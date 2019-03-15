@@ -21,6 +21,7 @@ public class PushCommandDecoder implements CommandDecoder{
     public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         logger.info("decode command readable length "+in.readableBytes());
         if(in.readableBytes() >= PushCommand.LENGTH){
+            in.markReaderIndex();
             byte[] header = new byte[PushCommand.LENGTH];
             in.readBytes(header);
             ResponsePushCommand responsePushCommand = new ResponsePushCommand(header);
