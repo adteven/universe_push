@@ -118,6 +118,7 @@ push.redis.address=redis://172.16.46.213:6379
 ## Push-Sub
 * 对于订阅请求，消息体如果带有token则使用当前token，不再重新生成，也即是只要客户端不清除token，下次重建链接还是可以沿用先前的token
 * 对请求过来的token按照push-connector ip分组进行分组
+* 订阅服务需要生成链接的唯一id,目前采用的snakeflow算法，可能由于时钟回拨的问题，可能出现重复，可以考虑[美团的leaf-snakeflow方案](https://tech.meituan.com/2017/04/21/mt-leaf.html)
 
 ## Push-Cache[计划中]
 ### 基本功能
