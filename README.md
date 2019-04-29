@@ -5,6 +5,8 @@
 
 > 为了开源以及方便部署,将更换RPC框架为`Dubbo`,并且全部基于`SpringBoot`
 
+* [本项目github地址](https://github.com/comsince/universe_push)
+
 # 部署说明
 
 ![image](attachment/push-universe.png)
