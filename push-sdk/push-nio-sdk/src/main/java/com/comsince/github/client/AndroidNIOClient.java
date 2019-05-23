@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
  * 这里Android client，提供心跳回调机制，方便客户端自由定制
  * */
 public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedCallback {
-    Log log = LoggerFactory.getLogger(NIOClient.class);
+    Log log = LoggerFactory.getLogger(AndroidNIOClient.class);
     private AsyncServer asyncServer;
     private AsyncSocket asyncSocket;
     private String host;
@@ -117,26 +117,42 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
     }
 
 
+    ByteBufferList notAllHeader = new ByteBufferList();
 
     @Override
     public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
-        if(receiveBuffer.remaining() == 0){
-            ByteBufferList headerBuffer = bb.get(Header.LENGTH);
-            receiveHeader = new Header(headerBuffer.getAll());
-        }
-        int bodyLength = receiveHeader.getLength();
-        int read = bodyLength - receiveBuffer.remaining();
-        int reallyRead = read > bb.remaining() ? bb.remaining() : read;
-        bb.get(receiveBuffer,reallyRead);
-
-        if(receiveBuffer.remaining() == bodyLength){
-            String message = receiveBuffer.readString(Charset.forName("UTF-8"));
-            String logMessage = "receive signal ["+receiveHeader.getSignal()+"] body-> "+message;
-            log.i(logMessage);
-            if(pushMessageCallback != null){
-                pushMessageCallback.receiveMessage(receiveHeader.getSignal(),message);
+        if(!receiveBuffer.hasRemaining() && bb.hasRemaining() && receiveHeader == null){
+            if(bb.remaining() <= Header.LENGTH && bb.remaining() <= Header.LENGTH - notAllHeader.remaining()){
+                bb.get(notAllHeader);
+            } else {
+                int remain = Header.LENGTH - notAllHeader.remaining();
+                bb.get(notAllHeader,remain);
+            }
+            if(notAllHeader.remaining() == Header.LENGTH){
+                receiveHeader = new Header(notAllHeader.getAll());
             }
         }
+        if(receiveHeader != null){
+            int bodyLength = receiveHeader.getLength();
+            int read = bodyLength - receiveBuffer.remaining();
+            int reallyRead = read > bb.remaining() ? bb.remaining() : read;
+            if(reallyRead > 0){
+                bb.get(receiveBuffer,reallyRead);
+            }
+            if(receiveBuffer.remaining() == bodyLength){
+                String message = receiveBuffer.readString(Charset.forName("UTF-8"));
+                Signal receiveHeaderSignal = receiveHeader.getSignal();
+                receiveHeader = null;
+                String logMessage = "receive signal ["+receiveHeaderSignal+"] body-> "+message;
+                log.i(logMessage);
+                if(pushMessageCallback != null){
+                    pushMessageCallback.receiveMessage(receiveHeaderSignal,message);
+                }
+            }
+        }
+
+
+
 
     }
 

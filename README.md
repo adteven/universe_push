@@ -32,7 +32,7 @@
 ```
 
 ## SpringBoot Dubbo服务启动
-由于dubbo严格遵守服务依赖启动顺序，请安装顺序启动如下服务
+由于dubbo严格遵守服务依赖启动顺序，请安装顺序启动如下服务,本次版本加入了dubbo的metric功能，对dubbo的代码进行适当的改造，使用的这里的代码编译出来[dubbo-2.7.2-SNAPSHOT](https://github.com/comsince/incubator-dubbo),此功能大家可以等到dubbo-2.7.2正式发布
 
 * `application.properties`配置`redis`和`zookeeper`地址
 
@@ -40,6 +40,13 @@
 
 ```properties
 push.redis.address=redis://172.16.46.213:6379
+```
+
+> 增加push-connector kafka集羣支持
+
+```properties
+## kafka broker
+push.kafka.broker=172.16.177.107:9092
 ```
 
 * 运行`mvn clean package -Dmaven.test.skip=true` 打包springboot jar 

@@ -18,7 +18,7 @@ public class PushServerConfiguration extends PushCommonConfiguration{
     @Bean
     public PushServer pushServer() throws IOException {
         PushServer pushServer = new PushServer();
-        pushServer.init(redissonClient());
+        pushServer.init(kafkaProperties.getBroker());
         return pushServer;
     }
 }

@@ -49,25 +49,12 @@
             android:id="@+id/send_private"/>
     </LinearLayout>
 
-    <ScrollView
+
+    <ListView
+        android:id="@+id/push_log_list"
+        android:background="@color/background_material_dark"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:scrollbars="vertical"
-        android:background="@color/background_material_dark">
-
-        <TextView
-            android:id="@+id/push_log"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:singleLine="false"
-            android:background="@color/background_material_dark"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-    </ScrollView>
-
+        android:layout_height="match_parent" />
 
 
 </LinearLayout>

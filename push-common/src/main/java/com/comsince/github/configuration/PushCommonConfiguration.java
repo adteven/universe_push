@@ -25,6 +25,9 @@ public class PushCommonConfiguration {
     @Autowired
     RedisProperties redisProperties;
 
+    @Autowired
+    KafkaProperties kafkaProperties;
+
     @Reference
     private SubService subService;
 
@@ -32,7 +35,9 @@ public class PushCommonConfiguration {
     RedissonClient redissonClient() throws IOException {
         Config config = new Config();
         config.useSingleServer().setAddress(redisProperties.getAddress());
-        return Redisson.create(config);
+        RedissonClient redissonClient = Redisson.create(config);
+        logger.info("create redisson client successful");
+        return redissonClient;
     }
 
     public SubService subService(){

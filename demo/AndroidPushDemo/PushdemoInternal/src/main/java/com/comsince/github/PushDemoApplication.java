@@ -46,12 +46,8 @@ public class PushDemoApplication extends Application {
         @Override
         public void handleMessage(Message msg) {
             String s = (String) msg.obj;
-            PushMainActivity.logList.add(0, getSimpleDate() + " " + s);
             if (pushLogActivity != null) {
-                pushLogActivity.refreshLogInfo();
-            }
-            if (!TextUtils.isEmpty(s)) {
-                Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+                pushLogActivity.refreshLogInfo(getSimpleDate() + " " + s);
             }
         }
 

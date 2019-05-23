@@ -5,6 +5,7 @@ import com.comsince.github.handler.PushMessageHandler;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tio.cluster.TioClusterConfig;
+import org.tio.cluster.kafka.KafkaTioClusterTopic;
 import org.tio.cluster.redisson.RedissonTioClusterTopic;
 import org.tio.server.ServerGroupContext;
 import org.tio.server.TioServer;
@@ -43,8 +44,17 @@ public class PushServer {
     public static TioClusterConfig tioClusterConfig;
 
 
-    public void init(RedissonClient redissonClient) throws IOException{
-        tioClusterConfig = new TioClusterConfig(new RedissonTioClusterTopic("push-channel",redissonClient));
+//    public void init(RedissonClient redissonClient) throws IOException{
+//        //tioClusterConfig = new TioClusterConfig(new RedissonTioClusterTopic("push-channel",redissonClient));
+//        tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",""));
+//        serverGroupContext.setTioClusterConfig(tioClusterConfig);
+//        serverGroupContext.setHeartbeatTimeout(Const.TIMEOUT);
+//        tioServer.start(serverIp, serverPort);
+//    }
+
+    public void init(String broker) throws IOException{
+        //tioClusterConfig = new TioClusterConfig(new RedissonTioClusterTopic("push-channel",redissonClient));
+        tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",broker));
         serverGroupContext.setTioClusterConfig(tioClusterConfig);
         serverGroupContext.setHeartbeatTimeout(Const.TIMEOUT);
         tioServer.start(serverIp, serverPort);

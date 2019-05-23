@@ -30,6 +30,9 @@ public class PushPacket extends Packet {
 
     public void setBody(byte[] body) {
         this.body = body;
+        if(body != null){
+            setByteCount(body.length);
+        }
     }
 
     public ByteBuffer encode(){

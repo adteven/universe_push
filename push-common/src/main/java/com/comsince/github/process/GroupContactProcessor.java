@@ -8,6 +8,7 @@ import com.comsince.github.Signal;
 import com.comsince.github.configuration.PushCommonConfiguration;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.model.GroupRequest;
+import com.comsince.github.utils.Constants;
 import org.redisson.api.RList;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class GroupContactProcessor implements MessageProcessor{
         if(GroupRequest.SIGNAL_CONTACT_MESSAGE == groupRequest.getType()){
             groupContactService.pushByToken(groupRequest.getTo(),groupRequest.getMessage());
         } else if(GroupRequest.GROUP_CONTACT_MESSAGE == groupRequest.getType()){
-            RList<String> rList = redissonClient.getList(groupRequest.getGroup());
+            RList<String> rList = redissonClient.getList(Constants.REDIS_PREFIX + groupRequest.getGroup());
             for(String token : rList){
                 if(groupRequest.getFrom().equals(token)){
                     continue;

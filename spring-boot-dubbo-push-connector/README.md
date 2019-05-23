@@ -34,6 +34,8 @@
 {"token":"test"}
 ````
 
+## 功能改进
+* push-connector消息订阅与发布变化为kafka
 
 ## 基本功能
 * 提供根据唯一id的RPC统一推送接口

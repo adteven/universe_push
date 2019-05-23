@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.comsince.github.adapter.PushLogAdapter;
 import com.meizu.cloud.pushinternal.DebugLogger;
 
 import java.io.IOException;
@@ -30,23 +34,22 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
 
     private String TAG = "PushMainActivity";
 
-    private TextView logTv;
-
-    public static List<String> logList = new CopyOnWriteArrayList<String>();
-
     private EditText groupEt;
     private EditText sendMessageEt;
     private Button joinGroupBt;
     private Button sendAllBt;
     private Button sendPrivateBt;
+    private ListView pushLogListView;
+
+    private PushLogAdapter pushLogAdapter;
+
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_push);
-        logTv = findViewById(R.id.push_log);
-
+        pushLogListView = findViewById(R.id.push_log_list);
         PushDemoApplication.setPushLogActivity(this);
 
         initView();
@@ -66,22 +69,19 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
         joinGroupBt.setOnClickListener(this);
         sendAllBt.setOnClickListener(this);
         sendPrivateBt.setOnClickListener(this);
+
+        pushLogAdapter = new PushLogAdapter(this);
+        pushLogListView.setAdapter(pushLogAdapter);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        refreshLogInfo();
     }
 
-    public void refreshLogInfo() {
-        String AllLog = "";
-        for (String log : logList) {
-            AllLog = AllLog + log + "\n";
-        }
-        //DebugLogger.i("PushLog",AllLog);
-        logTv.setText(AllLog);
+    public void refreshLogInfo(String item) {
+        pushLogAdapter.addlog(item);
     }
 
     @Override
@@ -94,6 +94,10 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.send_all:
+                if(TextUtils.isEmpty(groupEt.getText().toString())){
+                    Toast.makeText(this,"羣組不能爲空",Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 sendAll(groupEt.getText().toString(),sendMessageEt.getText().toString());
                 break;
             case R.id.join_group:

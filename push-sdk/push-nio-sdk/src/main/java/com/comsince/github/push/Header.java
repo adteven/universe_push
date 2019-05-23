@@ -16,7 +16,7 @@ public class Header {
 
     public Header(ByteBuffer buffer) {
         mContents = new byte[LENGTH];
-        if(buffer.limit() >= LENGTH) {
+        if(buffer.remaining() >= LENGTH) {
             for(int i = 0; i < LENGTH; i++) {
                 mContents[i] = buffer.get();
             }

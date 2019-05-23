@@ -1,7 +1,9 @@
 package com.comsince.github.controller;
 
 import com.comsince.github.model.PushResponse;
+import com.comsince.github.utils.Constants;
 import org.redisson.api.RList;
+import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,14 @@ public class GroupController {
     @RequestMapping(value = "joinGroup")
     public PushResponse joinGroup(@RequestParam String token, @RequestParam String group){
         logger.info("token "+token+" join group "+group);
-        RList<String> tokenList = redissonClient.getList(group);
+        RList<String> tokenList = redissonClient.getList(Constants.REDIS_PREFIX + group);
+        RMap<String,Integer> onlineStatusMap = redissonClient.getMap(Constants.ONLINE_STATUS);
+        for(String alreadyToken : tokenList){
+            if(onlineStatusMap.get(alreadyToken) == 0){
+                logger.info("remove offline token "+alreadyToken);
+                tokenList.remove(alreadyToken);
+            }
+        }
         if(tokenList.contains(token)){
             return new PushResponse(30001,"already add group");
         }
@@ -44,7 +53,7 @@ public class GroupController {
      * */
     @RequestMapping(value = "quitGroup")
     public PushResponse quitGroup(@RequestParam String token,@RequestParam String group){
-        boolean flag = redissonClient.getList(group).remove(token);
+        boolean flag = redissonClient.getList(Constants.REDIS_PREFIX + group).remove(token);
         return new PushResponse(200,String.valueOf(flag));
     }
 
@@ -53,6 +62,11 @@ public class GroupController {
      * */
     @RequestMapping(value = "createGroup")
     public void createGroup(@RequestParam String group){
+
+    }
+
+
+    public void deleteInvalidToken(){
 
     }
 

@@ -9,9 +9,12 @@ public class Constants {
     /**
      * 当前在线人数
      * */
-    public static final String ONLINE_NUM = "online_num";
 
-    public static final String ONLINE_STATUS = "online_status";
+    public static final String REDIS_PREFIX = "push.";
+
+    public static final String ONLINE_NUM = "push.online_num";
+
+    public static final String ONLINE_STATUS = "push.online_status";
 
     public static final String UID_TOKEN_MAP = "uid-token";
 
