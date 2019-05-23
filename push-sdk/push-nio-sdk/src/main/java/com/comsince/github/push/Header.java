@@ -1,10 +1,12 @@
 package com.comsince.github.push;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Header {
     public static final int LENGTH = 6;
     public static final int VERSION = 1;
+    public static final byte magic = (byte)0xf8;
 
     protected byte[] mContents;
 
@@ -65,5 +67,10 @@ public class Header {
     public static void main(String[] args){
         System.out.println(~(0x01 << 7));
         System.out.println(~0x80);
+    }
+
+    @Override
+    public String toString() {
+        return "Header magic "+mContents[0]+" length "+getLength()+" signal "+getSignal();
     }
 }

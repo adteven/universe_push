@@ -10,6 +10,7 @@ import com.comsince.github.logger.LoggerFactory;
 import com.comsince.github.push.Header;
 import com.comsince.github.push.Signal;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -121,15 +122,28 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
 
     @Override
     public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
-        if(!receiveBuffer.hasRemaining() && bb.hasRemaining() && receiveHeader == null){
-            if(bb.remaining() <= Header.LENGTH && bb.remaining() <= Header.LENGTH - notAllHeader.remaining()){
-                bb.get(notAllHeader);
-            } else {
-                int remain = Header.LENGTH - notAllHeader.remaining();
-                bb.get(notAllHeader,remain);
-            }
-            if(notAllHeader.remaining() == Header.LENGTH){
-                receiveHeader = new Header(notAllHeader.getAll());
+        if(!receiveBuffer.hasRemaining() && receiveHeader == null){
+            while (bb.hasRemaining()){
+                int readable = bb.remaining();
+                int readLength = Math.min(readable,Header.LENGTH - notAllHeader.remaining());
+                bb.get(notAllHeader,readLength);
+                if(notAllHeader.remaining() == Header.LENGTH){
+                    byte[] header = new byte[Header.LENGTH];
+                    notAllHeader.get(header);
+                    if(header[0] != Header.magic){
+                        log.i("this message may not header");
+                        for(int i = 1; i < header.length; i++){
+                            if(header[i] == Header.magic){
+                                ByteBuffer rightHeader = ByteBuffer.wrap(header,i,header.length - i);
+                                notAllHeader.add(rightHeader);
+                                break;
+                            }
+                        }
+                    } else {
+                        receiveHeader = new Header(ByteBuffer.wrap(header));
+                        break;
+                    }
+                }
             }
         }
         if(receiveHeader != null){
