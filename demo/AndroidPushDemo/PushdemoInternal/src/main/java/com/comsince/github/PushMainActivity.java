@@ -17,8 +17,11 @@ import com.comsince.github.adapter.PushLogAdapter;
 import com.meizu.cloud.pushinternal.DebugLogger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,8 +45,9 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
     private ListView pushLogListView;
 
     private PushLogAdapter pushLogAdapter;
+    public static List<String> pushLoglist = new ArrayList<>();
 
-
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,9 +58,15 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
 
         initView();
 
-        Intent intent = new Intent(this,PushService.class);
-        intent.setAction(PushService.START_FOREGROUD_SERVICE);
-        startService(intent);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(PushMainActivity.this,PushService.class);
+                intent.setAction(PushService.START_FOREGROUD_SERVICE);
+                startService(intent);
+            }
+        });
+
     }
 
     private void initView(){
@@ -69,8 +79,8 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
         joinGroupBt.setOnClickListener(this);
         sendAllBt.setOnClickListener(this);
         sendPrivateBt.setOnClickListener(this);
-
-        pushLogAdapter = new PushLogAdapter(this);
+        DebugLogger.i("pushMain","init view ");
+        pushLogAdapter = new PushLogAdapter(this,pushLoglist);
         pushLogListView.setAdapter(pushLogAdapter);
     }
 
@@ -78,6 +88,11 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     public void refreshLogInfo(String item) {
