@@ -5,6 +5,7 @@ import com.comsince.github.model.PushResponse;
 import com.comsince.github.PushService;
 import com.comsince.github.model.PushTokenRequest;
 import com.comsince.github.model.PushTokensResponse;
+import com.comsince.github.utils.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.api.RMap;
@@ -131,7 +132,7 @@ public class PushController {
     }
 
     private boolean isOnline(String token){
-        RMap<String,Integer> flagMap = redissonClient.getMap("online_status");
+        RMap<String,Integer> flagMap = redissonClient.getMap(Constants.ONLINE_STATUS);
         int flag = 0;
         if(flagMap.containsKey(token)){
             flag = flagMap.get(token);
