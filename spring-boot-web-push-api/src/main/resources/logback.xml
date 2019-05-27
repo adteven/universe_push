@@ -25,6 +25,12 @@
       <!--日志文件保留天数 参考地址：https://www.sitec.cc/2015/10/30/logback/-->
       <MaxHistory>1</MaxHistory>
     </rollingPolicy>
+
+    <!--日志文件最大的大小-->
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>10GB</MaxFileSize>
+    </triggeringPolicy>
+
   </appender>
   <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
@@ -46,7 +52,6 @@
   </appender>
 
   <logger name="org.apache.http" level="OFF"/>
-  <logger name="com.meizu.yard" level="OFF"/>
   <logger name="org.apache.zookeeper.ClientCnxn" level="OFF"/>
 
   <root level="INFO">
