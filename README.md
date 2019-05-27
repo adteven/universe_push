@@ -38,9 +38,12 @@
 本项目引入dubbo admin监控项目，由于dubbo-2.7.2正式版没有发布所以对dubbo的相关项目做了改造以适应dubbo-metric数据统计，如果你在编译过程中遇到错误，可以到这里下载项目本地编译即可
 ![image](attachment/dubbo-metric.png)
 
+#### 相关项目
 * [dubbo](https://github.com/comsince/incubator-dubbo)
 * [dubbo-springboot-starter](https://github.com/comsince/incubator-dubbo-spring-boot-project)
 * [dubbo-admin]()
+
+### Dubbo项目参数说明
 
 * `application.properties`配置`redis`和`zookeeper`地址
 
