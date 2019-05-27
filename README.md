@@ -34,6 +34,14 @@
 ## SpringBoot Dubbo服务启动
 由于dubbo严格遵守服务依赖启动顺序，请安装顺序启动如下服务,本次版本加入了dubbo的metric功能，对dubbo的代码进行适当的改造，使用的这里的代码编译出来[dubbo-2.7.2-SNAPSHOT](https://github.com/comsince/incubator-dubbo),此功能大家可以等到dubbo-2.7.2正式发布
 
+### Dubbo admin metric
+本项目引入dubbo admin监控项目，由于dubbo-2.7.2正式版没有发布所以对dubbo的相关项目做了改造以适应dubbo-metric数据统计，如果你在编译过程中遇到错误，可以到这里下载项目本地编译即可
+![image](attachment/dubbo-metric.png)
+
+* [dubbo](https://github.com/comsince/incubator-dubbo)
+* [dubbo-springboot-starter](https://github.com/comsince/incubator-dubbo-spring-boot-project)
+* [dubbo-admin]()
+
 * `application.properties`配置`redis`和`zookeeper`地址
 
 > 这里没用使用诸如`nacos`,`apollo`外部的配置中心，需要自己手动修改
