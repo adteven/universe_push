@@ -14,14 +14,14 @@
     <!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy-->
     <!--for further documentation-->
     <Append>true</Append>
-    <File>../push-group/logs/push-group.log</File>
+    <File>../push-sub/logs/push-sub.log</File>
     <encoder>
       <pattern>
         %d{HH:mm:ss.SSS} %-5p [%t] [%c] %X{tid} - %m%n
       </pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>../push-group/logs/push-group.log.%d{yyyyMMdd}</fileNamePattern>
+      <fileNamePattern>../push-sub/logs/push-sub.log.%d{yyyyMMdd}</fileNamePattern>
       <!--日志文件保留天数 参考地址：https://www.sitec.cc/2015/10/30/logback/-->
       <MaxHistory>1</MaxHistory>
     </rollingPolicy>
@@ -34,14 +34,14 @@
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>ERROR</level>
     </filter>
-    <File>../push-group/logs/push-group-error.log</File>
+    <File>../push-sub/logs/push-sub-error.log</File>
     <encoder>
       <pattern>
         %d{HH:mm:ss.SSS} %-5p [%t] [%c] %X{tid} - %m%n
       </pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>../push-group/logs/push-group-error.log.%d{yyyyMMdd}</fileNamePattern>
+      <fileNamePattern>../push-sub/logs/push-sub-error.log.%d{yyyyMMdd}</fileNamePattern>
     </rollingPolicy>
   </appender>
 
