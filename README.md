@@ -41,7 +41,7 @@
 #### 相关项目
 * [dubbo](https://github.com/comsince/incubator-dubbo)
 * [dubbo-springboot-starter](https://github.com/comsince/incubator-dubbo-spring-boot-project)
-* [dubbo-admin]()
+* [dubbo-admin](https://github.com/comsince/dubbo-admin)
 
 ### Dubbo项目参数说明
 
