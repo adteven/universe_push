@@ -41,10 +41,10 @@ do_start()
     JAVA_HOME=/data/java
   fi
 
-  mkdir -p /opt/boot/$APP_NAME/logs
+  mkdir -p /data/boot/$APP_NAME/logs
 
   COMMAND="$JAVA_HOME/bin/java $JVM_OPTIONS -jar $APP_LIB/$JAR_NAME"
-  (${COMMAND} 2>&1 1> "/opt/boot/$APP_NAME/logs/$APP_NAME.log" &) > /dev/null
+  (${COMMAND} 2>&1 1> "/data/boot/$APP_NAME/logs/$APP_NAME.log" &) > /dev/null
 
   sleep 1 #避免进程启动太慢,导致无法进入后续循环
 
