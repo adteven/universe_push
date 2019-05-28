@@ -3,9 +3,8 @@
 while true
 do
     i=$(($i+1))
-    echo "current num is ${i}"
     curl -X POST --header "Content-Type:application/json;charset=UTF-8" -i 'http://172.16.185.114:8080/push/sendToAll' --data "[这是第${i}消息][消息类型->群发消息][消息内容->最终目的是能够将各个技术点形成知识体系，有了足够的知识积累方能技术深入，对每个技术点的有研究，大致分为基础用法和原理剖析，最终能够将文章组织的有条理]"
-    curl -X GET -i 'http://172.16.185.114:8080/push/sendByToken?token=5f6497f77b9621dacd564bfba394ea49&message=pushsiginsad'
-
+    #curl -X GET -i 'http://172.16.185.114:8080/push/sendByToken?token=5f6497f77b9621dacd564bfba394ea49&message=pushsiginsad'
+    echo "current num is ${i}"
     #sleep 1
 done

@@ -34,7 +34,7 @@ public class PushCommonConfiguration {
     @Bean(destroyMethod="shutdown")
     RedissonClient redissonClient() throws IOException {
         Config config = new Config();
-        config.useSingleServer().setAddress(redisProperties.getAddress());
+        config.useSingleServer().setAddress(redisProperties.getAddress()).setPassword(redisProperties.getPassword());
         RedissonClient redissonClient = Redisson.create(config);
         logger.info("create redisson client successful");
         return redissonClient;

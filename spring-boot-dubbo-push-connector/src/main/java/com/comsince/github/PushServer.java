@@ -54,8 +54,8 @@ public class PushServer {
 
     public void init(String broker) throws IOException{
         //tioClusterConfig = new TioClusterConfig(new RedissonTioClusterTopic("push-channel",redissonClient));
-        tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",broker));
-        serverGroupContext.setTioClusterConfig(tioClusterConfig);
+//        tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",broker));
+//        serverGroupContext.setTioClusterConfig(tioClusterConfig);
         serverGroupContext.setHeartbeatTimeout(Const.TIMEOUT);
         tioServer.start(serverIp, serverPort);
     }
