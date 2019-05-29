@@ -23,7 +23,7 @@ public class RedissonConfiguration {
     @Bean(destroyMethod="shutdown")
     RedissonClient redisson() throws IOException {
         Config config = new Config();
-        config.useSingleServer().setAddress(redisProperties.getAddress());
+        config.useSingleServer().setAddress(redisProperties.getAddress()).setPassword(redisProperties.getPassword());
         return Redisson.create(config);
     }
 }

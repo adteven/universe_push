@@ -69,7 +69,8 @@ public class ConnectService implements PushMessageCallback,Callback {
 
     public void start(){
         alarmWrapper.start();
-        redirect();
+        //redirect();
+        connect(new NodeInfo("152.136.147.18",6789));
     }
 
     public void stop(){
@@ -162,7 +163,7 @@ public class ConnectService implements PushMessageCallback,Callback {
                         }).build());
     }
 
-    public void redirect(){
+    private void redirect(){
         final Request request = new Request.Builder()
                 .url("http://172.16.185.114:8080/manager/redirect")
                 .build();
@@ -195,6 +196,10 @@ public class ConnectService implements PushMessageCallback,Callback {
         NodeInfo nodeInfo = redirectResponse.getNodeInfos().get(new Random().nextInt(3));
 //        nodeInfo = new NodeInfo("172.16.46.201",6789);
 //        androidNIOClient = new AndroidNIOClient("172.16.177.107",6789);
+        connect(nodeInfo);
+    }
+
+    private void connect(NodeInfo nodeInfo){
         PushDemoApplication.sendMessage("connect node "+nodeInfo.getIp()+":"+nodeInfo.getPort());
         androidNIOClient = new AndroidNIOClient(nodeInfo.getIp(),nodeInfo.getPort());
         androidNIOClient.setPushMessageCallback(this);

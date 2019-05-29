@@ -22,7 +22,7 @@
 
     <dependency>
       <groupId>com.comsince.github</groupId>
-      <artifactId>push-sub</artifactId>
+      <artifactId>push-common</artifactId>
       <version>${project.verson}</version>
     </dependency>
   </dependencies>
