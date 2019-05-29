@@ -113,7 +113,7 @@ push.kafka.broker=172.16.177.107:9092
 ```
 
 ## 推送SDK
-为了方便用户快速接入消息推送系统，特提供如下SDK
+为了方便用户快速接入消息推送系统，特提供如下SDK,[演示APK下载](attachment/PushdemoInternal-debug.apk)
 
 * __[AIO-PUSHSDK](push-sdk/push-aio-sdk)__
 * __[NIO-PUSHSDK](push-sdk/push-nio-sdk)__
