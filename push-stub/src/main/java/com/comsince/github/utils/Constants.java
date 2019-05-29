@@ -16,7 +16,7 @@ public class Constants {
 
     public static final String ONLINE_STATUS = "push.online_status";
 
-    public static final String UID_TOKEN_MAP = "uid-token";
+    public static final String UID_TOKEN_MAP = "push.uid-token";
 
     public static final String REDISCLIENT_NAME = "redissonClient";
 

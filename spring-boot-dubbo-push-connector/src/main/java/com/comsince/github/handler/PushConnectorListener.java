@@ -4,6 +4,7 @@ import com.comsince.github.configuration.PushCommonConfiguration;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.sub.SubService;
 import com.comsince.github.utils.Constants;
+import io.netty.util.internal.StringUtil;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,20 @@ public class PushConnectorListener implements ServerAioListener{
     Logger logger = LoggerFactory.getLogger(PushConnectorListener.class);
 
     public void onAfterConnected(ChannelContext channelContext, boolean b, boolean b1) throws Exception {
-        String token;
+        String token = null;
         PushCommonConfiguration pushServerConfiguration = (PushCommonConfiguration) SpringApplicationContext.getBean(Constants.PUSHSERVER_CONFIGURATION);
         SubService subService = pushServerConfiguration.subService();
         if(subService == null){
             token = new DefaultTioUuid().uuid();
         } else {
-            token = subService.generateToken();
+            try {
+                token = subService.generateToken();
+            } catch (Exception e){
+                logger.error("generateToken error ",e);
+            }
+            if(StringUtil.isNullOrEmpty(token)){
+                token = new DefaultTioUuid().uuid();
+            }
         }
         Tio.bindBsId(channelContext,token);
 
