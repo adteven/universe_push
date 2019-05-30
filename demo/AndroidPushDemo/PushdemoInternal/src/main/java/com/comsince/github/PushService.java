@@ -1,12 +1,14 @@
 package com.comsince.github;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.IBinder;
 
 import com.comsince.github.model.GroupRequest;
@@ -14,6 +16,8 @@ import com.comsince.github.push.Signal;
 import com.comsince.github.utils.Json;
 import com.comsince.github.utils.PreferenceUtil;
 import com.meizu.cloud.pushinternal.DebugLogger;
+import com.meizu.cloud.pushsdk.util.MinSdkChecker;
+import com.meizu.cloud.pushsdk.util.MzSystemUtils;
 
 /**
  * Created by liaojinlong on 16-4-21.
@@ -91,25 +95,37 @@ public class PushService extends Service implements MessageCallback{
              groupService.joinGroup("test");
          } else if(Signal.CONTACT == signal){
              GroupRequest groupRequest = Json.toBean(message,GroupRequest.class);
+             DebugLogger.i("PushService","receive contact message "+groupRequest);
              showNotification(groupRequest);
          }
     }
 
     private void showNotification(GroupRequest groupRequest){
         // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, PushMainActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getService(this, 0,
+                new Intent(this, PushService.class), 0);
 
         // Set the info for the views that show in the notification panel.
-        Notification notification = new Notification.Builder(this)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),R.drawable.flyme_status_ic_notification ))
                 .setSmallIcon(R.drawable.mz_push_notification_small_icon)  // the status icon
+                .setAutoCancel(true)
                 .setTicker(groupRequest.getMessage())  // the status text
                 .setWhen(System.currentTimeMillis())  // the time stamp
                 .setContentTitle("群组"+groupRequest.getGroup()+"消息")  // the label of the entry
                 .setContentText(groupRequest.getMessage())  // the contents of the entry
-                .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
-                .build();
+                .setContentIntent(contentIntent);  // The intent to send when the entry is clicked
+
+        if(MinSdkChecker.isSupportNotificationChannel()){
+            DebugLogger.e("PushService","support notification channel on non meizu device");
+            NotificationChannel notificationChannel = new NotificationChannel("push","MEIZUPUSH",NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.enableLights(true); //是否在桌面icon右上角展示小红点
+            notificationChannel.setLightColor(Color.GREEN); //小红点颜色
+            notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
+            notificationManager.createNotificationChannel(notificationChannel);
+            builder.setChannelId("push");
+        }
+        Notification notification = builder.build();
         int notifyId = Math.abs((int)System.currentTimeMillis());
         notificationManager.notify(notifyId,notification);
     }
