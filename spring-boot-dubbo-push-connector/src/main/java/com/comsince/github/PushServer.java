@@ -59,7 +59,7 @@ public class PushServer {
 
     public void init(String broker) throws IOException{
         if(!StringUtil.isNullOrEmpty(broker)){
-            logger.info("start push-connector cluster kafka broker is "+broker);
+            logger.info("start push-connector cluster current kafka broker is "+broker);
             tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",broker));
             serverGroupContext.setTioClusterConfig(tioClusterConfig);
         }
