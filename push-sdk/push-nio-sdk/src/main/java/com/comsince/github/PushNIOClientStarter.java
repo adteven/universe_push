@@ -23,12 +23,17 @@ public class PushNIOClientStarter {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                for(int i=0;i<50;i++){
+                for(int i=0;i<1000;i++){
 //            sendConnect("172.16.177.107",6789);
 //            sendConnect("172.16.176.23",6789);
 //            sendConnect("172.16.176.25",6789);
 //            sendConnect("127.0.0.1",6789);
                     sendConnect("152.136.147.18",6789);
+//                    try {
+//                        Thread.sleep(50);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         });
@@ -37,23 +42,7 @@ public class PushNIOClientStarter {
     }
 
     public static void sendConnect(String host, int port){
-        final AndroidNIOClient nioClient = new AndroidNIOClient(host,port);
-        nioClient.setPushMessageCallback(new PushMessageCallback() {
-            @Override
-            public void receiveMessage(Signal signal, String message) {
-
-            }
-
-            @Override
-            public void receiveException(Exception e) {
-
-            }
-
-            @Override
-            public void onConnected() {
-                 nioClient.sub();
-            }
-        });
+        final NIOClient nioClient = new NIOClient(host,port);
         nioClient.connect();
     }
 }
