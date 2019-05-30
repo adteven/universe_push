@@ -2,7 +2,10 @@ package com.comsince.github;
 
 import com.comsince.github.handler.PushConnectorListener;
 import com.comsince.github.handler.PushMessageHandler;
+import io.netty.util.internal.StringUtil;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tio.cluster.TioClusterConfig;
 import org.tio.cluster.kafka.KafkaTioClusterTopic;
@@ -21,6 +24,8 @@ import org.redisson.config.Config;
  * @Time 19-2-14 上午10:21
  **/
 public class PushServer {
+
+    private Logger logger = LoggerFactory.getLogger(PushServer.class);
 
     //handler, 包括编码、解码、消息处理
     public static ServerAioHandler aioHandler = new PushMessageHandler();
@@ -53,9 +58,11 @@ public class PushServer {
 //    }
 
     public void init(String broker) throws IOException{
-        //tioClusterConfig = new TioClusterConfig(new RedissonTioClusterTopic("push-channel",redissonClient));
-//        tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",broker));
-//        serverGroupContext.setTioClusterConfig(tioClusterConfig);
+        if(!StringUtil.isNullOrEmpty(broker)){
+            logger.info("start push-connector cluster kafka broker is "+broker);
+            tioClusterConfig = new TioClusterConfig(new KafkaTioClusterTopic("push-channel",broker));
+            serverGroupContext.setTioClusterConfig(tioClusterConfig);
+        }
         serverGroupContext.setHeartbeatTimeout(Const.TIMEOUT);
         tioServer.start(serverIp, serverPort);
     }
