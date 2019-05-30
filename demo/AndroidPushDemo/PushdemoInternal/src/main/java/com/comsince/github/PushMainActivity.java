@@ -87,6 +87,9 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
 
     @Override
     protected void onResume() {
+        if(groupEt != null){
+            groupEt.setText("test");
+        }
         super.onResume();
     }
 

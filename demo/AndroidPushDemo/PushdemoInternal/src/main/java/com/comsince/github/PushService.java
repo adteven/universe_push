@@ -81,6 +81,8 @@ public class PushService extends Service implements MessageCallback{
     public void receiveMessage(Signal signal, String message) {
          if(Signal.SUB == signal){
              PreferenceUtil.putToken(this,connectService.getToken());
+             //测试用，默认加入test群组
+             groupService.joinGroup("test");
          }
     }
 
