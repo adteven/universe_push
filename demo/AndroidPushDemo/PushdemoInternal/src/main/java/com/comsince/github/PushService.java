@@ -1,13 +1,17 @@
 package com.comsince.github;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 
+import com.comsince.github.model.GroupRequest;
 import com.comsince.github.push.Signal;
+import com.comsince.github.utils.Json;
 import com.comsince.github.utils.PreferenceUtil;
 import com.meizu.cloud.pushinternal.DebugLogger;
 
@@ -23,10 +27,12 @@ public class PushService extends Service implements MessageCallback{
     ConnectService connectService;
     GroupService groupService;
     NetworkService networkService;
+    NotificationManager notificationManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        this.notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         connectService = new ConnectService(this,"push-connector");
         connectService.setMessageCallback(this);
         groupService = new GroupService(connectService);
@@ -83,7 +89,29 @@ public class PushService extends Service implements MessageCallback{
              PreferenceUtil.putToken(this,connectService.getToken());
              //测试用，默认加入test群组
              groupService.joinGroup("test");
+         } else if(Signal.CONTACT == signal){
+             GroupRequest groupRequest = Json.toBean(message,GroupRequest.class);
+             showNotification(groupRequest);
          }
+    }
+
+    private void showNotification(GroupRequest groupRequest){
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, PushMainActivity.class), 0);
+
+        // Set the info for the views that show in the notification panel.
+        Notification notification = new Notification.Builder(this)
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),R.drawable.flyme_status_ic_notification ))
+                .setSmallIcon(R.drawable.mz_push_notification_small_icon)  // the status icon
+                .setTicker(groupRequest.getMessage())  // the status text
+                .setWhen(System.currentTimeMillis())  // the time stamp
+                .setContentTitle("群组"+groupRequest.getGroup()+"消息")  // the label of the entry
+                .setContentText(groupRequest.getMessage())  // the contents of the entry
+                .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
+                .build();
+        int notifyId = Math.abs((int)System.currentTimeMillis());
+        notificationManager.notify(notifyId,notification);
     }
 
     private void switchIntent(Intent intent){

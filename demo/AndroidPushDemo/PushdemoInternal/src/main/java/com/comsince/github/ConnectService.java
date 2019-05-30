@@ -69,8 +69,10 @@ public class ConnectService implements PushMessageCallback,Callback {
 
     public void start(){
         alarmWrapper.start();
-        //redirect();
-        connect(new NodeInfo("152.136.147.18",6789));
+//        redirect();
+        androidNIOClient = new AndroidNIOClient("152.136.147.18",6789);
+        androidNIOClient.setPushMessageCallback(this);
+        androidNIOClient.connect();
     }
 
     public void stop(){
