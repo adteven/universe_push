@@ -46,6 +46,7 @@
             android:layout_height="wrap_content"
             android:text="发送私有消息"
             android:layout_weight="1"
+            android:visibility="gone"
             android:id="@+id/send_private"/>
     </LinearLayout>
 

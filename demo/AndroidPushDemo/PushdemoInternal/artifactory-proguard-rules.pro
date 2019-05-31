@@ -28,8 +28,8 @@
         -keep class com.squareup.okhttp.** {*;}
         -dontwarn com.squareup.okhttp.**
 
-        -keep class com.comsince.github.model.** { *; }
-        -dontwarn com.comsince.github.model.**
+        -keep class com.comsince.github.** { *; }
+        -dontwarn com.comsince.github.**
 
 
         # App compat
