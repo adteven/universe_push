@@ -105,6 +105,7 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
                     break;
                 }
                 sendAll(groupEt.getText().toString(),sendMessageEt.getText().toString());
+                sendMessageEt.setText("");
                 break;
             case R.id.join_group:
                 joinGroup(groupEt.getText().toString());
