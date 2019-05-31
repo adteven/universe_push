@@ -1,7 +1,9 @@
-package com.comsince.github;
+package com.comsince.github.service;
 
+import com.comsince.github.PushDemoApplication;
 import com.comsince.github.model.PublicMessage;
 import com.comsince.github.push.Signal;
+import com.comsince.github.utils.Constant;
 import com.comsince.github.utils.Json;
 import com.meizu.cloud.pushinternal.DebugLogger;
 
@@ -34,7 +36,7 @@ public class GroupService {
     public void joinGroup(String group){
         DebugLogger.i(TAG,"join group "+group);
         final Request request = new Request.Builder()
-                .url("http://152.136.147.18:8081/group/joinGroup?group="+group+"&token="+connectService.getToken())
+                .url("http://"+ Constant.CONNECTOR_NODE_IP+":8081/group/joinGroup?group="+group+"&token="+connectService.getToken())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

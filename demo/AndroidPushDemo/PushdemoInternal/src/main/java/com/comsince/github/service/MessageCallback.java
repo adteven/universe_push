@@ -1,4 +1,4 @@
-package com.comsince.github;
+package com.comsince.github.service;
 
 
 import com.comsince.github.push.Signal;

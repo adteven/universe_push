@@ -4,9 +4,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.text.TextUtils;
 
-/**
- * Created by zbin on 17-6-14.
- */
 public class Timer {
     int key;
     long period;

@@ -3,9 +3,6 @@ package com.comsince.github.alarm;
 import android.os.Handler;
 import android.os.Looper;
 
-/**
- * Created by zbin on 17-6-20.
- */
 
 public class Schedule {
     private Looper mLooper;

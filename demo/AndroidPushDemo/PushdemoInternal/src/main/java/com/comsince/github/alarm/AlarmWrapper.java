@@ -16,10 +16,6 @@ import com.meizu.cloud.pushinternal.DebugLogger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by zbin on 17-6-14.
- */
-
 public class AlarmWrapper {
     private static final String tag = "AlarmWrapper";
     private static final String scheme = "timer";

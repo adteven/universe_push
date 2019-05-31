@@ -3,10 +3,6 @@ package com.comsince.github.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by liaojinlong on 19-3-7.
- */
-
 public class PreferenceUtil {
 
     private static SharedPreferences getSharePerferenceByName(Context context, String name){

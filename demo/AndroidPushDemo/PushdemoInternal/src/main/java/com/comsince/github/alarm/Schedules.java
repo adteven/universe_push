@@ -6,10 +6,6 @@ import android.os.Looper;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by zbin on 17-6-20.
- */
-
 public class Schedules {
     private static Map<Schedule.Type, Schedule> sScheduleMap = new HashMap<>();
     private static Schedule sIo, sEvent, sMain, sComputation;

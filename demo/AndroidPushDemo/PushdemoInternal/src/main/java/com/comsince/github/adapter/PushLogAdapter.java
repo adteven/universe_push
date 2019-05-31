@@ -8,14 +8,10 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.comsince.github.R;
-import com.meizu.cloud.pushinternal.DebugLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by liaojinlong on 19-5-23.
- */
 
 public class PushLogAdapter extends BaseAdapter {
 

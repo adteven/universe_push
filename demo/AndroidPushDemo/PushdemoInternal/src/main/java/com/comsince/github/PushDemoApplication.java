@@ -5,18 +5,17 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
-import android.widget.Toast;
-
 import com.meizu.cloud.pushinternal.DebugLogger;
-
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class PushDemoApplication extends Application {
     private static DemoHandler sHandler = null;
     private static PushMainActivity pushLogActivity = null;
+    public static List<String> pushLoglist = new ArrayList<>();
 
     @Override
     public void onCreate() {
@@ -48,6 +47,11 @@ public class PushDemoApplication extends Application {
             String s = (String) msg.obj;
             if (pushLogActivity != null) {
                 pushLogActivity.refreshLogInfo(getSimpleDate() + " " + s);
+            } else {
+                if(pushLoglist.size() > 50){
+                    pushLoglist.clear();
+                }
+                pushLoglist.add(0,getSimpleDate() + " " + s);
             }
         }
 

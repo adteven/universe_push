@@ -1,144 +1,43 @@
 package com.comsince.github;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.IBinder;
 
-import com.comsince.github.model.GroupRequest;
-import com.comsince.github.push.Signal;
-import com.comsince.github.utils.Json;
-import com.comsince.github.utils.PreferenceUtil;
+import com.comsince.github.service.StackService;
 import com.meizu.cloud.pushinternal.DebugLogger;
-import com.meizu.cloud.pushsdk.util.MinSdkChecker;
-import com.meizu.cloud.pushsdk.util.MzSystemUtils;
-
-/**
- * Created by liaojinlong on 16-4-21.
- */
-public class PushService extends Service implements MessageCallback{
-
-    public static int FOREGROUND_SERVICE = 102;
-    public static String START_FOREGROUD_SERVICE = "start_foreground_service";
 
 
-    ConnectService connectService;
-    GroupService groupService;
-    NetworkService networkService;
-    NotificationManager notificationManager;
+public class PushService extends Service {
+
+    public static String START_PUSH_SERVICE = "start_foreground_service";
+
+    private StackService stackService;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        connectService = new ConnectService(this,"push-connector");
-        connectService.setMessageCallback(this);
-        groupService = new GroupService(connectService);
-        networkService  = new NetworkService(this,connectService);
-        connectService.start();
-        networkService.start();
+        stackService = new StackService(this);
+        stackService.start();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         DebugLogger.i("LocalService", "Received start id " + startId + ": " + intent);
-        switchIntent(intent);
+        stackService.switchIntent(intent);
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        // Cancel the persistent notification.
-        stopForeground(true);
         super.onDestroy();
-        DebugLogger.i(START_FOREGROUD_SERVICE,"close push channel");
-        connectService.stop();
-        networkService.stop();
+        DebugLogger.i(START_PUSH_SERVICE,"close push channel");
+        stackService.stop();
     }
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    private void startForegroudService(Intent intent){
-        CharSequence text = getText(R.string.local_service_started);
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, PushMainActivity.class), 0);
-
-        // Set the info for the views that show in the notification panel.
-        Notification notification = new Notification.Builder(this)
-                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),R.drawable.flyme_status_ic_notification ))
-                .setSmallIcon(R.drawable.mz_push_notification_small_icon)  // the status icon
-                .setTicker(text)  // the status text
-                .setWhen(System.currentTimeMillis())  // the time stamp
-                .setContentTitle("PushSevice foreground")  // the label of the entry
-                .setContentText(text)  // the contents of the entry
-                .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
-                .build();
-
-        startForeground(FOREGROUND_SERVICE,notification);
-    }
-
-    @Override
-    public void receiveMessage(Signal signal, String message) {
-         if(Signal.SUB == signal){
-             PreferenceUtil.putToken(this,connectService.getToken());
-             //测试用，默认加入test群组
-             groupService.joinGroup("test");
-         } else if(Signal.CONTACT == signal){
-             GroupRequest groupRequest = Json.toBean(message,GroupRequest.class);
-             DebugLogger.i("PushService","receive contact message "+groupRequest);
-             showNotification(groupRequest);
-         }
-    }
-
-    private void showNotification(GroupRequest groupRequest){
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getService(this, 0,
-                new Intent(this, PushService.class), 0);
-
-        // Set the info for the views that show in the notification panel.
-        Notification.Builder builder = new Notification.Builder(this)
-                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),R.drawable.flyme_status_ic_notification ))
-                .setSmallIcon(R.drawable.mz_push_notification_small_icon)  // the status icon
-                .setAutoCancel(true)
-                .setTicker(groupRequest.getMessage())  // the status text
-                .setWhen(System.currentTimeMillis())  // the time stamp
-                .setContentTitle("群组"+groupRequest.getGroup()+"消息")  // the label of the entry
-                .setContentText(groupRequest.getMessage())  // the contents of the entry
-                .setContentIntent(contentIntent);  // The intent to send when the entry is clicked
-
-        if(MinSdkChecker.isSupportNotificationChannel()){
-            DebugLogger.e("PushService","support notification channel on non meizu device");
-            NotificationChannel notificationChannel = new NotificationChannel("push","MEIZUPUSH",NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.enableLights(true); //是否在桌面icon右上角展示小红点
-            notificationChannel.setLightColor(Color.GREEN); //小红点颜色
-            notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-            notificationManager.createNotificationChannel(notificationChannel);
-            builder.setChannelId("push");
-        }
-        Notification notification = builder.build();
-        int notifyId = Math.abs((int)System.currentTimeMillis());
-        notificationManager.notify(notifyId,notification);
-    }
-
-    private void switchIntent(Intent intent){
-        if(START_FOREGROUD_SERVICE.equals(intent.getAction())){
-            startForegroudService(intent);
-        } else if(GroupService.ACTION_GROUP_JOIN_GROUP.equals(intent.getAction())){
-            groupService.joinGroup(intent.getStringExtra(GroupService.GROUP_NAME));
-        } else if(GroupService.ACTION_SEND_PUBLIC_MESSAGE.equals(intent.getAction())){
-            groupService.sendPublicMessage(intent.getStringExtra(GroupService.GROUP_NAME),intent.getStringExtra(GroupService.GROUP_MESSAGE));
-        } else if(GroupService.ACTION_SEND_PRIVATE_MESSAGE.equals(intent.getAction())){
-
-        }
-    }
 }

@@ -28,12 +28,10 @@
         -keep class com.squareup.okhttp.** {*;}
         -dontwarn com.squareup.okhttp.**
 
-     # for push sdk
-       -keep class com.meizu.cloud.pushsdk.** { *; }
-       -dontwarn  com.meizu.cloud.pushsdk.**
+        -keep class com.comsince.github.model.** { *; }
+        -dontwarn com.comsince.github.model.**
 
-       -keep class com.meizu.nebula.** { *; }
-       -dontwarn com.meizu.nebula.**
 
-        -keep class com.meizu.push.** { *; }
-        -dontwarn com.meizu.push.**
+        # App compat
+        -keep class android.support.** {*;}
+        -dontwarn android.support.**

@@ -6,10 +6,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
-/**
- * Created by zbin on 17-6-13.
- */
-
 public class Network {
     private static NetworkInfo activeInfo(Context context) {
         ConnectivityManager cm = (ConnectivityManager)

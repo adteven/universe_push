@@ -81,3 +81,16 @@
     -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
         <init>(java.lang.Throwable);
     }
+    # Support design
+    -dontwarn android.support.design.**
+    -keep class android.support.design.** { *; }
+    -keep interface android.support.design.** { *; }
+    -keep public class android.support.design.R$* { *; }
+
+    # App compat
+    -keep public class android.support.** {*;}
+    -dontwarn android.support.**
+
+    # picasso
+    -dontwarn com.squareup.okhttp.**
+    -dontwarn okio.Okio.**

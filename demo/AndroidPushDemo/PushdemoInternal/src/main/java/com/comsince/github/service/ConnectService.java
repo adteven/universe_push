@@ -1,8 +1,9 @@
-package com.comsince.github;
+package com.comsince.github.service;
 
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.comsince.github.PushDemoApplication;
 import com.comsince.github.alarm.AlarmWrapper;
 import com.comsince.github.alarm.Timer;
 import com.comsince.github.client.AndroidNIOClient;
@@ -12,8 +13,8 @@ import com.comsince.github.logger.JavaLogger;
 import com.comsince.github.model.NodeInfo;
 import com.comsince.github.model.RedirectResponse;
 import com.comsince.github.push.Signal;
+import com.comsince.github.utils.Constant;
 import com.comsince.github.utils.Json;
-import com.comsince.github.utils.PreferenceUtil;
 import com.meizu.cloud.pushinternal.DebugLogger;
 import com.meizu.cloud.pushsdk.util.MzSystemUtils;
 
@@ -29,7 +30,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class ConnectService implements PushMessageCallback,Callback {
+class ConnectService implements PushMessageCallback,Callback,CloseableService {
     public static final String TAG = "ConnectService";
     Context context;
     AndroidNIOClient androidNIOClient;
@@ -45,6 +46,8 @@ public class ConnectService implements PushMessageCallback,Callback {
     public ConnectService(Context context,String authority){
         this.context  = context;
         alarmWrapper = new AlarmWrapper(context,authority);
+        androidNIOClient = new AndroidNIOClient(Constant.CONNECTOR_NODE_IP,Constant.CONNECTOR_NODE_PORT);
+        androidNIOClient.setPushMessageCallback(this);
     }
 
     public void setMessageCallback(MessageCallback messageCallback){
@@ -67,14 +70,12 @@ public class ConnectService implements PushMessageCallback,Callback {
     }
 
 
+    @Override
     public void start(){
         alarmWrapper.start();
-//        redirect();
-        androidNIOClient = new AndroidNIOClient("152.136.147.18",6789);
-        androidNIOClient.setPushMessageCallback(this);
-        androidNIOClient.connect();
     }
 
+    @Override
     public void stop(){
         disConnect();
         alarmWrapper.stop();
@@ -196,8 +197,6 @@ public class ConnectService implements PushMessageCallback,Callback {
         PushDemoApplication.sendMessage("redirect "+redirect);
         RedirectResponse redirectResponse = Json.toBean(redirect,RedirectResponse.class);
         NodeInfo nodeInfo = redirectResponse.getNodeInfos().get(new Random().nextInt(3));
-//        nodeInfo = new NodeInfo("172.16.46.201",6789);
-//        androidNIOClient = new AndroidNIOClient("172.16.177.107",6789);
         connect(nodeInfo);
     }
 

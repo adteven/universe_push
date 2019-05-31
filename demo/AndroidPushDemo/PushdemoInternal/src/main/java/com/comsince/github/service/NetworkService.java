@@ -1,4 +1,4 @@
-package com.comsince.github;
+package com.comsince.github.service;
 
 
 import android.content.BroadcastReceiver;
@@ -11,7 +11,7 @@ import android.telephony.TelephonyManager;
 import com.comsince.github.utils.Network;
 import com.meizu.cloud.pushinternal.DebugLogger;
 
-public class NetworkService {
+class NetworkService implements CloseableService{
     private static final String tag = "NetworkService";
     private Context context;
     private ConnectService connectService;
@@ -26,6 +26,7 @@ public class NetworkService {
         this.connectService = connectService;
     }
 
+    @Override
     public void start(){
         DebugLogger.i(tag, "start network service");
         mNetworkReceiver = new NetworkReceiver();
@@ -34,6 +35,7 @@ public class NetworkService {
         context.registerReceiver(mNetworkReceiver, filter);
     }
 
+    @Override
     public void stop(){
         DebugLogger.i(tag, "stop network service");
         context.unregisterReceiver(mNetworkReceiver);

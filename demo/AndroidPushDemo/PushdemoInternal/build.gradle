@@ -13,17 +13,25 @@ android {
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.comsince.github"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 26
-        versionCode 382
-        versionName "3.8.2"
+        versionCode 383
+        versionName "3.8.3"
     }
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'artifactory-proguard-rules.pro'
             signingConfig signingConfigs.config
         }
+    }
+
+    lintOptions {
+        abortOnError false        // true by default
+        checkAllWarnings false
+        checkReleaseBuilds false
+        ignoreWarnings true       // false by default
+        quiet true                // false by default
     }
 
     packagingOptions {
@@ -36,8 +44,8 @@ android {
 dependencies {
    // compile fileTree(dir: 'libs', include: ['*.jar'])
     compile(name:'push-nio-sdk-1.0.0-SNAPSHOT',ext: 'jar')
-    compile(group: 'com.meizu.flyme.internet', name: 'push-internal', version: '3.8.2', ext: 'aar')
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile(group: 'com.meizu.flyme.internet', name: 'push-internal', version: '3.8.1', ext: 'aar')
+    compile 'com.android.support:appcompat-v7:26.0.1'
     compile("com.squareup.okhttp3:okhttp:3.0.0")
     compile 'com.alibaba:fastjson:1.1.70.android'
 }

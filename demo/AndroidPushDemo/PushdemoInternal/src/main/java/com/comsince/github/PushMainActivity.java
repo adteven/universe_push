@@ -9,29 +9,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.comsince.github.adapter.PushLogAdapter;
+import com.comsince.github.service.GroupService;
 import com.meizu.cloud.pushinternal.DebugLogger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-/**
- * Created by liaojinlong on 2019/2/23.
- */
 
 public class PushMainActivity extends Activity implements View.OnClickListener{
 
@@ -45,7 +34,6 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
     private ListView pushLogListView;
 
     private PushLogAdapter pushLogAdapter;
-    public static List<String> pushLoglist = new ArrayList<>();
 
     ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -62,7 +50,7 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
             @Override
             public void run() {
                 Intent intent = new Intent(PushMainActivity.this,PushService.class);
-                intent.setAction(PushService.START_FOREGROUD_SERVICE);
+                intent.setAction(PushService.START_PUSH_SERVICE);
                 startService(intent);
             }
         });
@@ -80,7 +68,7 @@ public class PushMainActivity extends Activity implements View.OnClickListener{
         sendAllBt.setOnClickListener(this);
         sendPrivateBt.setOnClickListener(this);
         DebugLogger.i("pushMain","init view ");
-        pushLogAdapter = new PushLogAdapter(this,pushLoglist);
+        pushLogAdapter = new PushLogAdapter(this,PushDemoApplication.pushLoglist);
         pushLogListView.setAdapter(pushLogAdapter);
     }
 
