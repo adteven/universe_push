@@ -1,7 +1,6 @@
 package com.comsince.github.controller;
 
 import com.comsince.github.GroupContactService;
-import com.comsince.github.PushService;
 import com.comsince.github.model.PushResponse;
 import com.comsince.github.utils.Constants;
 import org.apache.dubbo.config.annotation.Reference;
