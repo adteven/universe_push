@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class ChatroomLoader implements MapStore<String, WFCMessage.ChatroomInfo> {
     private DatabaseStore getDatabaseStore() {
-        return (DatabaseStore) SpringApplicationContext.getBean("memoryMessagesStore");
+        return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
 
     /**

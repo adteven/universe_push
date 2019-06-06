@@ -37,7 +37,7 @@ public class UserStatusLoader implements MapStore<String, Integer> {
     }
 
     private DatabaseStore getDatabaseStore() {
-        return (DatabaseStore) SpringApplicationContext.getBean("memoryMessagesStore");
+        return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
 
     @Override

@@ -157,7 +157,7 @@ push.kafka.broker=172.16.177.107:9092
 提供推送Http接口服务，调用推送网关发送推送消息，此接口采用springboot开发web服务
 
 
-## Push-Group
+## Push-Group[开发中可能存在编译不通过的情况]
 * 单聊服务
 * 群组服务
 

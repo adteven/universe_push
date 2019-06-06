@@ -23,17 +23,14 @@ public class MessageStoreConfiguration extends HazelcastConfiguration{
     @Autowired
     IMConfig imConfig;
 
+    @Autowired
     DatabaseStore databaseStore;
 
     @PostConstruct
     void init(){
         DBUtil.init(imConfig);
-        int threadNum = Runtime.getRuntime().availableProcessors() * 2;
-        ThreadPoolExecutorWrapper dbScheduler = new ThreadPoolExecutorWrapper(Executors.newScheduledThreadPool(threadNum), threadNum, "db");
-        databaseStore = new DatabaseStore(dbScheduler);
+
     }
-
-
 
     @Bean
     MemoryMessagesStore memoryMessagesStore(){

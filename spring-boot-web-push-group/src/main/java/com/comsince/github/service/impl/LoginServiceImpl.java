@@ -153,7 +153,7 @@ public class LoginServiceImpl implements LoginService {
 
             //使用用户id获取token
             OutputGetIMTokenData tokenResult = adminService.getUserToken(new InputGetToken(user.getUserId(), clientId));
-            if (tokenResult != null) {
+            if (tokenResult == null) {
                 LOG.error("Get user failure ");
                 return RestResult.error(RestResult.RestCode.ERROR_SERVER_ERROR);
             }

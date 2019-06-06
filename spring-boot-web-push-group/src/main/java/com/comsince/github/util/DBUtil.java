@@ -73,7 +73,7 @@ public class DBUtil {
                         System.exit(-1);
                     }
                 } else {
-                    migrateLocation = "filesystem:./migrate/mysql";
+                    migrateLocation = "filesystem:"+DBUtil.class.getResource("/").getPath()+"migrate/mysql";
                     comboPooledDataSource = new ComboPooledDataSource("mysql");
                     try {
                         String url01 = comboPooledDataSource.getJdbcUrl().substring(0,comboPooledDataSource.getJdbcUrl().indexOf("?"));

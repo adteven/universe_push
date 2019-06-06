@@ -38,7 +38,7 @@ public class RobotLoader implements MapStore<String, WFCMessage.Robot> {
     }
 
     private DatabaseStore getDatabaseStore() {
-        return (DatabaseStore) SpringApplicationContext.getBean("memoryMessagesStore");
+        return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
 
     @Override

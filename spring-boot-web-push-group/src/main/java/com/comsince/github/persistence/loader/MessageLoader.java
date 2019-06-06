@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class MessageLoader implements MapStore<Long, MessageBundle> {
     private DatabaseStore getDatabaseStore() {
-        return (DatabaseStore) SpringApplicationContext.getBean("memoryMessagesStore");
+        return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
     /**
      * Loads the value of a given key. If distributed map doesn't contain the value

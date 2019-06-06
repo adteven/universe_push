@@ -38,7 +38,7 @@ public class UserLoader implements MapStore<String, WFCMessage.User> {
     }
 
     private DatabaseStore getDatabaseStore() {
-        return (DatabaseStore) SpringApplicationContext.getBean("memoryMessagesStore");
+        return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
 
     @Override

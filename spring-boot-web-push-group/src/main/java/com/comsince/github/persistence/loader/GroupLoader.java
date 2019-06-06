@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class GroupLoader implements MapStore<String, WFCMessage.GroupInfo> {
     private DatabaseStore getDatabaseStore() {
-        return (DatabaseStore) SpringApplicationContext.getBean("memoryMessagesStore");
+        return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
 
     /**

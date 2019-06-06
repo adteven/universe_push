@@ -30,6 +30,7 @@ public class SpringApplicationContext implements ApplicationContextAware{
         }
     }
 
+
     public static Object getBeanByType(Class cls){
         if(pushApplicationContext != null){
             try {
