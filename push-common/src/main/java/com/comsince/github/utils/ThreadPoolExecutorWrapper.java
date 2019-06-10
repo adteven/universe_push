@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-package com.comsince.github.util;
+package com.comsince.github.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

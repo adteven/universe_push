@@ -1,7 +1,6 @@
 package com.comsince.github.security;
 
-
-import com.hazelcast.util.StringUtil;
+import io.netty.util.internal.StringUtil;
 
 public class Tokenor {
 	private static String KEY = "testim";

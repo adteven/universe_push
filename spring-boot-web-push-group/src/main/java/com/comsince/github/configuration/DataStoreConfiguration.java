@@ -1,7 +1,7 @@
 package com.comsince.github.configuration;
 
 import com.comsince.github.persistence.DatabaseStore;
-import com.comsince.github.util.ThreadPoolExecutorWrapper;
+import com.comsince.github.utils.ThreadPoolExecutorWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

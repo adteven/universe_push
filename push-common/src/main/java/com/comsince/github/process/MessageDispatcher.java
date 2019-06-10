@@ -12,6 +12,7 @@ public class MessageDispatcher {
     private static Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
     private static List<MessageProcessor> pushMessageProcessors = new ArrayList<>();
     static {
+        pushMessageProcessors.add(new ImMessageProcessor());
         pushMessageProcessors.add(new SubResponseProcessor());
         pushMessageProcessors.add(new HeartbeatResponseProcessor());
         pushMessageProcessors.add(new PushMessageProcessor());

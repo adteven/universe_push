@@ -10,6 +10,7 @@ package com.comsince.github.util;
 
 
 import com.comsince.github.configuration.IMConfig;
+import com.comsince.github.utils.Utility;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;

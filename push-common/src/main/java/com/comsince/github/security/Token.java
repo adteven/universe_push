@@ -14,7 +14,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.comsince.github.persistence;
+package com.comsince.github.security;
 
 /**
  * Internal use only class.

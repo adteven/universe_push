@@ -4,13 +4,11 @@ import com.comsince.github.persistence.DatabaseStore;
 import com.comsince.github.persistence.MemoryMessagesStore;
 import com.comsince.github.persistence.MemorySessionStore;
 import com.comsince.github.util.DBUtil;
-import com.comsince.github.util.ThreadPoolExecutorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.util.concurrent.Executors;
 
 /**
  * @author comsicne

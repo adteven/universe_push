@@ -15,6 +15,13 @@
 
   <dependencies>
 
+
+    <dependency>
+      <groupId>com.comsince.github</groupId>
+      <artifactId>push-common</artifactId>
+      <version>${project.verson}</version>
+    </dependency>
+
     <!-- 短信推送-->
     <dependency>
       <groupId>com.github.qcloudsms</groupId>

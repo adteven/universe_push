@@ -9,6 +9,7 @@
 package com.comsince.github.persistence;
 
 import com.comsince.github.util.DBUtil;
+import com.comsince.github.utils.SpinLock;
 
 import java.util.Calendar;
 import java.util.Date;

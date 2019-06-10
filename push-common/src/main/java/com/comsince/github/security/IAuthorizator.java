@@ -17,7 +17,6 @@
 package com.comsince.github.security;
 
 
-import com.comsince.github.persistence.Topic;
 
 /**
  * ACL checker.

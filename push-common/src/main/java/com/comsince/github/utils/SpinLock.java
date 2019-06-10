@@ -1,4 +1,4 @@
-package com.comsince.github.persistence;
+package com.comsince.github.utils;
 
 import java.util.concurrent.atomic.AtomicReference;
 

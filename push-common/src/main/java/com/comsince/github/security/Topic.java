@@ -14,7 +14,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.comsince.github.persistence;
+package com.comsince.github.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -14,11 +14,17 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.comsince.github.persistence;
-import com.comsince.github.security.Topic;
+package com.comsince.github.security;
 
+public class PermitAllAuthorizator implements IAuthorizator {
 
-public interface IMatchingCondition {
+    @Override
+    public boolean canWrite(Topic topic, String user, String client) {
+        return true;
+    }
 
-    boolean match(Topic key);
+    @Override
+    public boolean canRead(Topic topic, String user, String client) {
+        return true;
+    }
 }
