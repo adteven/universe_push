@@ -9,8 +9,8 @@ import com.comsince.github.logger.Log;
 import com.comsince.github.logger.LoggerFactory;
 import com.comsince.github.push.Header;
 import com.comsince.github.push.Signal;
+import com.comsince.github.push.SubSignal;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -105,6 +105,28 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         ByteBuffer allBuffer = ByteBufferList.obtain(Header.LENGTH + header.getLength());
         allBuffer.put(header.getContents());
         allBuffer.put(body.getBytes());
+        allBuffer.flip();
+        bufferList.add(allBuffer);
+
+        Util.writeAll(asyncSocket, bufferList, new CompletedCallback() {
+            @Override
+            public void onCompleted(Exception ex) {
+                log.e("send heartbeat completed",ex);
+                completedCallback.onCompleted(ex);
+            }
+        });
+    }
+
+    public void sendMessage(Signal signal, SubSignal subSignal, byte[] body, final CompletedCallback completedCallback){
+        ByteBufferList bufferList = new ByteBufferList();
+        Header header = new Header();
+        header.setSignal(signal);
+        header.setSubSignal(subSignal);
+        header.setLength(body.length);
+
+        ByteBuffer allBuffer = ByteBufferList.obtain(Header.LENGTH + header.getLength());
+        allBuffer.put(header.getContents());
+        allBuffer.put(body);
         allBuffer.flip();
         bufferList.add(allBuffer);
 

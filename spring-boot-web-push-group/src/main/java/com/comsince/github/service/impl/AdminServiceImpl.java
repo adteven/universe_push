@@ -3,7 +3,6 @@ package com.comsince.github.service.impl;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.controller.im.pojo.*;
 import com.comsince.github.persistence.IMessagesStore;
-import com.comsince.github.persistence.MemorySessionStore;
 import com.comsince.github.security.TokenAuthenticator;
 import com.comsince.github.service.AdminService;
 import com.comsince.github.session.ISessionsStore;

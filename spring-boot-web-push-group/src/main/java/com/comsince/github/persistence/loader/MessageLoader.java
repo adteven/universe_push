@@ -9,9 +9,9 @@
 package com.comsince.github.persistence.loader;
 
 
+import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.persistence.DatabaseStore;
 import com.comsince.github.persistence.MessageBundle;
-import com.comsince.github.util.SpringApplicationContext;
 import com.hazelcast.core.MapStore;
 
 import java.util.Collection;

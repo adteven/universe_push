@@ -1,13 +1,15 @@
-package com.comsince.github.handler.im.message;
+package com.comsince.github.message;
 
 import io.netty.util.internal.StringUtil;
+
+import java.io.Serializable;
 
 /**
  * @author comsicne
  * Copyright (c) [2019]
  * @Time 19-6-10 下午4:36
  **/
-public class ConnectMessage {
+public class ConnectMessage implements Serializable{
     private String clientIdentifier;
     private String willTopic;
     private String willMessage;

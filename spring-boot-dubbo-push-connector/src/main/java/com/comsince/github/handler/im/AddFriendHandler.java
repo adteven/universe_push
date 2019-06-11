@@ -21,7 +21,8 @@ import static com.comsince.github.handler.im.IMTopic.HandleFriendRequestTopic;
 public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> {
     @Override
     public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.AddFriendRequest request, ImMessageProcessor.IMCallback callback) {
-            long[] head = new long[1];
+        LOG.info("targetUid {} reason {}",request.getTargetUid(),request.getReason());
+        long[] head = new long[1];
             ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, request, head);
             if (errorCode == ERROR_CODE_SUCCESS) {
                 WFCMessage.User user = messageService.getUserInfo(request.getTargetUid());

@@ -1,16 +1,12 @@
 package com.comsince.github.process;
 
-import com.comsince.github.MessageService;
-import com.comsince.github.PushPacket;
-import com.comsince.github.SessionService;
-import com.comsince.github.Signal;
+import com.comsince.github.*;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.configuration.PushCommonConfiguration;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMHandler;
 import com.comsince.github.handler.im.MessagesPublisher;
-import com.comsince.github.handler.im.message.ConnectMessage;
 import com.comsince.github.security.IAuthorizator;
 import com.comsince.github.security.PermitAllAuthorizator;
 import com.comsince.github.utils.ClassUtil;
@@ -25,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.utils.json.Json;
+import com.comsince.github.message.ConnectMessage;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -74,6 +71,7 @@ public class ImMessageProcessor implements MessageProcessor{
                 break;
             case PUBLISH:
                 processPublishMessage(pushPacket,channelContext);
+                break;
             default:
                 LOG.error("Unkonwn Singal:{}", signal);
                 break;
@@ -98,10 +96,15 @@ public class ImMessageProcessor implements MessageProcessor{
     }
 
     private void processPublishMessage(PushPacket pushPacket,ChannelContext channelContext){
-        Signal signal = pushPacket.getHeader().getSignal();
+        SubSignal signal = pushPacket.getHeader().getSubSignal();
         String clientID = (String) channelContext.getAttribute(ATTR_CLIENTID);
         String fromUser = (String) channelContext.getAttribute(ATTR_USERNAME);
-        IMCallback wrapper = null;
+        IMCallback wrapper = new IMCallback() {
+            @Override
+            public void onIMHandled(ErrorCode errorCode, ByteBuf ackPayload) {
+                LOG.info("handle message errorcode {}",errorCode);
+            }
+        };
         byte[] payloadContent = pushPacket.getBody();
         IMHandler handler = m_imHandlers.get(signal.name());
         if (handler != null) {

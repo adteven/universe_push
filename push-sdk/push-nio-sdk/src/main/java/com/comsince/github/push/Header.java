@@ -8,6 +8,7 @@ public class Header {
     public static final int VERSION = 1;
     public static final byte magic = (byte)0xf8;
 
+
     protected byte[] mContents;
 
     public Header() {
@@ -18,7 +19,7 @@ public class Header {
 
     public Header(ByteBuffer buffer) {
         mContents = new byte[LENGTH];
-        if(buffer.remaining() >= LENGTH) {
+        if(buffer.limit() >= LENGTH) {
             for(int i = 0; i < LENGTH; i++) {
                 mContents[i] = buffer.get();
             }
@@ -57,6 +58,15 @@ public class Header {
         return (((mContents[3] & 0xff) << 8) | (0xff & mContents[4]));
     }
 
+    public Header setSubSignal(SubSignal subSignal){
+        mContents[5] = (byte)((mContents[5] & (0x01 << 7)) | subSignal.ordinal()) ;
+        return this;
+    }
+
+    public SubSignal getSubSignal(){
+        return SubSignal.toEnum((~(0x01 << 7)) & mContents[5]);
+    }
+
 
     public boolean isValid(){
         return mContents[0] == (byte)0xf8 &&
@@ -65,6 +75,7 @@ public class Header {
     }
 
     public static void main(String[] args){
+        System.out.println(0x01 << 7);
         System.out.println(~(0x01 << 7));
         System.out.println(~0x80);
     }
