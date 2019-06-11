@@ -21,6 +21,8 @@ import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.controller.im.pojo.FriendData;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
+import com.comsince.github.session.Session;
+import com.comsince.github.session.StoredMessage;
 import com.comsince.github.util.*;
 import com.comsince.github.utils.Utility;
 import com.google.protobuf.ByteString;
@@ -52,8 +54,8 @@ import static cn.wildfirechat.proto.ProtoConstants.ModifyGroupInfoType.*;
 import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
 import static com.comsince.github.persistence.MyInfoType.*;
 import static com.comsince.github.util.BrokerConstants.*;
-import static com.comsince.github.util.Constants.MAX_CHATROOM_MESSAGE_QUEUE;
-import static com.comsince.github.util.Constants.MAX_MESSAGE_QUEUE;
+import static com.comsince.github.utils.Constants.MAX_CHATROOM_MESSAGE_QUEUE;
+import static com.comsince.github.utils.Constants.MAX_MESSAGE_QUEUE;
 
 public class MemoryMessagesStore implements IMessagesStore {
     private static final String MESSAGES_MAP = "messages_map";
@@ -250,7 +252,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
 
-        MemorySessionStore.Session session = memorySessionStore.getSession(exceptClientId);
+        Session session = memorySessionStore.getSession(exceptClientId);
         session.refreshLastActiveTime();
         if (pullType != ProtoConstants.PullType.Pull_ChatRoom) {
             session.setUnReceivedMsgs(0);
@@ -496,7 +498,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public boolean checkUserClientInChatroom(String user, String clientId, String chatroomId) {
-        MemorySessionStore.Session session = memorySessionStore.getSession(clientId);
+        Session session = memorySessionStore.getSession(clientId);
         if (session == null || System.currentTimeMillis() - session.getLastChatroomActiveTime() > 5 * 60 * 1000) {
             handleQuitChatroom(user, clientId, chatroomId);
             return false;

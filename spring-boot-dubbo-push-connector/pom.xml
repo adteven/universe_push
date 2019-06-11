@@ -4,7 +4,7 @@
   <groupId>com.comsince.github</groupId>
   <artifactId>spring-boot-dubbo-push-connector</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>${project.verson}</version>
   <url>http://maven.apache.org</url>
 
   <parent>
@@ -18,6 +18,12 @@
     <dependency>
       <groupId>com.comsince.github</groupId>
       <artifactId>push-common</artifactId>
+      <version>${project.verson}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.comsince.github</groupId>
+      <artifactId>push-stub</artifactId>
       <version>${project.verson}</version>
     </dependency>
 

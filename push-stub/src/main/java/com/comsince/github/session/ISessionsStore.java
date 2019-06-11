@@ -14,11 +14,10 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.comsince.github.persistence;
+package com.comsince.github.session;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
-import com.comsince.github.persistence.IMessagesStore.StoredMessage;
 
 import java.util.Collection;
 import java.util.Queue;
@@ -37,28 +36,28 @@ public interface ISessionsStore {
      */
     boolean contains(String clientID);
 
-    MemorySessionStore.Session createUserSession(String username, String clientID);
+    Session createUserSession(String username, String clientID);
 
     ErrorCode createNewSession(String username, String clientID, boolean cleanSession, boolean createNoExist);
 
     ClientSession updateExistSession(String username, String clientID, WFCMessage.RouteRequest endpoint, boolean cleanSession);
 
-    MemorySessionStore.Session getSession(String clientID);
+    Session getSession(String clientID);
 
-    void updateSessionToken(MemorySessionStore.Session session, boolean voip);
+    void updateSessionToken(Session session, boolean voip);
     /**
      * @param clientID
      *            the client owning the session.
      * @return the session for the given clientID, null if not found.
      */
 
-    MemorySessionStore.Session sessionForClientAndUser(String username, String clientID);
+    Session sessionForClientAndUser(String username, String clientID);
 
     ClientSession sessionForClient(String clientID);
 
     void loadUserSession(String username, String clientID);
     
-    Collection<MemorySessionStore.Session> sessionForUser(String username);
+    Collection<Session> sessionForUser(String username);
 
     /**
      * Returns all the sessions
@@ -67,7 +66,7 @@ public interface ISessionsStore {
      */
     Collection<ClientSession> getAllSessions();
 
-    IMessagesStore.StoredMessage inFlightAck(String clientID, int messageID);
+    StoredMessage inFlightAck(String clientID, int messageID);
 
     /**
      * Save the message msg with  messageID, clientID as in flight
@@ -123,7 +122,7 @@ public interface ISessionsStore {
     /**
      * @return the inflight inbound (PUBREL for Qos2) message.
      * */
-    IMessagesStore.StoredMessage inboundInflight(String clientID, int messageID);
+    StoredMessage inboundInflight(String clientID, int messageID);
 
     void markAsInboundInflight(String clientID, int messageID, StoredMessage msg);
 

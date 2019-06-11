@@ -1,25 +1,34 @@
 package com.comsince.github.process;
 
+import com.comsince.github.MessageService;
 import com.comsince.github.PushPacket;
+import com.comsince.github.SessionService;
 import com.comsince.github.Signal;
 import com.comsince.github.common.ErrorCode;
+import com.comsince.github.configuration.PushCommonConfiguration;
+import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMHandler;
+import com.comsince.github.handler.im.MessagesPublisher;
+import com.comsince.github.handler.im.message.ConnectMessage;
+import com.comsince.github.security.IAuthorizator;
 import com.comsince.github.security.PermitAllAuthorizator;
 import com.comsince.github.utils.ClassUtil;
-import com.comsince.github.utils.RateLimiter;
+import com.comsince.github.utils.Constants;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
 import com.comsince.github.utils.Utility;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tio.core.ChannelContext;
+import org.tio.core.Tio;
+import org.tio.utils.json.Json;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
-
-import com.comsince.github.security.IAuthorizator;
-import org.tio.core.ChannelContext;
 
 import static com.comsince.github.common.ErrorCode.ERROR_CODE_NOT_IMPLEMENT;
 
@@ -31,10 +40,10 @@ import static com.comsince.github.common.ErrorCode.ERROR_CODE_NOT_IMPLEMENT;
  **/
 public class ImMessageProcessor implements MessageProcessor{
     private static final Logger LOG = LoggerFactory.getLogger(ImMessageProcessor.class);
-
+    public static final String ATTR_USERNAME = "username";
+    public static final String ATTR_CLIENTID = "ClientID";
     private final ThreadPoolExecutorWrapper m_imBusinessExecutor;
     protected final IAuthorizator m_authorizator;
-    private final RateLimiter mLimitCounter = new RateLimiter(5, 100);
 
     private HashMap<String, IMHandler> m_imHandlers = new HashMap<>();
 
@@ -42,15 +51,56 @@ public class ImMessageProcessor implements MessageProcessor{
         int threadNum = Runtime.getRuntime().availableProcessors() * 2;
         this.m_imBusinessExecutor = new ThreadPoolExecutorWrapper(Executors.newScheduledThreadPool(threadNum), threadNum, "business");
         this.m_authorizator = new PermitAllAuthorizator();
-        IMHandler.init(m_imBusinessExecutor);
+        IMHandler.init(m_imBusinessExecutor,messageService(),new MessagesPublisher(sessionService()));
         registerAllAction();
+    }
+
+    private MessageService messageService(){
+        PushCommonConfiguration pushServerConfiguration = (PushCommonConfiguration) SpringApplicationContext.getBean(Constants.PUSHSERVER_CONFIGURATION);
+        return pushServerConfiguration.messageService();
+    }
+
+    private SessionService sessionService(){
+        PushCommonConfiguration pushServerConfiguration = (PushCommonConfiguration) SpringApplicationContext.getBean(Constants.PUSHSERVER_CONFIGURATION);
+        return pushServerConfiguration.sessionService();
     }
 
     @Override
     public void process(PushPacket pushPacket, ChannelContext channelContext) {
         Signal signal = pushPacket.getHeader().getSignal();
-        String clientID = null;
-        String fromUser = null;
+        switch (pushPacket.getHeader().getSignal()){
+            case CONNECT:
+                processConnectMessage(pushPacket,channelContext);
+                break;
+            case PUBLISH:
+                processPublishMessage(pushPacket,channelContext);
+            default:
+                LOG.error("Unkonwn Singal:{}", signal);
+                break;
+        }
+
+    }
+
+    private void processConnectMessage(PushPacket pushPacket,ChannelContext channelContext){
+        ConnectMessage connectMessage = Json.toBean(new String(pushPacket.getBody()),ConnectMessage.class);
+        LOG.info("Processing CONNECT message. CId={}, username={}", connectMessage.getClientIdentifier(), connectMessage.getUserName());
+        if(!StringUtil.isNullOrEmpty(connectMessage.getClientIdentifier())){
+            ChannelContext existChannelContext = Tio.getChannelContextByBsId(channelContext.groupContext,connectMessage.getClientIdentifier());
+            if(existChannelContext != null){
+                Tio.close(existChannelContext,"close exist im channel context");
+            }
+            Tio.bindBsId(channelContext,connectMessage.getClientIdentifier());
+            channelContext.setAttribute(ATTR_USERNAME,connectMessage.getUserName());
+            channelContext.setAttribute(ATTR_CLIENTID,connectMessage.getClientIdentifier());
+        } else {
+            Tio.close(channelContext,"非法的链接，无效的clientID");
+        }
+    }
+
+    private void processPublishMessage(PushPacket pushPacket,ChannelContext channelContext){
+        Signal signal = pushPacket.getHeader().getSignal();
+        String clientID = (String) channelContext.getAttribute(ATTR_CLIENTID);
+        String fromUser = (String) channelContext.getAttribute(ATTR_USERNAME);
         IMCallback wrapper = null;
         byte[] payloadContent = pushPacket.getBody();
         IMHandler handler = m_imHandlers.get(signal.name());

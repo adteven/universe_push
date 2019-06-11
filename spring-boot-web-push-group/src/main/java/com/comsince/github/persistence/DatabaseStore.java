@@ -11,6 +11,8 @@ package com.comsince.github.persistence;
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.controller.im.pojo.FriendData;
+import com.comsince.github.session.ClientSession;
+import com.comsince.github.session.Session;
 import com.comsince.github.util.DBUtil;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
 import com.comsince.github.utils.Utility;
@@ -29,7 +31,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
-import static com.comsince.github.util.Constants.MAX_MESSAGE_QUEUE;
+import static com.comsince.github.utils.Constants.MAX_MESSAGE_QUEUE;
 
 public class DatabaseStore {
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseStore.class);
@@ -781,7 +783,7 @@ public class DatabaseStore {
         });
     }
 
-    MemorySessionStore.Session getSession(String uid, String clientId, ClientSession clientSession) {
+    Session getSession(String uid, String clientId, ClientSession clientSession) {
         String sql = "select  `_package_name`,`_token`,`_voip_token`,`_secret`,`_db_secret`,`_platform`,`_push_type`,`_device_name`,`_device_version`,`_phone_name`,`_language`,`_carrier_name`, `_dt` from t_user_session where `_uid` = ? and `_cid` = ? limit 1";
         Connection connection = null;
         PreparedStatement statement = null;
@@ -792,7 +794,7 @@ public class DatabaseStore {
             statement.setString(2, clientId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                MemorySessionStore.Session session = new MemorySessionStore.Session(uid, clientId, clientSession);
+                Session session = new Session(uid, clientId, clientSession);
 
                 int index = 1;
                 session.setAppName(resultSet.getString(index++));
@@ -863,7 +865,7 @@ public class DatabaseStore {
         return left.equals(right);
     }
 
-    void updateSession(String uid, String cid, MemorySessionStore.Session session, WFCMessage.RouteRequest request) {
+    void updateSession(String uid, String cid, Session session, WFCMessage.RouteRequest request) {
         mScheduler.execute(()->{
             Connection connection = null;
             PreparedStatement statement = null;
@@ -947,7 +949,7 @@ public class DatabaseStore {
         });
     }
 
-    MemorySessionStore.Session createSession(String uid, String clientId, ClientSession clientSession) {
+    Session createSession(String uid, String clientId, ClientSession clientSession) {
         Connection connection = null;
         PreparedStatement statement = null;
         LOG.info("Database create session {},{}", uid, clientId);
@@ -959,7 +961,7 @@ public class DatabaseStore {
 
             int index = 1;
 
-            MemorySessionStore.Session session = new MemorySessionStore.Session(uid, clientId, clientSession);
+            Session session = new Session(uid, clientId, clientSession);
 
 
             statement.setString(index++, uid);

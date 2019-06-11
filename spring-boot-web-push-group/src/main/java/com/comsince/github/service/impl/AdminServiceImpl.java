@@ -3,10 +3,11 @@ package com.comsince.github.service.impl;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.controller.im.pojo.*;
 import com.comsince.github.persistence.IMessagesStore;
-import com.comsince.github.persistence.ISessionsStore;
 import com.comsince.github.persistence.MemorySessionStore;
 import com.comsince.github.security.TokenAuthenticator;
 import com.comsince.github.service.AdminService;
+import com.comsince.github.session.ISessionsStore;
+import com.comsince.github.session.Session;
 import com.comsince.github.util.UUIDGenerator;
 import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public OutputGetIMTokenData getUserToken(InputGetToken inputGetToken) {
-        MemorySessionStore.Session session = sessionsStore.createUserSession(inputGetToken.getUserId(), inputGetToken.getClientId());
+        Session session = sessionsStore.createUserSession(inputGetToken.getUserId(), inputGetToken.getClientId());
         TokenAuthenticator authenticator = new TokenAuthenticator();
         String strToken = authenticator.generateToken(inputGetToken.getUserId());
         String result = strToken + "|" + session.getSecret() + "|" + session.getDbSecret();

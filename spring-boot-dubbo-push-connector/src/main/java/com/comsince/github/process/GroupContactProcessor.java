@@ -2,10 +2,8 @@ package com.comsince.github.process;
 
 import com.alibaba.fastjson.JSON;
 import com.comsince.github.GroupContactService;
-import com.comsince.github.PushGroupService;
 import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
-import com.comsince.github.configuration.PushCommonConfiguration;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.model.GroupRequest;
 import com.comsince.github.utils.Constants;

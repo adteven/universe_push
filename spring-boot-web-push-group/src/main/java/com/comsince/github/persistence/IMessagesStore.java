@@ -20,6 +20,8 @@ import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.controller.im.pojo.FriendData;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
+import com.comsince.github.session.MessageGUID;
+import com.comsince.github.session.StoredMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.MqttQoS;
@@ -33,63 +35,63 @@ import java.util.Set;
  */
 public interface IMessagesStore {
 
-    class StoredMessage {
-
-        final MqttQoS m_qos;
-        final byte[] m_payload;
-        final String m_topic;
-        private boolean m_retained;
-        private String m_clientID;
-        private MessageGUID m_guid;
-
-        public StoredMessage(byte[] message, MqttQoS qos, String topic) {
-            m_qos = qos;
-            m_payload = message;
-            m_topic = topic;
-        }
-
-        public MqttQoS getQos() {
-            return m_qos;
-        }
-
-        public String getTopic() {
-            return m_topic;
-        }
-
-        public void setGuid(MessageGUID guid) {
-            this.m_guid = guid;
-        }
-
-        public MessageGUID getGuid() {
-            return m_guid;
-        }
-
-        public String getClientID() {
-            return m_clientID;
-        }
-
-        public void setClientID(String m_clientID) {
-            this.m_clientID = m_clientID;
-        }
-
-        public ByteBuf getPayload() {
-            return Unpooled.copiedBuffer(m_payload);
-        }
-
-        public void setRetained(boolean retained) {
-            this.m_retained = retained;
-        }
-
-        public boolean isRetained() {
-            return m_retained;
-        }
-
-        @Override
-        public String toString() {
-            return "PublishEvent{clientID='" + m_clientID + '\'' + ", m_retain="
-                    + m_retained + ", m_qos=" + m_qos + ", m_topic='" + m_topic + '\'' + '}';
-        }
-    }
+//    class StoredMessage {
+//
+//        final MqttQoS m_qos;
+//        final byte[] m_payload;
+//        final String m_topic;
+//        private boolean m_retained;
+//        private String m_clientID;
+//        private MessageGUID m_guid;
+//
+//        public StoredMessage(byte[] message, MqttQoS qos, String topic) {
+//            m_qos = qos;
+//            m_payload = message;
+//            m_topic = topic;
+//        }
+//
+//        public MqttQoS getQos() {
+//            return m_qos;
+//        }
+//
+//        public String getTopic() {
+//            return m_topic;
+//        }
+//
+//        public void setGuid(MessageGUID guid) {
+//            this.m_guid = guid;
+//        }
+//
+//        public MessageGUID getGuid() {
+//            return m_guid;
+//        }
+//
+//        public String getClientID() {
+//            return m_clientID;
+//        }
+//
+//        public void setClientID(String m_clientID) {
+//            this.m_clientID = m_clientID;
+//        }
+//
+//        public ByteBuf getPayload() {
+//            return Unpooled.copiedBuffer(m_payload);
+//        }
+//
+//        public void setRetained(boolean retained) {
+//            this.m_retained = retained;
+//        }
+//
+//        public boolean isRetained() {
+//            return m_retained;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "PublishEvent{clientID='" + m_clientID + '\'' + ", m_retain="
+//                    + m_retained + ", m_qos=" + m_qos + ", m_topic='" + m_topic + '\'' + '}';
+//        }
+//    }
 
     DatabaseStore getDatabaseStore();
     WFCMessage.Message storeMessage(String fromUser, String fromClientId, WFCMessage.Message message);

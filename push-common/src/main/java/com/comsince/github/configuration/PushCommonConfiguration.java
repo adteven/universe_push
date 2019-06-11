@@ -1,5 +1,7 @@
 package com.comsince.github.configuration;
 
+import com.comsince.github.MessageService;
+import com.comsince.github.SessionService;
 import com.comsince.github.sub.SubService;
 import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.Redisson;
@@ -31,6 +33,12 @@ public class PushCommonConfiguration {
     @Reference
     private SubService subService;
 
+    @Reference
+    private MessageService messageService;
+
+    @Reference
+    private SessionService sessionService;
+
     @Bean(destroyMethod="shutdown")
     RedissonClient redissonClient() throws IOException {
         Config config = new Config();
@@ -42,5 +50,13 @@ public class PushCommonConfiguration {
 
     public SubService subService(){
         return subService;
+    }
+
+    public MessageService messageService(){
+        return messageService;
+    }
+
+    public SessionService sessionService(){
+        return sessionService;
     }
 }

@@ -28,6 +28,10 @@ public class PushPacket extends Packet {
         return body;
     }
 
+    public Signal signal(){
+        return Signal.PUSH;
+    }
+
     public void setBody(byte[] body) {
         this.body = body;
         if(body != null){
@@ -36,7 +40,19 @@ public class PushPacket extends Packet {
     }
 
     public ByteBuffer encode(){
-        return null;
+        int bodyLength = 0;
+        if(getBody() != null){
+            bodyLength = getBody().length;
+        }
+        ByteBuffer buffer = ByteBuffer.allocate(Header.LENGTH + bodyLength);
+        Header header = new Header();
+        header.setSignal(signal());
+        header.setLength(bodyLength);
+        buffer.put(header.getContents());
+        if(getBody() != null){
+            buffer.put(getBody());
+        }
+        return buffer;
     }
 
     public PushPacket decode(ByteBuffer byteBuffer, int readableLength, ChannelContext channelContext) throws AioDecodeException{

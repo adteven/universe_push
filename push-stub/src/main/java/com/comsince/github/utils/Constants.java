@@ -21,4 +21,7 @@ public class Constants {
     public static final String REDISCLIENT_NAME = "redissonClient";
 
     public static final String PUSHSERVER_CONFIGURATION = "pushServerConfiguration";
+
+    public static final int MAX_MESSAGE_QUEUE = 1024; // number of messages
+    public static final int MAX_CHATROOM_MESSAGE_QUEUE = 256; // number of chatroom messages
 }

@@ -1,5 +1,6 @@
 package com.comsince.github;
 
+import com.comsince.github.handler.PushConnectorHandler;
 import com.comsince.github.handler.PushConnectorListener;
 import com.comsince.github.handler.PushMessageHandler;
 import io.netty.util.internal.StringUtil;
@@ -28,7 +29,7 @@ public class PushServer {
     private Logger logger = LoggerFactory.getLogger(PushServer.class);
 
     //handler, 包括编码、解码、消息处理
-    public static ServerAioHandler aioHandler = new PushMessageHandler();
+    public static ServerAioHandler aioHandler = new PushConnectorHandler();
 
     //事件监听器，可以为null，但建议自己实现该接口，可以参考showcase了解些接口
     public static ServerAioListener aioListener = new PushConnectorListener();

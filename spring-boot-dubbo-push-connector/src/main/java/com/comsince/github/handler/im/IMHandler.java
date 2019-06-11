@@ -1,5 +1,6 @@
 package com.comsince.github.handler.im;
 
+import com.comsince.github.MessageService;
 import com.comsince.github.process.ImMessageProcessor;
 import com.comsince.github.utils.RateLimiter;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
@@ -38,10 +39,14 @@ public abstract class IMHandler<T> {
     }
 
     protected static String actionName;
+    protected static MessageService messageService;
+    protected static MessagesPublisher publisher;
 
 
-    public static void init(ThreadPoolExecutorWrapper businessExecutor){
+    public static void init(ThreadPoolExecutorWrapper businessExecutor, MessageService msgService, MessagesPublisher messagesPublisher){
         m_imBusinessExecutor = businessExecutor;
+        messageService = msgService;
+        publisher = messagesPublisher;
     }
 
     public IMHandler() {
