@@ -1437,8 +1437,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         if (requests == null || requests.size() == 0) {
             requests = databaseStore.getPersistFriendRequests(userId);
             if (requests != null) {
-                for (WFCMessage.FriendRequest r : requests
-                    ) {
+                for (WFCMessage.FriendRequest r : requests) {
                     requestMap.put(userId, r);
                 }
             } else {

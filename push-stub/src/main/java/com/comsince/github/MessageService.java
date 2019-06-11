@@ -2,6 +2,7 @@ package com.comsince.github;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
+import com.comsince.github.message.AddFriendMessage;
 
 /**
  * @author comsicne
@@ -9,6 +10,6 @@ import com.comsince.github.common.ErrorCode;
  * @Time 19-6-11 上午10:24
  **/
 public interface MessageService {
-    ErrorCode saveAddFriendRequest(String userId, WFCMessage.AddFriendRequest request, long[] head);
+    ErrorCode saveAddFriendRequest(String userId, AddFriendMessage request, long[] head);
     WFCMessage.User getUserInfo(String userId);
 }

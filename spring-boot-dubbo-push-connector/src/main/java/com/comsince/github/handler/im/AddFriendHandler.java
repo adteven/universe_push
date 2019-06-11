@@ -11,6 +11,7 @@ package com.comsince.github.handler.im;
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
+import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.process.ImMessageProcessor;
 import io.netty.buffer.ByteBuf;
 import static com.comsince.github.common.ErrorCode.ERROR_CODE_SUCCESS;
@@ -23,17 +24,16 @@ public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> 
     public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.AddFriendRequest request, ImMessageProcessor.IMCallback callback) {
         LOG.info("targetUid {} reason {}",request.getTargetUid(),request.getReason());
         long[] head = new long[1];
-            ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, request, head);
-            if (errorCode == ERROR_CODE_SUCCESS) {
-                WFCMessage.User user = messageService.getUserInfo(request.getTargetUid());
-                if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
-                    publisher.publishNotification(IMTopic.NotifyFriendRequestTopic, request.getTargetUid(), head[0]);
-                }
-//                else if(user != null && user.getType() == ProtoConstants.UserType.UserType_Robot) {
-//                    WFCMessage.HandleFriendRequest handleFriendRequest = WFCMessage.HandleFriendRequest.newBuilder().setTargetUid(fromUser).setStatus(ProtoConstants.FriendRequestStatus.RequestStatus_Accepted).build();
-//                    mServer.internalRpcMsg(request.getTargetUid(), null, handleFriendRequest.toByteArray(), 0, fromUser, HandleFriendRequestTopic, false);
-//                }
+        AddFriendMessage addFriendMessage = new AddFriendMessage();
+        addFriendMessage.setTargetUid(request.getTargetUid());
+        addFriendMessage.setReason(request.getReason());
+        ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, addFriendMessage, head);
+        if (errorCode == ERROR_CODE_SUCCESS) {
+            WFCMessage.User user = messageService.getUserInfo(request.getTargetUid());
+            if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
+                publisher.publishNotification(IMTopic.NotifyFriendRequestTopic, request.getTargetUid(), head[0]);
             }
+        }
             return errorCode;
     }
 }
