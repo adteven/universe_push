@@ -19,6 +19,7 @@ package com.comsince.github.session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Queue;
 
 /**
@@ -35,9 +36,9 @@ import java.util.Queue;
  *     <li>Optionally, QoS 0 messages pending transmission to the Client.</li>
  * </ul>
  */
-public class ClientSession {
+public class ClientSession implements Serializable {
 
-    class OutboundFlightZone {
+    class OutboundFlightZone implements Serializable{
 
         /**
          * Save the binding messageID, clientID - message
@@ -59,7 +60,7 @@ public class ClientSession {
         }
     }
 
-    class InboundFlightZone {
+    class InboundFlightZone implements Serializable{
 
         public StoredMessage lookup(int messageID) {
             return m_sessionsStore.inboundInflight(clientID, messageID);

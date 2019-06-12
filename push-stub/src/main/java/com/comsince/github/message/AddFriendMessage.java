@@ -1,6 +1,8 @@
 package com.comsince.github.message;
 
-public class AddFriendMessage {
+import java.io.Serializable;
+
+public class AddFriendMessage implements Serializable {
     String reason;
     String targetUid;
 

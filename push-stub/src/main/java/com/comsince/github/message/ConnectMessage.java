@@ -10,11 +10,12 @@ import java.io.Serializable;
  * @Time 19-6-10 下午4:36
  **/
 public class ConnectMessage implements Serializable{
+    //设备唯一标志，手机可以使用imei作为唯一标志，但不是唯一的方式
     private String clientIdentifier;
     private String willTopic;
     private String willMessage;
     private String userName;
-    private byte[] password;
+    private String password;
 
 
     public String getClientIdentifier() {
@@ -49,11 +50,11 @@ public class ConnectMessage implements Serializable{
         this.userName = userName;
     }
 
-    public byte[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

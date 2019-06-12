@@ -1,5 +1,7 @@
 package com.comsince.github;
 
+import com.comsince.github.common.ErrorCode;
+import com.comsince.github.session.ClientSession;
 import com.comsince.github.session.Session;
 
 import java.util.Collection;
@@ -11,4 +13,9 @@ import java.util.Collection;
  **/
 public interface SessionService {
     Collection<Session> sessionForUser(String username);
+    Session getSession(String clientID);
+    ErrorCode createNewSession(String username, String clientID, boolean cleanSession, boolean createNoExist);
+    void loadUserSession(String username, String clientID);
+    ClientSession sessionForClient(String clientID);
+    ClientSession updateExistSession(String username, String clientID, boolean cleanSession);
 }

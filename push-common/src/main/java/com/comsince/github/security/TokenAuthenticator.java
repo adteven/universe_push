@@ -4,6 +4,7 @@ package com.comsince.github.security;
 import java.io.IOException;
 
 public class TokenAuthenticator implements IAuthenticator, ITokenGenerator {
+
     public static void main(String[] args) throws IOException {
     	TokenAuthenticator authenticator = new TokenAuthenticator();
     	String strToken = authenticator.generateToken("user1");

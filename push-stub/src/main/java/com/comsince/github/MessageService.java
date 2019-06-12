@@ -12,4 +12,10 @@ import com.comsince.github.message.AddFriendMessage;
 public interface MessageService {
     ErrorCode saveAddFriendRequest(String userId, AddFriendMessage request, long[] head);
     WFCMessage.User getUserInfo(String userId);
+    int getUserStatus(String userId);
+
+    long getMessageHead(String user);
+    long getFriendHead(String user);
+    long getFriendRqHead(String user);
+    long getSettingHead(String user);
 }

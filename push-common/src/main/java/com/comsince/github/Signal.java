@@ -13,6 +13,7 @@ public enum Signal {
     PUSH,//推送指令
     CONTACT,//聊天信令
     CONNECT,//IM链接信令
+    CONNECT_ACK,
     PUBLISH;
 
     public static Signal toEnum(int ordinal) {

@@ -15,8 +15,6 @@ import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.process.ImMessageProcessor;
 import io.netty.buffer.ByteBuf;
 import static com.comsince.github.common.ErrorCode.ERROR_CODE_SUCCESS;
-import static com.comsince.github.handler.im.IMTopic.HandleFriendRequestTopic;
-
 
 @Handler(IMTopic.AddFriendRequestTopic)
 public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> {
@@ -28,12 +26,13 @@ public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> 
         addFriendMessage.setTargetUid(request.getTargetUid());
         addFriendMessage.setReason(request.getReason());
         ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, addFriendMessage, head);
+        LOG.info("head time "+head[0]);
         if (errorCode == ERROR_CODE_SUCCESS) {
             WFCMessage.User user = messageService.getUserInfo(request.getTargetUid());
             if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
                 publisher.publishNotification(IMTopic.NotifyFriendRequestTopic, request.getTargetUid(), head[0]);
             }
         }
-            return errorCode;
+        return errorCode;
     }
 }

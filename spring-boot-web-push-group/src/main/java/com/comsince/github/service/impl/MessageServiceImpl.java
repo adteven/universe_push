@@ -4,22 +4,11 @@ import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.MessageService;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
-import com.comsince.github.message.ConnectMessage;
 import com.comsince.github.persistence.IMessagesStore;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import org.apache.dubbo.common.serialize.hessian2.Hessian2ObjectInput;
-import org.apache.dubbo.common.serialize.hessian2.Hessian2ObjectOutput;
 import org.apache.dubbo.config.annotation.Service;
-import org.apache.dubbo.remoting.buffer.ChannelBufferOutputStream;
-import org.apache.zookeeper.server.ByteBufferOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.*;
-import java.nio.ByteBuffer;
-
 /**
  * @author comsicne
  * Copyright (c) [2019]
@@ -45,6 +34,31 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public WFCMessage.User getUserInfo(String userId) {
         return messagesStore.getUserInfo(userId);
+    }
+
+    @Override
+    public int getUserStatus(String userId) {
+        return messagesStore.getUserStatus(userId);
+    }
+
+    @Override
+    public long getMessageHead(String user) {
+        return messagesStore.getMessageHead(user);
+    }
+
+    @Override
+    public long getFriendHead(String user) {
+        return messagesStore.getFriendHead(user);
+    }
+
+    @Override
+    public long getFriendRqHead(String user) {
+        return messagesStore.getFriendRqHead(user);
+    }
+
+    @Override
+    public long getSettingHead(String user) {
+        return messagesStore.getSettingHead(user);
     }
 
 

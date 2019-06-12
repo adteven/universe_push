@@ -2,7 +2,7 @@ package com.comsince.github.handler.im;
 
 import com.comsince.github.PushServer;
 import com.comsince.github.SessionService;
-import com.comsince.github.immessage.PublishMessage;
+import com.comsince.github.immessage.PublishMessagePacket;
 import com.comsince.github.session.Session;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -40,7 +40,7 @@ public class MessagesPublisher {
             if (targetIsActive) {
                 ByteBuf payload = Unpooled.buffer();
                 payload.writeLong(head);
-                PublishMessage publishMessage = new PublishMessage();
+                PublishMessagePacket publishMessage = new PublishMessagePacket();
                 publishMessage.setTopic(topic);
                 publishMessage.setBody(payload.array());
                 boolean result = Tio.send(channelContext,publishMessage);

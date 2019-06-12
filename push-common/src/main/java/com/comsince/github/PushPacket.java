@@ -32,11 +32,21 @@ public class PushPacket extends Packet {
         return Signal.PUSH;
     }
 
+    public SubSignal subSignal(){
+        return SubSignal.NONE;
+    }
+
     public void setBody(byte[] body) {
         this.body = body;
         if(body != null){
             setByteCount(body.length);
         }
+    }
+
+    public void setBody(byte content){
+        this.body = new byte[1];
+        body[0] = content;
+        setByteCount(1);
     }
 
     public ByteBuffer encode(){
@@ -47,6 +57,7 @@ public class PushPacket extends Packet {
         ByteBuffer buffer = ByteBuffer.allocate(Header.LENGTH + bodyLength);
         Header header = new Header();
         header.setSignal(signal());
+        header.setSubSignal(subSignal());
         header.setLength(bodyLength);
         buffer.put(header.getContents());
         if(getBody() != null){

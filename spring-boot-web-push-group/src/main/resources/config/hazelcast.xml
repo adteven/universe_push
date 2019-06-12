@@ -52,7 +52,7 @@
         <max-size policy="PER_NODE">1000000</max-size>
         <eviction-percentage>10</eviction-percentage>
         <map-store enabled="true">
-            <class-name>icom.comsince.github.persistence.loader.UserStatusLoader</class-name>
+            <class-name>com.comsince.github.persistence.loader.UserStatusLoader</class-name>
             <write-delay-seconds>0</write-delay-seconds>
         </map-store>
     </map>

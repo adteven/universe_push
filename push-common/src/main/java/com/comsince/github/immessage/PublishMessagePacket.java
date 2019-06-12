@@ -8,7 +8,7 @@ import com.comsince.github.Signal;
  * Copyright (c) [2019]
  * @Time 19-6-11 下午2:42
  **/
-public class PublishMessage extends PushPacket {
+public class PublishMessagePacket extends PushPacket {
 
     public Signal signal = Signal.PUBLISH;
 

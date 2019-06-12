@@ -1,6 +1,8 @@
 package com.comsince.github.service.impl;
 
 import com.comsince.github.SessionService;
+import com.comsince.github.common.ErrorCode;
+import com.comsince.github.session.ClientSession;
 import com.comsince.github.session.ISessionsStore;
 import com.comsince.github.session.Session;
 import org.apache.dubbo.config.annotation.Service;
@@ -21,5 +23,30 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public Collection<Session> sessionForUser(String username) {
         return sessionsStore.sessionForUser(username);
+    }
+
+    @Override
+    public Session getSession(String clientID) {
+        return sessionsStore.getSession(clientID);
+    }
+
+    @Override
+    public ErrorCode createNewSession(String username, String clientID, boolean cleanSession, boolean createNoExist) {
+        return sessionsStore.createNewSession(username,clientID,cleanSession,createNoExist);
+    }
+
+    @Override
+    public void loadUserSession(String username, String clientID) {
+        sessionsStore.loadUserSession(username,clientID);
+    }
+
+    @Override
+    public ClientSession sessionForClient(String clientID) {
+        return sessionsStore.sessionForClient(clientID);
+    }
+
+    @Override
+    public ClientSession updateExistSession(String username, String clientID, boolean cleanSession) {
+        return sessionsStore.updateExistSession(username,clientID,null,cleanSession);
     }
 }

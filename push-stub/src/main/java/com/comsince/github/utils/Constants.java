@@ -24,4 +24,6 @@ public class Constants {
 
     public static final int MAX_MESSAGE_QUEUE = 1024; // number of messages
     public static final int MAX_CHATROOM_MESSAGE_QUEUE = 256; // number of chatroom messages
+    public static final String ATTR_USERNAME = "username";
+    public static final String ATTR_CLIENTID = "ClientID";
 }
