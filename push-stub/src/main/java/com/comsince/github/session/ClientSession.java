@@ -36,9 +36,9 @@ import java.util.Queue;
  *     <li>Optionally, QoS 0 messages pending transmission to the Client.</li>
  * </ul>
  */
-public class ClientSession implements Serializable {
+public class ClientSession {
 
-    class OutboundFlightZone implements Serializable{
+    class OutboundFlightZone {
 
         /**
          * Save the binding messageID, clientID - message
@@ -60,7 +60,7 @@ public class ClientSession implements Serializable {
         }
     }
 
-    class InboundFlightZone implements Serializable{
+    class InboundFlightZone {
 
         public StoredMessage lookup(int messageID) {
             return m_sessionsStore.inboundInflight(clientID, messageID);

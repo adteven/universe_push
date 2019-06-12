@@ -124,8 +124,7 @@ public class ImMessageProcessor implements MessageProcessor{
 
         sendAck(channelContext,connectMessage,clientId);
 
-        final ClientSession clientSession = createOrLoadClientSession(connectMessage.getUserName(),connectMessage, clientId);
-        if (clientSession == null) {
+        if (createOrLoadClientSession(connectMessage.getUserName(),connectMessage, clientId)) {
             ConnectAckMessagePacket badId = connAck(CONNECTION_REFUSED_SESSION_NOT_EXIST);
             Tio.send(channelContext,badId);
             Tio.close(channelContext,"session not exist");
@@ -141,17 +140,15 @@ public class ImMessageProcessor implements MessageProcessor{
         LOG.info("The CONNECT message has been processed. CId={}, username={}", clientId, connectMessage.getUserName());
     }
 
-    private ClientSession createOrLoadClientSession(String username, ConnectMessage msg, String clientId) {
+    private boolean createOrLoadClientSession(String username, ConnectMessage msg, String clientId) {
         sessionService().loadUserSession(username, clientId);
-        ClientSession clientSession = sessionService().sessionForClient(clientId);
-        boolean isSessionAlreadyStored = clientSession != null;
-        if (isSessionAlreadyStored) {
-            clientSession = sessionService().updateExistSession(username, clientId, false);
+        boolean hasSessionClient = sessionService().sessionForClient(clientId);
+        if (hasSessionClient) {
+            return sessionService().updateExistSession(username, clientId, false);
         } else {
-            return null;
+            return false;
         }
 
-        return clientSession;
     }
 
     private void sendAck(ChannelContext channelContext,ConnectMessage connectMessage,String clientId){

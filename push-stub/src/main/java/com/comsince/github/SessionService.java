@@ -16,6 +16,6 @@ public interface SessionService {
     Session getSession(String clientID);
     ErrorCode createNewSession(String username, String clientID, boolean cleanSession, boolean createNoExist);
     void loadUserSession(String username, String clientID);
-    ClientSession sessionForClient(String clientID);
-    ClientSession updateExistSession(String username, String clientID, boolean cleanSession);
+    boolean sessionForClient(String clientID);
+    boolean updateExistSession(String username, String clientID, boolean cleanSession);
 }

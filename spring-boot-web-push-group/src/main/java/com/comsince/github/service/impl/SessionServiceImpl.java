@@ -41,12 +41,12 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public ClientSession sessionForClient(String clientID) {
-        return sessionsStore.sessionForClient(clientID);
+    public boolean sessionForClient(String clientID) {
+        return sessionsStore.sessionForClient(clientID) != null ? true : false;
     }
 
     @Override
-    public ClientSession updateExistSession(String username, String clientID, boolean cleanSession) {
-        return sessionsStore.updateExistSession(username,clientID,null,cleanSession);
+    public boolean updateExistSession(String username, String clientID, boolean cleanSession) {
+        return sessionsStore.updateExistSession(username,clientID,null,cleanSession) != null ? true : false;
     }
 }
