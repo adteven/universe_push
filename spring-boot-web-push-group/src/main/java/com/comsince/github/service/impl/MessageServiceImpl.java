@@ -4,11 +4,16 @@ import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.MessageService;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
+import com.comsince.github.model.UserResponse;
 import com.comsince.github.persistence.IMessagesStore;
 import org.apache.dubbo.config.annotation.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author comsicne
  * Copyright (c) [2019]
@@ -59,6 +64,19 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public long getSettingHead(String user) {
         return messagesStore.getSettingHead(user);
+    }
+
+    @Override
+    public List<UserResponse> searchUser(String keyword, boolean buzzy, int page) {
+        List<UserResponse> userResponseList = new ArrayList<>();
+        List<WFCMessage.User> users = messagesStore.searchUser(keyword,buzzy,page);
+        for(WFCMessage.User user : users){
+            UserResponse userResponse = new UserResponse();
+            userResponse.setDisplayName(user.getDisplayName());
+            userResponse.setGender(user.getGender());
+            userResponseList.add(userResponse);
+        }
+        return userResponseList;
     }
 
 

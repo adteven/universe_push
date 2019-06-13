@@ -5,15 +5,12 @@ import com.comsince.github.*;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.configuration.PushCommonConfiguration;
 import com.comsince.github.context.SpringApplicationContext;
-import com.comsince.github.handler.im.Handler;
-import com.comsince.github.handler.im.IMHandler;
-import com.comsince.github.handler.im.MessagesPublisher;
+import com.comsince.github.handler.PublishMessageHandler;
 import com.comsince.github.immessage.ConnectAckMessagePacket;
 import com.comsince.github.model.SessionResponse;
 import com.comsince.github.security.*;
 import com.comsince.github.utils.*;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +18,9 @@ import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.utils.json.Json;
 import com.comsince.github.message.ConnectMessage;
-
-import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.concurrent.Executors;
 
 import static com.comsince.github.SubSignal.*;
-import static com.comsince.github.common.ErrorCode.ERROR_CODE_NOT_IMPLEMENT;
 
 /**
  * @author comsicne
@@ -37,21 +29,15 @@ import static com.comsince.github.common.ErrorCode.ERROR_CODE_NOT_IMPLEMENT;
  **/
 public class ImMessageProcessor implements MessageProcessor{
     private static final Logger LOG = LoggerFactory.getLogger(ImMessageProcessor.class);
-
-    private final ThreadPoolExecutorWrapper m_imBusinessExecutor;
-    protected final IAuthorizator m_authorizator;
+    private IAuthorizator m_authorizator;
     private IAuthenticator m_authenticator;
     private boolean allowAnonymous = false;
-    private final RateLimiter mLimitCounter = new RateLimiter(5, 100);
-    private HashMap<String, IMHandler> m_imHandlers = new HashMap<>();
+    private PublishMessageHandler publishMessageHandler;
 
     public ImMessageProcessor() {
-        int threadNum = Runtime.getRuntime().availableProcessors() * 2;
-        this.m_imBusinessExecutor = new ThreadPoolExecutorWrapper(Executors.newScheduledThreadPool(threadNum), threadNum, "business");
         this.m_authorizator = new PermitAllAuthorizator();
         this.m_authenticator = new TokenAuthenticator();
-        IMHandler.init(m_imBusinessExecutor,messageService(),new MessagesPublisher(sessionService()));
-        registerAllAction();
+        publishMessageHandler = new PublishMessageHandler(messageService(),sessionService());
     }
 
     private MessageService messageService(){
@@ -250,113 +236,8 @@ public class ImMessageProcessor implements MessageProcessor{
     }
 
     private void processPublishMessage(PushPacket pushPacket,ChannelContext channelContext){
-        SubSignal signal = pushPacket.getHeader().getSubSignal();
-        String clientID = (String) channelContext.getAttribute(Constants.ATTR_CLIENTID);
-        String fromUser = (String) channelContext.getAttribute(Constants.ATTR_USERNAME);
-        IMCallback wrapper = new IMCallback() {
-            @Override
-            public void onIMHandled(ErrorCode errorCode, ByteBuf ackPayload) {
-                LOG.info("handle message errorcode {}",errorCode);
-            }
-        };
-        byte[] payloadContent = pushPacket.getBody();
-        IMHandler handler = m_imHandlers.get(signal.name());
-        if (handler != null) {
-            handler.doHandler(clientID, fromUser, signal.name(), payloadContent, wrapper, false);
-        } else {
-            LOG.error("imHandler unknown topic={}", signal.name());
-            ByteBuf ackPayload = Unpooled.buffer();
-            ackPayload.ensureWritable(1).writeByte(ERROR_CODE_NOT_IMPLEMENT.getCode());
-            try {
-                wrapper.onIMHandled(ERROR_CODE_NOT_IMPLEMENT, ackPayload);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Utility.printExecption(LOG, e);
-            }
-        }
+        publishMessageHandler.receivePublishMessage(pushPacket,channelContext);
     }
-
-//    private void ImHandler(String clientID, String fromUser, String topic, byte[] payloadContent, IMCallback callback){
-//        LOG.info("imHandler fromUser={}, topic={}", fromUser, topic);
-//        if(!mLimitCounter.isGranted(clientID + fromUser + topic)) {
-//            ByteBuf ackPayload = Unpooled.buffer();
-//            ackPayload.ensureWritable(1).writeByte(ERROR_CODE_OVER_FREQUENCY.getCode());
-//            try {
-//                callback.onIMHandled(ERROR_CODE_OVER_FREQUENCY, ackPayload);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Utility.printExecption(LOG, e);
-//            }
-//            LOG.warn("user {} request over frequency", fromUser);
-//            return;
-//        }
-//
-//        IMCallback wrapper = (errorcode, ackPayload) -> {
-//            ackPayload.resetReaderIndex();
-//            byte code = ackPayload.readByte();
-//            if(ackPayload.readableBytes() > 0) {
-//                byte[] data = new byte[ackPayload.readableBytes()];
-//                ackPayload.getBytes(1, data);
-//                try {
-//                    //clientID 为空的是server api请求。客户端不允许clientID为空
-//                    if (!StringUtil.isNullOrEmpty(clientID)) {
-//                        //在route时，使用系统根密钥。当route成功后，用户都使用用户密钥
-//                        if (topic.equals(IMTopic.GetTokenTopic)) {
-//                            data = AES.AESEncrypt(data, "");
-//                        } else {
-//                            SessionResponse session = sessionService().getSession(clientID);
-//                            if (session != null && session.getUsername().equals(fromUser)) {
-//                                if (data.length > 7*1024 && session.getMqttVersion() == MqttVersion.Wildfire_1) {
-//                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                                    GZIPOutputStream gzip;
-//                                    try {
-//                                        gzip = new GZIPOutputStream(out);
-//                                        gzip.write(data);
-//                                        gzip.close();
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    data = out.toByteArray();
-//                                    code = (byte)ErrorCode.ERROR_CODE_SUCCESS_GZIPED.code;
-//                                }
-//
-//                                data = AES.AESEncrypt(data, session.getSecret());
-//                            }
-//                        }
-//                    }
-//                    ackPayload.clear();
-//                    ackPayload.resetWriterIndex();
-//                    ackPayload.writeByte(code);
-//                    ackPayload.writeBytes(data);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    Utility.printExecption(LOG, e);
-//                }
-//            }
-//            ackPayload.resetReaderIndex();
-//            try {
-//                callback.onIMHandled(errorcode, ackPayload);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Utility.printExecption(LOG, e);
-//            }
-//        };
-//
-//        IMHandler handler = m_imHandlers.get(topic);
-//        if (handler != null) {
-//            handler.doHandler(clientID, fromUser, topic, payloadContent, wrapper, isAdmin);
-//        } else {
-//            LOG.error("imHandler unknown topic={}", topic);
-//            ByteBuf ackPayload = Unpooled.buffer();
-//            ackPayload.ensureWritable(1).writeByte(ERROR_CODE_NOT_IMPLEMENT.getCode());
-//            try {
-//                wrapper.onIMHandled(ERROR_CODE_NOT_IMPLEMENT, ackPayload);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Utility.printExecption(LOG, e);
-//            }
-//        }
-//    }
 
     /**
      * 处理消息IM消息信令
@@ -370,27 +251,7 @@ public class ImMessageProcessor implements MessageProcessor{
         void onIMHandled(ErrorCode errorCode, ByteBuf ackPayload);
     }
 
-    private void registerAllAction() {
-        try {
-            for (Class cls : ClassUtil.getAllAssignedClass(IMHandler.class)) {
-                Handler annotation = (Handler)cls.getAnnotation(Handler.class);
-                if(annotation != null) {
-                    IMHandler handler = (IMHandler) cls.newInstance();
-                    m_imHandlers.put(annotation.value(), handler);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Utility.printExecption(LOG, e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            Utility.printExecption(LOG, e);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 
 }

@@ -32,6 +32,10 @@ public class PushPacket extends Packet {
         return Signal.PUSH;
     }
 
+    public int messageId(){
+        return 0;
+    }
+
     public SubSignal subSignal(){
         return SubSignal.NONE;
     }
@@ -58,6 +62,7 @@ public class PushPacket extends Packet {
         Header header = new Header();
         header.setSignal(signal());
         header.setSubSignal(subSignal());
+        header.setMessageId(messageId());
         header.setLength(bodyLength);
         buffer.put(header.getContents());
         if(getBody() != null){

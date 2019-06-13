@@ -3,6 +3,9 @@ package com.comsince.github;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
+import com.comsince.github.model.UserResponse;
+
+import java.util.List;
 
 /**
  * @author comsicne
@@ -18,4 +21,6 @@ public interface MessageService {
     long getFriendHead(String user);
     long getFriendRqHead(String user);
     long getSettingHead(String user);
+
+    List<UserResponse> searchUser(String keyword, boolean buzzy, int page);
 }

@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class Header {
-    public static final int LENGTH = 6;
+    public static final int LENGTH = 8;
     public static final int VERSION = 1;
     public static final byte magic = (byte)0xf8;
 
@@ -65,6 +65,16 @@ public class Header {
 
     public SubSignal getSubSignal(){
         return SubSignal.toEnum((~(0x01 << 7)) & mContents[5]);
+    }
+
+    public Header setMessageId(int messageId){
+        mContents[6] = (byte)((messageId >> 8) & 0xff);
+        mContents[7] = (byte)(messageId & 0xff);
+        return this;
+    }
+
+    public int getMessageId(){
+        return (((mContents[6] & 0xff) << 8) | (0xff & mContents[7]));
     }
 
 

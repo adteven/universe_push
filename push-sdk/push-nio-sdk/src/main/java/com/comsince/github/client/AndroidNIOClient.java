@@ -182,7 +182,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
                 Signal receiveHeaderSignal = receiveHeader.getSignal();
                 SubSignal subSignal = receiveHeader.getSubSignal();
                 receiveHeader = null;
-                String logMessage = "receive signal ["+receiveHeaderSignal;
+                String logMessage = "receive signal ["+receiveHeaderSignal+"]";
                 log.i(logMessage);
                 if(pushMessageCallback != null){
                     pushMessageCallback.receiveMessage(receiveHeaderSignal,subSignal,receiveBufferList);

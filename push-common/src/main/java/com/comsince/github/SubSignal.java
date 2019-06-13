@@ -9,6 +9,7 @@ import io.netty.util.internal.StringUtil;
  **/
 public enum SubSignal {
     NONE,
+    // connect
     CONNECTION_ACCEPTED,
     CONNECTION_REFUSED_UNACCEPTABLE_PROTOCOL_VERSION,
     CONNECTION_REFUSED_IDENTIFIER_REJECTED,
@@ -17,7 +18,10 @@ public enum SubSignal {
     CONNECTION_REFUSED_NOT_AUTHORIZED,
     CONNECTION_REFUSED_UNEXPECT_NODE,
     CONNECTION_REFUSED_SESSION_NOT_EXIST,
-    FAR;
+    //publish
+    US,
+    FAR
+    ;
 
     public static SubSignal toEnum(int ordinal) {
         byte o = (byte) ordinal;

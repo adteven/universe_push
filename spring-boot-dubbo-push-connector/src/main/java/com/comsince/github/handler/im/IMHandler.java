@@ -122,7 +122,6 @@ public abstract class IMHandler<T> {
             try {
                 callback.onIMHandled(ERROR_CODE_OVER_FREQUENCY, ackPayload);
             } catch (Exception e) {
-                e.printStackTrace();
                 Utility.printExecption(LOG, e);
             }
             return ErrorCode.ERROR_CODE_OVER_FREQUENCY;
@@ -136,7 +135,7 @@ public abstract class IMHandler<T> {
                 @Override
                 public void onIMHandled(ErrorCode errorCode, ByteBuf ackPayload) {
                     LOG.debug("execute handler {} with result {}", this.getClass().getName(), errorCode);
-                    callback.onIMHandled(errorCode, ackPayload);
+                    //callback.onIMHandled(errorCode, ackPayload);
                     afterAction(clientID, fromUser, topic, callback);
                 }
             };
@@ -152,15 +151,12 @@ public abstract class IMHandler<T> {
                     LOG.debug("execute handler for topic {}", topic);
                     errorCode = action(ackPayload, clientID, fromUser, isAdmin, getDataObject(payloadContent), callbackWrapper);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
                     Utility.printExecption(LOG, e);
                     errorCode = ErrorCode.ERROR_CODE_INVALID_DATA;
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();
                     Utility.printExecption(LOG, e);
                     errorCode = ErrorCode.ERROR_CODE_INVALID_DATA;
                 } catch (Exception e) {
-                    e.printStackTrace();
                     Utility.printExecption(LOG, e);
                     if (e instanceof InvalidProtocolBufferException) {
                         errorCode = ErrorCode.ERROR_CODE_INVALID_DATA;
