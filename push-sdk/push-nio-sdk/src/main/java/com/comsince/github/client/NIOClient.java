@@ -147,15 +147,17 @@ public class NIOClient implements ConnectCallback,DataCallback,CompletedCallback
         bb.get(receiveBuffer,reallyRead);
 
         if(receiveBuffer.remaining() == bodyLength){
-            String message = receiveBuffer.readString(Charset.forName("UTF-8"));
+            ByteBufferList receiveBufferList = new ByteBufferList();
+            receiveBuffer.get(receiveBufferList);
+            //String message = receiveBuffer.readString(Charset.forName("UTF-8"));
 
             if(receiveHeader.getSignal() == Signal.PING){
                 scheduleHeartbeat();
             }
-            String logMessage = "receive signal ["+receiveHeader.getSignal()+"] body-> "+message;
+            String logMessage = "receive signal ["+receiveHeader.getSignal()+"] ";
             log.i(logMessage);
             if(pushMessageCallback != null){
-                pushMessageCallback.receiveMessage(receiveHeader.getSignal(),message);
+                pushMessageCallback.receiveMessage(receiveHeader.getSignal(),receiveHeader.getSubSignal(),receiveBufferList);
             }
         }
 

@@ -176,13 +176,16 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
                 bb.get(receiveBuffer,reallyRead);
             }
             if(receiveBuffer.remaining() == bodyLength){
-                String message = receiveBuffer.readString(Charset.forName("UTF-8"));
+                ByteBufferList receiveBufferList = new ByteBufferList();
+                receiveBuffer.get(receiveBufferList);
+                //String message = receiveBuffer.readString(Charset.forName("UTF-8"));
                 Signal receiveHeaderSignal = receiveHeader.getSignal();
+                SubSignal subSignal = receiveHeader.getSubSignal();
                 receiveHeader = null;
-                String logMessage = "receive signal ["+receiveHeaderSignal+"] body-> "+message;
+                String logMessage = "receive signal ["+receiveHeaderSignal;
                 log.i(logMessage);
                 if(pushMessageCallback != null){
-                    pushMessageCallback.receiveMessage(receiveHeaderSignal,message);
+                    pushMessageCallback.receiveMessage(receiveHeaderSignal,subSignal,receiveBufferList);
                 }
             }
         }

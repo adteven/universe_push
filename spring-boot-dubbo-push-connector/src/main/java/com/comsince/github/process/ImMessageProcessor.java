@@ -9,13 +9,9 @@ import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMHandler;
 import com.comsince.github.handler.im.MessagesPublisher;
 import com.comsince.github.immessage.ConnectAckMessagePacket;
+import com.comsince.github.model.SessionResponse;
 import com.comsince.github.security.*;
-import com.comsince.github.session.ClientSession;
-import com.comsince.github.session.Session;
-import com.comsince.github.utils.ClassUtil;
-import com.comsince.github.utils.Constants;
-import com.comsince.github.utils.ThreadPoolExecutorWrapper;
-import com.comsince.github.utils.Utility;
+import com.comsince.github.utils.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.StringUtil;
@@ -27,6 +23,7 @@ import org.tio.utils.json.Json;
 import com.comsince.github.message.ConnectMessage;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 
@@ -45,7 +42,7 @@ public class ImMessageProcessor implements MessageProcessor{
     protected final IAuthorizator m_authorizator;
     private IAuthenticator m_authenticator;
     private boolean allowAnonymous = false;
-
+    private final RateLimiter mLimitCounter = new RateLimiter(5, 100);
     private HashMap<String, IMHandler> m_imHandlers = new HashMap<>();
 
     public ImMessageProcessor() {
@@ -86,8 +83,8 @@ public class ImMessageProcessor implements MessageProcessor{
 
     private void processConnectMessage(PushPacket pushPacket,ChannelContext channelContext){
         ConnectMessage connectMessage = Json.toBean(new String(pushPacket.getBody()),ConnectMessage.class);
-        LOG.info("Processing CONNECT message. CId={}, username={}", connectMessage.getClientIdentifier(), connectMessage.getUserName());
         String clientId = connectMessage.getClientIdentifier();
+        LOG.info("Processing CONNECT message. CId={}, username={}", clientId, connectMessage.getUserName());
         ConnectAckMessagePacket connectAckMessagePacket = new ConnectAckMessagePacket();
         if(!pushPacket.getHeader().isValid()){
              connectAckMessagePacket.setSubSignal(CONNECTION_REFUSED_UNACCEPTABLE_PROTOCOL_VERSION);
@@ -124,14 +121,14 @@ public class ImMessageProcessor implements MessageProcessor{
 
         sendAck(channelContext,connectMessage,clientId);
 
-        if (createOrLoadClientSession(connectMessage.getUserName(),connectMessage, clientId)) {
+        if (!createOrLoadClientSession(connectMessage.getUserName(),connectMessage, clientId)) {
             ConnectAckMessagePacket badId = connAck(CONNECTION_REFUSED_SESSION_NOT_EXIST);
             Tio.send(channelContext,badId);
             Tio.close(channelContext,"session not exist");
             return;
         }
 
-        Session session = sessionService().getSession(clientId);
+        SessionResponse session = sessionService().getSession(clientId);
         if(session != null) {
             //远程调用可用有问题，不能刷新时间
             session.refreshLastActiveTime();
@@ -144,7 +141,9 @@ public class ImMessageProcessor implements MessageProcessor{
         sessionService().loadUserSession(username, clientId);
         boolean hasSessionClient = sessionService().sessionForClient(clientId);
         if (hasSessionClient) {
-            return sessionService().updateExistSession(username, clientId, false);
+            boolean updateFlag = sessionService().updateExistSession(username, clientId, false);
+            LOG.info("createOrLoadClientSession flag {}",updateFlag);
+            return updateFlag;
         } else {
             return false;
         }
@@ -180,9 +179,9 @@ public class ImMessageProcessor implements MessageProcessor{
             }
             byte[] pwd = null;
             if (msg.getPassword() != null) {
-                pwd = msg.getPassword().getBytes();
+                pwd = Base64.getDecoder().decode(msg.getPassword());
 
-                Session session = sessionService().getSession(clientId);
+                SessionResponse session = sessionService().getSession(clientId);
                 if (session == null) {
                     sessionService().createNewSession(msg.getUserName(), clientId, true, false);
                     session = sessionService().getSession(clientId);
@@ -190,8 +189,9 @@ public class ImMessageProcessor implements MessageProcessor{
 
                 if (session != null && session.getUsername().equals(msg.getUserName())) {
                     pwd = AES.AESDecrypt(pwd, session.getSecret(), true);
+                    LOG.info("decrypt pwd "+Base64.getEncoder().encodeToString(pwd));
                 } else {
-                    LOG.error("Password decrypt failed of client {}", clientId);
+                    LOG.error("no session decrypt failed of client {}", clientId);
                     failedNoSession(channelContext);
                     return false;
                 }
@@ -236,17 +236,17 @@ public class ImMessageProcessor implements MessageProcessor{
 
     private void failedBlocked(ChannelContext channelContext) {
         Tio.send(channelContext,connAck(CONNECTION_REFUSED_IDENTIFIER_REJECTED));
-        LOG.info("Client {} failed to connect, use is blocked.", channelContext.getBsId());
+        LOG.info("channelID {} failed to connect, use is blocked.", channelContext.getBsId());
     }
 
     private void failedCredentials(ChannelContext channelContext) {
         Tio.send(channelContext,connAck(CONNECTION_REFUSED_BAD_USER_NAME_OR_PASSWORD));
-        LOG.info("Client {} failed to connect with bad username or password.", channelContext.getBsId());
+        LOG.info("channelID {} failed to connect with bad username or password.", channelContext.getBsId());
     }
 
     private void failedNoSession(ChannelContext channelContext) {
         Tio.send(channelContext,connAck(CONNECTION_REFUSED_SESSION_NOT_EXIST));
-        LOG.info("Client {} failed to connect with bad username or password.", channelContext.getBsId());
+        LOG.info("channelID {} failed to connect with bad username or password.", channelContext.getBsId());
     }
 
     private void processPublishMessage(PushPacket pushPacket,ChannelContext channelContext){
@@ -275,6 +275,88 @@ public class ImMessageProcessor implements MessageProcessor{
             }
         }
     }
+
+//    private void ImHandler(String clientID, String fromUser, String topic, byte[] payloadContent, IMCallback callback){
+//        LOG.info("imHandler fromUser={}, topic={}", fromUser, topic);
+//        if(!mLimitCounter.isGranted(clientID + fromUser + topic)) {
+//            ByteBuf ackPayload = Unpooled.buffer();
+//            ackPayload.ensureWritable(1).writeByte(ERROR_CODE_OVER_FREQUENCY.getCode());
+//            try {
+//                callback.onIMHandled(ERROR_CODE_OVER_FREQUENCY, ackPayload);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Utility.printExecption(LOG, e);
+//            }
+//            LOG.warn("user {} request over frequency", fromUser);
+//            return;
+//        }
+//
+//        IMCallback wrapper = (errorcode, ackPayload) -> {
+//            ackPayload.resetReaderIndex();
+//            byte code = ackPayload.readByte();
+//            if(ackPayload.readableBytes() > 0) {
+//                byte[] data = new byte[ackPayload.readableBytes()];
+//                ackPayload.getBytes(1, data);
+//                try {
+//                    //clientID 为空的是server api请求。客户端不允许clientID为空
+//                    if (!StringUtil.isNullOrEmpty(clientID)) {
+//                        //在route时，使用系统根密钥。当route成功后，用户都使用用户密钥
+//                        if (topic.equals(IMTopic.GetTokenTopic)) {
+//                            data = AES.AESEncrypt(data, "");
+//                        } else {
+//                            SessionResponse session = sessionService().getSession(clientID);
+//                            if (session != null && session.getUsername().equals(fromUser)) {
+//                                if (data.length > 7*1024 && session.getMqttVersion() == MqttVersion.Wildfire_1) {
+//                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+//                                    GZIPOutputStream gzip;
+//                                    try {
+//                                        gzip = new GZIPOutputStream(out);
+//                                        gzip.write(data);
+//                                        gzip.close();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    data = out.toByteArray();
+//                                    code = (byte)ErrorCode.ERROR_CODE_SUCCESS_GZIPED.code;
+//                                }
+//
+//                                data = AES.AESEncrypt(data, session.getSecret());
+//                            }
+//                        }
+//                    }
+//                    ackPayload.clear();
+//                    ackPayload.resetWriterIndex();
+//                    ackPayload.writeByte(code);
+//                    ackPayload.writeBytes(data);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    Utility.printExecption(LOG, e);
+//                }
+//            }
+//            ackPayload.resetReaderIndex();
+//            try {
+//                callback.onIMHandled(errorcode, ackPayload);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Utility.printExecption(LOG, e);
+//            }
+//        };
+//
+//        IMHandler handler = m_imHandlers.get(topic);
+//        if (handler != null) {
+//            handler.doHandler(clientID, fromUser, topic, payloadContent, wrapper, isAdmin);
+//        } else {
+//            LOG.error("imHandler unknown topic={}", topic);
+//            ByteBuf ackPayload = Unpooled.buffer();
+//            ackPayload.ensureWritable(1).writeByte(ERROR_CODE_NOT_IMPLEMENT.getCode());
+//            try {
+//                wrapper.onIMHandled(ERROR_CODE_NOT_IMPLEMENT, ackPayload);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Utility.printExecption(LOG, e);
+//            }
+//        }
+//    }
 
     /**
      * 处理消息IM消息信令

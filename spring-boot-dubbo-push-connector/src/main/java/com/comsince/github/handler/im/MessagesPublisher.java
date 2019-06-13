@@ -3,7 +3,7 @@ package com.comsince.github.handler.im;
 import com.comsince.github.PushServer;
 import com.comsince.github.SessionService;
 import com.comsince.github.immessage.PublishMessagePacket;
-import com.comsince.github.session.Session;
+import com.comsince.github.model.SessionResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
@@ -33,9 +33,9 @@ public class MessagesPublisher {
     }
 
     void publishNotificationLocal(String topic, String receiver, long head) {
-        Collection<Session> sessions = sessionService.sessionForUser(receiver);
-        for (Session targetSession : sessions) {
-            ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.getClientSession().clientID);
+        Collection<SessionResponse> sessions = sessionService.sessionForUser(receiver);
+        for (SessionResponse targetSession : sessions) {
+            ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.clientID);
             boolean targetIsActive = !channelContext.isClosed;
             if (targetIsActive) {
                 ByteBuf payload = Unpooled.buffer();

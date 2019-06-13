@@ -14,7 +14,8 @@ public enum Signal {
     CONTACT,//聊天信令
     CONNECT,//IM链接信令
     CONNECT_ACK,
-    PUBLISH;
+    PUBLISH,
+    PUB_ACK;
 
     public static Signal toEnum(int ordinal) {
         byte o = (byte) ordinal;

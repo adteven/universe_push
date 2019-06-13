@@ -14,7 +14,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.comsince.github.session;
+package com.comsince.github.persistence.session;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;

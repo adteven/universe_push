@@ -2,13 +2,17 @@ package com.comsince.github.service.impl;
 
 import com.comsince.github.SessionService;
 import com.comsince.github.common.ErrorCode;
-import com.comsince.github.session.ClientSession;
-import com.comsince.github.session.ISessionsStore;
-import com.comsince.github.session.Session;
+import com.comsince.github.model.SessionResponse;
+import com.comsince.github.persistence.session.ISessionsStore;
+import com.comsince.github.persistence.session.Session;
 import org.apache.dubbo.config.annotation.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author comsicne
@@ -17,17 +21,28 @@ import java.util.Collection;
  **/
 @Service
 public class SessionServiceImpl implements SessionService {
+    Logger logger = LoggerFactory.getLogger(SessionServiceImpl.class);
     @Autowired
     ISessionsStore sessionsStore;
 
     @Override
-    public Collection<Session> sessionForUser(String username) {
-        return sessionsStore.sessionForUser(username);
+    public Collection<SessionResponse> sessionForUser(String username) {
+        Collection<Session> sessions = sessionsStore.sessionForUser(username);
+        List<SessionResponse> sessionResponseList = new ArrayList<>();
+        for(Session session : sessions){
+            sessionResponseList.add(convertSession(session));
+        }
+        return sessionResponseList;
     }
 
     @Override
-    public Session getSession(String clientID) {
-        return sessionsStore.getSession(clientID);
+    public SessionResponse getSession(String clientID) {
+        Session session = sessionsStore.getSession(clientID);
+        if(session != null){
+            logger.info("find session clientID {}",clientID);
+            return convertSession(session);
+        }
+        return null;
     }
 
     @Override
@@ -48,5 +63,18 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public boolean updateExistSession(String username, String clientID, boolean cleanSession) {
         return sessionsStore.updateExistSession(username,clientID,null,cleanSession) != null ? true : false;
+    }
+
+    private SessionResponse convertSession(Session session){
+        SessionResponse sessionResponse = new SessionResponse();
+        sessionResponse.clientID = session.getClientID();
+        sessionResponse.username = session.username;
+        sessionResponse.setAppName(session.getAppName());
+        sessionResponse.setCarrierName(session.getCarrierName());
+        sessionResponse.setDbSecret(session.getDbSecret());
+        sessionResponse.setDeviceName(session.getDeviceName());
+        sessionResponse.setDeviceVersion(session.getDeviceVersion());
+        sessionResponse.setSecret(session.getSecret());
+        return sessionResponse;
     }
 }

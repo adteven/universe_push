@@ -18,10 +18,10 @@ package com.comsince.github.persistence;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
-import com.comsince.github.session.ClientSession;
-import com.comsince.github.session.ISessionsStore;
-import com.comsince.github.session.Session;
-import com.comsince.github.session.StoredMessage;
+import com.comsince.github.persistence.session.ClientSession;
+import com.comsince.github.persistence.session.ISessionsStore;
+import com.comsince.github.persistence.session.Session;
+import com.comsince.github.persistence.session.StoredMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;

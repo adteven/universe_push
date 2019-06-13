@@ -1,7 +1,5 @@
 package com.comsince.github.push;
 
-import io.netty.util.internal.StringUtil;
-
 /**
  * @author comsicne
  * Copyright (c) [2019]
@@ -9,8 +7,15 @@ import io.netty.util.internal.StringUtil;
  **/
 public enum SubSignal {
     NONE,
+    CONNECTION_ACCEPTED,
+    CONNECTION_REFUSED_UNACCEPTABLE_PROTOCOL_VERSION,
+    CONNECTION_REFUSED_IDENTIFIER_REJECTED,
+    CONNECTION_REFUSED_SERVER_UNAVAILABLE,
+    CONNECTION_REFUSED_BAD_USER_NAME_OR_PASSWORD,
+    CONNECTION_REFUSED_NOT_AUTHORIZED,
+    CONNECTION_REFUSED_UNEXPECT_NODE,
+    CONNECTION_REFUSED_SESSION_NOT_EXIST,
     FAR;
-
     public static SubSignal toEnum(int ordinal) {
         byte o = (byte) ordinal;
         if (o > NONE.ordinal() &&
@@ -26,7 +31,7 @@ public enum SubSignal {
     }
 
     public static SubSignal toEnum(String topic){
-        if(!StringUtil.isNullOrEmpty(topic)){
+        if(topic != null && !"".equals(topic)){
             for(SubSignal signal : SubSignal.values()){
                 if(signal.name().equals(topic)){
                     return signal;

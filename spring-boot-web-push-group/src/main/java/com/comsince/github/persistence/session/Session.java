@@ -1,4 +1,4 @@
-package com.comsince.github.session;
+package com.comsince.github.persistence.session;
 
 import com.comsince.github.utils.Constants;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Copyright (c) [2019]
  * @Time 19-6-11 上午11:18
  **/
-public class Session implements Comparable<Session>, Serializable {
+public class Session implements Comparable<Session> {
     public final String clientID;
     public String username;
     private String appName;

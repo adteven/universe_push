@@ -3,12 +3,15 @@ package com.comsince.github.service.impl;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.controller.im.pojo.*;
 import com.comsince.github.persistence.IMessagesStore;
+import com.comsince.github.security.AES;
 import com.comsince.github.security.TokenAuthenticator;
 import com.comsince.github.service.AdminService;
-import com.comsince.github.session.ISessionsStore;
-import com.comsince.github.session.Session;
+import com.comsince.github.persistence.session.ISessionsStore;
+import com.comsince.github.persistence.session.Session;
 import com.comsince.github.util.UUIDGenerator;
 import io.netty.util.internal.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ import java.util.Base64;
  **/
 @Service
 public class AdminServiceImpl implements AdminService {
+
+    Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
 
     @Autowired
     IMessagesStore messagesStore;
@@ -103,8 +108,11 @@ public class AdminServiceImpl implements AdminService {
         Session session = sessionsStore.createUserSession(inputGetToken.getUserId(), inputGetToken.getClientId());
         TokenAuthenticator authenticator = new TokenAuthenticator();
         String strToken = authenticator.generateToken(inputGetToken.getUserId());
+        logger.info("userId generate token is "+strToken);
         String result = strToken + "|" + session.getSecret() + "|" + session.getDbSecret();
-        String token = Base64.getEncoder().encodeToString(result.getBytes());
+        byte[] tokenAES = AES.AESEncrypt(result, "");
+        String token = Base64.getEncoder().encodeToString(tokenAES);
+        logger.info("userId {} clientId {} session secret {} token is {}",inputGetToken.getUserId(),inputGetToken.getClientId(),session.getSecret(),token);
         return new OutputGetIMTokenData(inputGetToken.getUserId(), token);
     }
 }

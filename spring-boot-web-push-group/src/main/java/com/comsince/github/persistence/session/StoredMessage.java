@@ -1,4 +1,4 @@
-package com.comsince.github.session;
+package com.comsince.github.persistence.session;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

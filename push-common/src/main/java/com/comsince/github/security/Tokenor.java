@@ -2,6 +2,8 @@ package com.comsince.github.security;
 
 import io.netty.util.internal.StringUtil;
 
+import java.util.Base64;
+
 public class Tokenor {
 	private static String KEY = "testim";
 
@@ -14,7 +16,7 @@ public class Tokenor {
     public static String getUserId(byte[] password) {
         try {
             String signKey =
-                DES.decryptDES(new String(password));
+                DES.decryptDES(Base64.getEncoder().encodeToString(password));
 
             if (signKey.startsWith(KEY + "|")) {
                 signKey = signKey.substring(KEY.length() + 1);
