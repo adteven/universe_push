@@ -143,4 +143,25 @@ public class UserResponse implements Serializable {
     public void setType(int type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "UserResponse{" +
+                "uid='" + uid + '\'' +
+                ", name='" + name + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", gender=" + gender +
+                ", portrait='" + portrait + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", company='" + company + '\'' +
+                ", social='" + social + '\'' +
+                ", extra='" + extra + '\'' +
+                ", friendAlias='" + friendAlias + '\'' +
+                ", groupAlias='" + groupAlias + '\'' +
+                ", updateDt=" + updateDt +
+                ", type=" + type +
+                '}';
+    }
 }

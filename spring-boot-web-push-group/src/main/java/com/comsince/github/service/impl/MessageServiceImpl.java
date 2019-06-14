@@ -37,9 +37,20 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public WFCMessage.User getUserInfo(String userId) {
-        return messagesStore.getUserInfo(userId);
+    public UserResponse getUserInfo(String userId) {
+        UserResponse userResponse = null;
+        WFCMessage.UserRequest userRequest = WFCMessage.UserRequest.newBuilder().setUid(userId).build();
+        List<WFCMessage.UserRequest> userRequests = new ArrayList<>();
+        userRequests.add(userRequest);
+        WFCMessage.PullUserResult.Builder resultBuilder = WFCMessage.PullUserResult.newBuilder();
+        messagesStore.getUserInfo(userRequests,resultBuilder);
+        for(WFCMessage.UserResult userResult : resultBuilder.getResultList()){
+            WFCMessage.User user = userResult.getUser();
+            userResponse = convertWFCUser(user);
+        }
+        return userResponse;
     }
+
 
     @Override
     public int getUserStatus(String userId) {
@@ -71,20 +82,27 @@ public class MessageServiceImpl implements MessageService {
         List<UserResponse> userResponseList = new ArrayList<>();
         List<WFCMessage.User> users = messagesStore.searchUser(keyword,buzzy,page);
         for(WFCMessage.User user : users){
-            UserResponse userResponse = new UserResponse();
-            userResponse.setAddress(user.getAddress());
-            userResponse.setCompany(user.getCompany());
-            userResponse.setEmail(user.getEmail());
-            userResponse.setName(user.getName());
-            userResponse.setMobile(user.getMobile());
-            userResponse.setDisplayName(user.getDisplayName());
-            userResponse.setGender(user.getGender());
-            userResponse.setExtra(user.getExtra());
-            userResponse.setPortrait(user.getPortrait());
-            userResponse.setUpdateDt(user.getUpdateDt());
+            UserResponse userResponse = convertWFCUser(user);
             userResponseList.add(userResponse);
         }
         return userResponseList;
+    }
+
+
+    private UserResponse convertWFCUser(WFCMessage.User user){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUid(user.getUid());
+        userResponse.setAddress(user.getAddress());
+        userResponse.setCompany(user.getCompany());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setName(user.getName());
+        userResponse.setMobile(user.getMobile());
+        userResponse.setDisplayName(user.getDisplayName());
+        userResponse.setGender(user.getGender());
+        userResponse.setExtra(user.getExtra());
+        userResponse.setPortrait(user.getPortrait());
+        userResponse.setUpdateDt(user.getUpdateDt());
+        return userResponse;
     }
 
 

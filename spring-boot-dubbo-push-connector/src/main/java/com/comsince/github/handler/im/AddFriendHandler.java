@@ -12,6 +12,7 @@ import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
+import com.comsince.github.model.UserResponse;
 import com.comsince.github.process.ImMessageProcessor;
 import io.netty.buffer.ByteBuf;
 import static com.comsince.github.common.ErrorCode.ERROR_CODE_SUCCESS;
@@ -28,7 +29,7 @@ public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> 
         ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, addFriendMessage, head);
         LOG.info("head time "+head[0]);
         if (errorCode == ERROR_CODE_SUCCESS) {
-            WFCMessage.User user = messageService.getUserInfo(request.getTargetUid());
+            UserResponse user = messageService.getUserInfo(request.getTargetUid());
             if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
                 publisher.publishNotification(IMTopic.NotifyFriendRequestTopic, request.getTargetUid(), head[0]);
             }

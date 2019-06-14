@@ -18,7 +18,8 @@ public enum SubSignal {
     CONNECTION_REFUSED_SESSION_NOT_EXIST,
     //publish
     US,
-    FAR
+    FAR,
+    UPUI
     ;
 
 
