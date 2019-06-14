@@ -23,27 +23,27 @@ public class PushConnectorListener implements ServerAioListener{
     Logger logger = LoggerFactory.getLogger(PushConnectorListener.class);
 
     public void onAfterConnected(ChannelContext channelContext, boolean b, boolean b1) throws Exception {
-        String token = null;
-        PushCommonConfiguration pushServerConfiguration = (PushCommonConfiguration) SpringApplicationContext.getBean(Constants.PUSHSERVER_CONFIGURATION);
-        SubService subService = pushServerConfiguration.subService();
-        if(subService == null){
-            token = new DefaultTioUuid().uuid();
-        } else {
-            try {
-                token = subService.generateToken();
-            } catch (Exception e){
-                logger.error("generateToken error ",e);
-            }
-            if(StringUtil.isNullOrEmpty(token)){
-                token = new DefaultTioUuid().uuid();
-            }
-        }
-        Tio.bindBsId(channelContext,token);
-
-        RedissonClient redissonClient = (RedissonClient) SpringApplicationContext.getBean(Constants.REDISCLIENT_NAME);
-        long onlineNum = redissonClient.getAtomicLong(Constants.ONLINE_NUM).incrementAndGet();
-        redissonClient.getMap(Constants.ONLINE_STATUS).fastPut(token,1);
-        logger.info("onAfterConnected client:"+channelContext.getClientNode()+" current onlineNum "+onlineNum);
+//        String token = null;
+//        PushCommonConfiguration pushServerConfiguration = (PushCommonConfiguration) SpringApplicationContext.getBean(Constants.PUSHSERVER_CONFIGURATION);
+//        SubService subService = pushServerConfiguration.subService();
+//        if(subService == null){
+//            token = new DefaultTioUuid().uuid();
+//        } else {
+//            try {
+//                token = subService.generateToken();
+//            } catch (Exception e){
+//                logger.error("generateToken error ",e);
+//            }
+//            if(StringUtil.isNullOrEmpty(token)){
+//                token = new DefaultTioUuid().uuid();
+//            }
+//        }
+//        Tio.bindBsId(channelContext,token);
+//
+//        RedissonClient redissonClient = (RedissonClient) SpringApplicationContext.getBean(Constants.REDISCLIENT_NAME);
+//        long onlineNum = redissonClient.getAtomicLong(Constants.ONLINE_NUM).incrementAndGet();
+//        redissonClient.getMap(Constants.ONLINE_STATUS).fastPut(token,1);
+//        logger.info("onAfterConnected client:"+channelContext.getClientNode()+" current onlineNum "+onlineNum);
     }
 
     public void onAfterDecoded(ChannelContext channelContext, Packet packet, int i) throws Exception {
@@ -67,10 +67,10 @@ public class PushConnectorListener implements ServerAioListener{
 
     public void onBeforeClose(ChannelContext channelContext, Throwable throwable, String s, boolean b) throws Exception {
         //重连可能出现不同channel对应同一个token这里不要用来统计当前在线token
-      RedissonClient redissonClient = (RedissonClient) SpringApplicationContext.getBean(Constants.REDISCLIENT_NAME);
-      long onlineNum = redissonClient.getAtomicLong(Constants.ONLINE_NUM).decrementAndGet();
-      redissonClient.getMap(Constants.ONLINE_STATUS).fastPut(channelContext.getBsId(),0);
-      logger.info("onBeforeClose close client:"+channelContext.getClientNode()+" token:"+channelContext.getBsId()+" current onlineNum "+onlineNum);
+//      RedissonClient redissonClient = (RedissonClient) SpringApplicationContext.getBean(Constants.REDISCLIENT_NAME);
+//      long onlineNum = redissonClient.getAtomicLong(Constants.ONLINE_NUM).decrementAndGet();
+//      redissonClient.getMap(Constants.ONLINE_STATUS).fastPut(channelContext.getBsId(),0);
+//      logger.info("onBeforeClose close client:"+channelContext.getClientNode()+" token:"+channelContext.getBsId()+" current onlineNum "+onlineNum);
     }
 
 

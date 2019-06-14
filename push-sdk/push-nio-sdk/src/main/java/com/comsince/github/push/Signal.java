@@ -12,6 +12,7 @@ public enum Signal {
     CONTACT,//聊天信令
     CONNECT,//IM链接信令
     CONNECT_ACK,
+    DISCONNECT,
     PUBLISH,
     PUB_ACK;
 

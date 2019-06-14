@@ -17,4 +17,6 @@ public interface SessionService {
     void loadUserSession(String username, String clientID);
     boolean sessionForClient(String clientID);
     boolean updateExistSession(String username, String clientID, boolean cleanSession);
+    void dropQueue(String clientID);
+    void cleanSession(String clientID);
 }

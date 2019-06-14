@@ -65,6 +65,16 @@ public class SessionServiceImpl implements SessionService {
         return sessionsStore.updateExistSession(username,clientID,null,cleanSession) != null ? true : false;
     }
 
+    @Override
+    public void dropQueue(String clientID) {
+        sessionsStore.dropQueue(clientID);
+    }
+
+    @Override
+    public void cleanSession(String clientID) {
+        sessionsStore.cleanSession(clientID);
+    }
+
     private SessionResponse convertSession(Session session){
         SessionResponse sessionResponse = new SessionResponse();
         sessionResponse.clientID = session.getClientID();

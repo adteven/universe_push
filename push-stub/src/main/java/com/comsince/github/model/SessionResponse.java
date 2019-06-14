@@ -188,4 +188,28 @@ public class SessionResponse implements Comparable<SessionResponse>, Serializabl
             return clientID.compareTo(o.clientID);
         }
     }
+
+    @Override
+    public String toString() {
+        return "SessionResponse{" +
+                "clientID='" + clientID + '\'' +
+                ", username='" + username + '\'' +
+                ", appName='" + appName + '\'' +
+                ", deviceToken='" + deviceToken + '\'' +
+                ", voipDeviceToken='" + voipDeviceToken + '\'' +
+                ", secret='" + secret + '\'' +
+                ", dbSecret='" + dbSecret + '\'' +
+                ", lastActiveTime=" + lastActiveTime +
+                ", lastChatroomActiveTime=" + lastChatroomActiveTime +
+                ", unReceivedMsgs=" + unReceivedMsgs +
+                ", pushType=" + pushType +
+                ", platform=" + platform +
+                ", deviceName='" + deviceName + '\'' +
+                ", deviceVersion='" + deviceVersion + '\'' +
+                ", phoneName='" + phoneName + '\'' +
+                ", language='" + language + '\'' +
+                ", carrierName='" + carrierName + '\'' +
+                ", updateDt=" + updateDt +
+                '}';
+    }
 }

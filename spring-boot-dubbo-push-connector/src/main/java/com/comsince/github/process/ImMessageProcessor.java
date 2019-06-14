@@ -60,11 +60,70 @@ public class ImMessageProcessor implements MessageProcessor{
             case PUBLISH:
                 processPublishMessage(pushPacket,channelContext);
                 break;
+            case DISCONNECT:
+                processDisconnectMessage(pushPacket,channelContext);
+                break;
             default:
                 LOG.error("Unkonwn Singal:{}", signal);
                 break;
         }
 
+    }
+
+    private void processDisconnectMessage(PushPacket pushPacket,ChannelContext channelContext){
+        final String clientID = (String) channelContext.getAttribute(Constants.ATTR_CLIENTID);
+        boolean clearSession = pushPacket.getBody()[0] == 1 ? true : false;
+        LOG.info("Processing DISCONNECT message. CId={}, clearSession={}", clientID, clearSession);
+
+        if (clientID == null) {
+            LOG.error("Error. Cid not exist!!!", clientID, clearSession);
+            Tio.close(channelContext,"Error. Cid not exist!!");
+            return;
+        }
+        //区分是网络断开，还是用户主动断开
+        if (!clearSession) {
+            processConnectionLost(clientID, channelContext);
+            return;
+        }
+
+
+        if (!dropStoredMessages(channelContext, clientID)) {
+            LOG.warn("Unable to drop stored messages. Closing connection. CId={}", clientID);
+            Tio.close(channelContext,"Unable to drop stored messages. Closing connection.");
+            return;
+        }
+
+        LOG.info("The DISCONNECT message has been processed. CId={}", clientID);
+
+        //disconnect the session
+        if(clearSession){
+            sessionService().cleanSession(clientID);
+        }
+
+        Tio.close(channelContext,"disconnect channel "+clientID);
+
+    }
+
+    private boolean dropStoredMessages(ChannelContext descriptor, String clientID) {
+        LOG.debug("Removing messages of session. CId={}", descriptor.getBsId());
+        sessionService().dropQueue(clientID);
+        LOG.debug("The messages of the session have been removed. CId={}", descriptor.getBsId());
+
+        return true;
+    }
+
+
+    public void processConnectionLost(String clientID, ChannelContext channel) {
+        LOG.info("Processing connection lost event. CId={}", clientID);
+//        ConnectionDescriptor oldConnDescr = new ConnectionDescriptor(clientID, channel);
+//        if(connectionDescriptors.removeConnection(oldConnDescr)) {
+//            MemorySessionStore.Session session = m_sessionsStore.getSession(clientID);
+//            if(session != null) {
+//                session.refreshLastActiveTime();
+//            }
+//            String username = NettyUtils.userName(channel);
+//            m_interceptor.notifyClientConnectionLost(clientID, username);
+//        }
     }
 
     private void processConnectMessage(PushPacket pushPacket,ChannelContext channelContext){
@@ -168,6 +227,7 @@ public class ImMessageProcessor implements MessageProcessor{
                 pwd = Base64.getDecoder().decode(msg.getPassword());
 
                 SessionResponse session = sessionService().getSession(clientId);
+                LOG.info("login find clientId {} session {}",clientId,session);
                 if (session == null) {
                     sessionService().createNewSession(msg.getUserName(), clientId, true, false);
                     session = sessionService().getSession(clientId);

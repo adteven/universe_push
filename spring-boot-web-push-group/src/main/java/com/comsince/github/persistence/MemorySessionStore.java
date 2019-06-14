@@ -252,7 +252,7 @@ public class MemorySessionStore implements ISessionsStore {
     public Session getSession(String clientID) {
         Session session = sessions.get(clientID);
         if (session == null) {
-            LOG.error("Can't find the session for client <{}>", clientID);
+            LOG.error("getSession Can't find the session for client <{}>", clientID);
         }
         return session;
     }
@@ -384,6 +384,7 @@ public class MemorySessionStore implements ISessionsStore {
             return;
         }
         Session session = databaseStore.getSession(username, clientID, new ClientSession(clientID, this));
+        LOG.info("put clientId {} username {} session ",clientID,username);
         if (session != null) {
             sessions.put(clientID, session);
         }
