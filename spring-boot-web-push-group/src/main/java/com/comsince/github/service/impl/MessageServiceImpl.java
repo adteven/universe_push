@@ -72,8 +72,16 @@ public class MessageServiceImpl implements MessageService {
         List<WFCMessage.User> users = messagesStore.searchUser(keyword,buzzy,page);
         for(WFCMessage.User user : users){
             UserResponse userResponse = new UserResponse();
+            userResponse.setAddress(user.getAddress());
+            userResponse.setCompany(user.getCompany());
+            userResponse.setEmail(user.getEmail());
+            userResponse.setName(user.getName());
+            userResponse.setMobile(user.getMobile());
             userResponse.setDisplayName(user.getDisplayName());
             userResponse.setGender(user.getGender());
+            userResponse.setExtra(user.getExtra());
+            userResponse.setPortrait(user.getPortrait());
+            userResponse.setUpdateDt(user.getUpdateDt());
             userResponseList.add(userResponse);
         }
         return userResponseList;

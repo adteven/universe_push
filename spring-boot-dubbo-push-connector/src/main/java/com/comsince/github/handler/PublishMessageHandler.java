@@ -50,12 +50,12 @@ public class PublishMessageHandler {
         SubSignal subSignal = pushPacket.getHeader().getSubSignal();
         String clientID = (String) channelContext.getAttribute(Constants.ATTR_CLIENTID);
         String fromUser = (String) channelContext.getAttribute(Constants.ATTR_USERNAME);
-        int messageID = 0;
+        int messageID = pushPacket.getHeader().getMessageId();
         ImMessageProcessor.IMCallback wrapper = new ImMessageProcessor.IMCallback() {
             @Override
             public void onIMHandled(ErrorCode errorCode, ByteBuf ackPayload) {
                 LOG.info("handle message errorcode {}",errorCode);
-                sendPubAck(clientID, messageID, ackPayload);
+                sendPubAck(clientID, messageID, ackPayload,subSignal);
             }
         };
         byte[] payloadContent = pushPacket.getBody();
@@ -78,10 +78,11 @@ public class PublishMessageHandler {
      * puback 消息格式
      * 第一个自己消息错误码，之后跟着消息体
      * */
-    private void sendPubAck(String clientId, int messageID, ByteBuf payload){
+    private void sendPubAck(String clientId, int messageID, ByteBuf payload, SubSignal subSignal){
         LOG.info("clientId {} messagId {} send PUB_ACK message size {}",clientId,messageID,payload.readableBytes());
         PublishAckMessagePacket publishAckMessagePacket = new PublishAckMessagePacket();
         publishAckMessagePacket.setMessageId(messageID);
+        publishAckMessagePacket.setSubSignal(subSignal);
         byte[] messageByte = new byte[payload.readableBytes()];
         payload.readBytes(messageByte);
         publishAckMessagePacket.setBody(messageByte);

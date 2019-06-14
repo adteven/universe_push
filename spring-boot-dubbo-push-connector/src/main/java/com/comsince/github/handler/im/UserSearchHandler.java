@@ -23,9 +23,15 @@ public class UserSearchHandler extends IMHandler<WFCMessage.SearchUserRequest> {
         List<WFCMessage.User> wfcUsers = new ArrayList<>();
         for(UserResponse userResponse : userResponseList){
             WFCMessage.User user = WFCMessage.User.newBuilder()
-                    .setUid(fromUser)
+                    .setUid(userResponse.getUid())
                     .setGender(userResponse.getGender())
                     .setDisplayName(userResponse.getDisplayName())
+                    .setAddress(userResponse.getAddress())
+                    .setEmail(userResponse.getEmail())
+                    .setUpdateDt(userResponse.getUpdateDt())
+                    .setMobile(userResponse.getMobile())
+                    .setCompany(userResponse.getCompany())
+                    .setPortrait(userResponse.getPortrait())
                     .build();
             wfcUsers.add(user);
         }

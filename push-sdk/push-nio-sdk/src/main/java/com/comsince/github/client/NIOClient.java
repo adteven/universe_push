@@ -157,7 +157,7 @@ public class NIOClient implements ConnectCallback,DataCallback,CompletedCallback
             String logMessage = "receive signal ["+receiveHeader.getSignal()+"] ";
             log.i(logMessage);
             if(pushMessageCallback != null){
-                pushMessageCallback.receiveMessage(receiveHeader.getSignal(),receiveHeader.getSubSignal(),receiveBufferList);
+                pushMessageCallback.receiveMessage(receiveHeader,receiveBufferList);
             }
         }
 

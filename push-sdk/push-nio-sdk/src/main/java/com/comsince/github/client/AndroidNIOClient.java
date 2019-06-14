@@ -117,10 +117,22 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         });
     }
 
-    public void sendMessage(Signal signal, SubSignal subSignal, byte[] body, final CompletedCallback completedCallback){
+    public void sendMessage(Signal signal, SubSignal subSignal,int messageId, byte[] body){
+        sendMessage(signal, subSignal, messageId, body, new CompletedCallback() {
+            @Override
+            public void onCompleted(Exception ex) {
+                if(ex != null){
+                    log.i("signal "+signal+" subsignal "+subSignal+" messageId "+messageId+" send success");
+                }
+            }
+        });
+    }
+
+    public void sendMessage(Signal signal, SubSignal subSignal,int messageId, byte[] body, final CompletedCallback completedCallback){
         ByteBufferList bufferList = new ByteBufferList();
         Header header = new Header();
         header.setSignal(signal);
+        header.setMessageId(messageId);
         header.setSubSignal(subSignal);
         header.setLength(body.length);
 
@@ -181,12 +193,12 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
                 //String message = receiveBuffer.readString(Charset.forName("UTF-8"));
                 Signal receiveHeaderSignal = receiveHeader.getSignal();
                 SubSignal subSignal = receiveHeader.getSubSignal();
-                receiveHeader = null;
-                String logMessage = "receive signal ["+receiveHeaderSignal+"]";
+                String logMessage = "receive signal ["+receiveHeaderSignal+"] subSignal ["+subSignal+"]";
                 log.i(logMessage);
                 if(pushMessageCallback != null){
-                    pushMessageCallback.receiveMessage(receiveHeaderSignal,subSignal,receiveBufferList);
+                    pushMessageCallback.receiveMessage(receiveHeader,receiveBufferList);
                 }
+                receiveHeader = null;
             }
         }
 
