@@ -1,17 +1,35 @@
 package com.comsince.github.handler.im;
 
+import cn.wildfirechat.proto.ProtoConstants;
+import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.MessageService;
 import com.comsince.github.PushServer;
 import com.comsince.github.SessionService;
+import com.comsince.github.SubSignal;
+import com.comsince.github.immessage.PublishAckMessagePacket;
 import com.comsince.github.immessage.PublishMessagePacket;
-import com.comsince.github.model.SessionResponse;
+import com.comsince.github.immessage.pojo.SendMessageData;
+import com.comsince.github.model.*;
+import com.comsince.github.utils.HttpUtils;
+import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.mqtt.MqttPublishMessage;
+import io.netty.handler.codec.mqtt.MqttQoS;
+import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
 
 /**
  * @author comsicne
@@ -20,35 +38,249 @@ import java.util.Collection;
  **/
 public class MessagesPublisher {
 
-    private Logger logger = LoggerFactory.getLogger(MessagesPublisher.class);
+    private Logger LOG = LoggerFactory.getLogger(MessagesPublisher.class);
 
     private SessionService sessionService;
+    private MessageService messageService;
+    private static ExecutorService executorCallback = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public MessagesPublisher(SessionService sessionService) {
+    public MessagesPublisher(SessionService sessionService, MessageService messageService) {
         this.sessionService = sessionService;
+        this.messageService = messageService;
     }
 
-    public void publishNotification(String topic, String receiver, long head) {
-        publishNotificationLocal(topic, receiver, head);
+    public void publishNotification(SubSignal subSignal, String receiver, long body) {
+        publishNotificationLocal(subSignal, receiver,body);
     }
 
-    void publishNotificationLocal(String topic, String receiver, long head) {
+    void publishNotificationLocal(SubSignal subSignal, String receiver,long body) {
         Collection<SessionResponse> sessions = sessionService.sessionForUser(receiver);
         for (SessionResponse targetSession : sessions) {
             ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.clientID);
             boolean targetIsActive = !channelContext.isClosed;
             if (targetIsActive) {
-                ByteBuf payload = Unpooled.buffer();
-                payload.writeLong(head);
                 PublishMessagePacket publishMessage = new PublishMessagePacket();
-                publishMessage.setTopic(topic);
-                publishMessage.setBody(payload.array());
+                publishMessage.setSubSignal(subSignal);
+                ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+                byteBuffer.putLong(body);
+                publishMessage.setBody(byteBuffer.array());
                 boolean result = Tio.send(channelContext,publishMessage);
                 if (!result) {
-                    logger.warn("Publish friend request failure");
+                    LOG.warn("Publish friend request failure");
                 }
             }
 
         }
     }
+
+    public void publish2Receivers(WFCMessage.Message message, Set<String> receivers, String exceptClientId, int pullType) {
+//        if (message.getConversation().getType() == ProtoConstants.ConversationType.ConversationType_Channel) {
+//            ChannelInfoResult channelInfo = messageService.getChannelInfo(message.getConversation().getTarget());
+//            if (channelInfo != null && !StringUtil.isNullOrEmpty(channelInfo.getCallback())) {
+//                executorCallback.execute(() -> HttpUtils.httpJsonPost(channelInfo.getCallback() + "/message", new Gson().toJson(SendMessageData.fromProtoMessage(message), SendMessageData.class)));
+//            }
+//        }
+        long messageId = message.getMessageId();
+
+        String pushContent = message.getContent().getPushContent();
+        if (StringUtil.isNullOrEmpty(pushContent)) {
+            int type = message.getContent().getType();
+            if (type == ProtoConstants.ContentType.Image) {
+                pushContent = "[图片]";
+            } else if(type == ProtoConstants.ContentType.Location) {
+                pushContent = "[位置]";
+            } else if(type == ProtoConstants.ContentType.Text) {
+                pushContent = message.getContent().getSearchableContent();
+            } else if(type == ProtoConstants.ContentType.Voice) {
+                pushContent = "[语音]";
+            } else if(type == ProtoConstants.ContentType.Video) {
+                pushContent = "[视频]";
+            } else if(type == ProtoConstants.ContentType.RichMedia) {
+                pushContent = "[图文]";
+            } else if(type == ProtoConstants.ContentType.File) {
+                pushContent = "[文件]";
+            } else if(type == ProtoConstants.ContentType.Sticker) {
+                pushContent = "[表情]";
+            }
+        }
+
+        if (message.getContent().getPersistFlag() == Transparent) {
+            pushContent = null;
+        }
+
+        publish2Receivers(message.getFromUser(),
+                message.getConversation().getType(),
+                message.getConversation().getTarget(),
+                message.getConversation().getLine(),
+                messageId,
+                receivers,
+                pushContent, exceptClientId, pullType,
+                message.getContent().getType(),
+                message.getServerTimestamp(),
+                message.getContent().getMentionedType(),
+                message.getContent().getMentionedTargetList(),
+                message.getContent().getPersistFlag());
+
+    }
+
+    private void publish2Receivers(String sender, int conversationType, String target, int line, long messageHead, Collection<String> receivers, String pushContent, String exceptClientId, int pullType, int messageContentType, long serverTime, int mentionType, List<String> mentionTargets, int persistFlag) {
+        if (persistFlag == Transparent) {
+            //publishTransparentMessage2Receivers(messageHead, receivers, pullType);
+            return;
+        }
+
+        WFCMessage.Message message = null;
+        for (String user : receivers) {
+//            if (!user.equals(sender)) {
+//                UserResponse userInfo = messageService.getUserInfo(user);
+//                if (userInfo != null && userInfo.getType() == ProtoConstants.UserType.UserType_Robot) {
+//                    RobotResult robot = messageService.getRobot(user);
+//                    if (robot != null && !StringUtil.isNullOrEmpty(robot.getCallback())) {
+//                        if (message == null) {
+//                            message = messageService.getMessage(messageHead);
+//                        }
+//                        final WFCMessage.Message finalMsg = message;
+//                        executorCallback.execute(() -> HttpUtils.httpJsonPost(robot.getCallback(), new Gson().toJson(SendMessageData.fromProtoMessage(finalMsg), SendMessageData.class)));
+//                        continue;
+//                    }
+//                }
+//            }
+            long messageSeq;
+            if (pullType != ProtoConstants.PullType.Pull_ChatRoom) {
+                messageSeq = messageService.insertUserMessages(sender, conversationType, target, line, messageContentType, user, messageHead);
+            } else {
+                messageSeq = messageService.insertChatroomMessages(user, line, messageHead);
+            }
+
+            Collection<SessionResponse> sessions = sessionService.sessionForUser(user);
+            LOG.info("current user {} sessions {}",user,sessions);
+            String senderName = null;
+            String targetName = null;
+            boolean nameLoaded = false;
+
+
+            Collection<String> targetClients = null;
+            if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
+                targetClients = messageService.getChatroomMemberClient(user);
+            }
+            for (SessionResponse targetSession : sessions) {
+                //超过7天不活跃的用户忽略
+                if(System.currentTimeMillis() - targetSession.getUpdateDt() > 7 * 24 * 60 * 60 * 1000) {
+                    continue;
+                }
+
+                if (exceptClientId != null && exceptClientId.equals(targetSession.clientID)) {
+                    continue;
+                }
+
+                if (targetSession.getClientID() == null) {
+                    continue;
+                }
+
+                if (pullType == ProtoConstants.PullType.Pull_ChatRoom && !targetClients.contains(targetSession.getClientID())) {
+                    continue;
+                }
+
+                if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
+                    if (exceptClientId != null && exceptClientId.equals(targetSession.getClientID())) {
+                        targetSession.refreshLastChatroomActiveTime();
+                    }
+
+                    if(System.currentTimeMillis() - targetSession.getLastChatroomActiveTime() > 5*60*1000) {
+                        messageService.handleQuitChatroom(user, targetSession.getClientID(), target);
+                        continue;
+                    }
+                }
+
+                boolean isSlient;
+                if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
+                    isSlient = true;
+                } else {
+                    isSlient = false;
+
+                    if (!user.equals(sender)) {
+                        ConversationResult conversation = new ConversationResult();
+//                        if (conversationType == ProtoConstants.ConversationType.ConversationType_Private) {
+//                            conversation = WFCMessage.Conversation.newBuilder().setType(conversationType).setLine(line).setTarget(sender).build();
+//                        } else {
+//                            conversation = WFCMessage.Conversation.newBuilder().setType(conversationType).setLine(line).setTarget(target).build();
+//                        }
+
+                        if (conversationType == ProtoConstants.ConversationType.ConversationType_Private){
+                            conversation.setType(conversationType);
+                            conversation.setLine(line);
+                            conversation.setTarget(sender);
+                        } else {
+                            conversation.setType(conversationType);
+                            conversation.setLine(line);
+                            conversation.setTarget(target);
+                        }
+
+                        if (messageService.getUserConversationSlient(user, conversation)) {
+                            LOG.info("The conversation {}-{}-{} is slient", conversation.getType(), conversation.getTarget(), conversation.getLine());
+                            isSlient = true;
+                        }
+
+                        if (messageService.getUserGlobalSlient(user)) {
+                            LOG.info("The user {} is global sliented", user);
+                            isSlient = true;
+                        }
+                    }
+
+                    if (!StringUtil.isNullOrEmpty(pushContent) || messageContentType == 400 || messageContentType == 402) {
+                        if (!isSlient) {
+                            targetSession.setUnReceivedMsgs(targetSession.getUnReceivedMsgs() + 1);
+                        }
+                    }
+
+                    if (isSlient) {
+                        if (mentionType == 2 || (mentionType == 1 && mentionTargets.contains(user))) {
+                            isSlient = false;
+                        }
+                    }
+                }
+
+                LOG.info("NotifyMessage pullType {}  messageSeq {}",pullType,messageSeq);
+
+                WFCMessage.NotifyMessage notifyMessage = WFCMessage.NotifyMessage
+                        .newBuilder()
+                        .setType(pullType)
+                        .setHead(messageSeq)
+                        .build();
+
+                byte[] byteData = notifyMessage.toByteArray();
+                PublishMessagePacket publishMsg;
+                publishMsg = new PublishMessagePacket();
+                publishMsg.setBody(byteData);
+                publishMsg.setSubSignal(SubSignal.MN);
+
+                Tio.sendToBsId(PushServer.serverGroupContext,targetSession.getClientID(),publishMsg);
+            }
+        }
+    }
+
+//    private void publishTransparentMessage2Receivers(long messageHead, Collection<String> receivers, int pullType) {
+//        WFCMessage.Message message = messageService.getMessage(messageHead);
+//
+//        if (message != null) {
+//            for (String user : receivers) {
+//                Collection<SessionResponse> sessions = sessionService.sessionForUser(user);
+//
+//                for (SessionResponse targetSession : sessions) {
+//                    if (targetSession.getClientID() == null) {
+//                        continue;
+//                    }
+//
+//                    ByteBuf payload = Unpooled.buffer();
+//                    byte[] byteData = message.toByteArray();
+//                    payload.ensureWritable(byteData.length).writeBytes(byteData);
+//                    PublishMessagePacket publishMsg;
+//                    publishMsg = new PublishMessagePacket();
+//                    publishMsg.setSubSignal(SubSignal.MS);
+//                    publishMsg.setBody(byteData);
+//                    Tio.sendToBsId(PushServer.serverGroupContext,targetSession.getClientID(),publishMsg);
+//                }
+//            }
+//        }
+//    }
 }

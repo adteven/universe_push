@@ -40,7 +40,7 @@ public class PublishMessageHandler {
     public PublishMessageHandler(MessageService messageService, SessionService sessionService){
         int threadNum = Runtime.getRuntime().availableProcessors() * 2;
         this.m_imBusinessExecutor = new ThreadPoolExecutorWrapper(Executors.newScheduledThreadPool(threadNum), threadNum, "business");
-        IMHandler.init(m_imBusinessExecutor,messageService,new MessagesPublisher(sessionService));
+        IMHandler.init(m_imBusinessExecutor,messageService,new MessagesPublisher(sessionService,messageService));
         registerAllAction();
 
     }

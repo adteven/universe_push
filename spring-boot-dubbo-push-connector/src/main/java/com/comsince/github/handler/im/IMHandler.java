@@ -1,6 +1,9 @@
 package com.comsince.github.handler.im;
 
+import cn.wildfirechat.proto.ProtoConstants;
+import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.MessageService;
+import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.ImMessageProcessor;
 import com.comsince.github.utils.RateLimiter;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
@@ -19,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static com.comsince.github.common.ErrorCode.*;
 
@@ -192,5 +197,29 @@ public abstract class IMHandler<T> {
 
     public void afterAction(String clientID, String fromUser, String topic, ImMessageProcessor.IMCallback callback) {
 
+    }
+
+    protected long saveAndPublish(String username, String clientID, WFCMessage.Message message) {
+        MessageResponse messageResponse = MessageResponse.convertMessageResponse(message);
+        messageService.storeMessage(username, clientID, messageResponse);
+        Set<String> notifyReceivers = messageService.getNotifyReceivers(username, messageResponse);
+        LOG.info("notifyReceivers {}",notifyReceivers);
+        int pullType = 0;
+        switch (message.getConversation().getType()){
+            case ProtoConstants.ConversationType.ConversationType_Private:
+                pullType = ProtoConstants.PullType.Pull_Normal;
+                break;
+            case ProtoConstants.ConversationType.ConversationType_Group:
+                pullType = ProtoConstants.PullType.Pull_Normal;
+                break;
+            case ProtoConstants.ConversationType.ConversationType_ChatRoom:
+                pullType = ProtoConstants.PullType.Pull_ChatRoom;
+                break;
+            case ProtoConstants.ConversationType.ConversationType_Channel:
+                break;
+
+        }
+        this.publisher.publish2Receivers(message, notifyReceivers, clientID, pullType);
+        return notifyReceivers.size();
     }
 }

@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-package com.comsince.github.controller.im.pojo;
+package com.comsince.github.immessage.pojo;
 
 public class Conversation {
     private int type;

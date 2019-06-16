@@ -8,21 +8,10 @@ import com.comsince.github.Signal;
  * Copyright (c) [2019]
  * @Time 19-6-11 下午2:42
  **/
-public class PublishMessagePacket extends PushPacket {
+public class PublishMessagePacket extends ImPacket {
 
-    public Signal signal = Signal.PUBLISH;
-
-    private String topic;
-
-    public Signal getSignal() {
-        return Signal.toEnum(topic);
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
+    @Override
+    public Signal signal() {
+        return Signal.PUBLISH;
     }
 }

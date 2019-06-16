@@ -10,7 +10,7 @@ package com.comsince.github.persistence;
 
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.controller.im.pojo.FriendData;
+import com.comsince.github.model.FriendData;
 import com.comsince.github.persistence.session.ClientSession;
 import com.comsince.github.persistence.session.Session;
 import com.comsince.github.util.DBUtil;

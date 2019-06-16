@@ -21,7 +21,15 @@ public enum SubSignal {
     //publish
     US,
     FAR,
-    UPUI
+    UPUI,
+    FRN,
+    FRUS,
+    FRP,
+    FHR,
+    FP,
+    MN,
+    MS,
+    MP
     ;
 
     public static SubSignal toEnum(int ordinal) {

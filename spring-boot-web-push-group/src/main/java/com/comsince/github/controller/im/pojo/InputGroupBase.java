@@ -9,12 +9,14 @@
 package com.comsince.github.controller.im.pojo;
 
 
+import com.comsince.github.immessage.pojo.MessagePayload;
+
 import java.util.List;
 
 public class InputGroupBase {
     public String operator;
     public List<Integer> to_lines;
-    public MessagePayload  notify_message;
+    public MessagePayload notify_message;
 
     public String getOperator() {
         return operator;

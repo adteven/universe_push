@@ -85,6 +85,7 @@ public class SessionServiceImpl implements SessionService {
         sessionResponse.setDeviceName(session.getDeviceName());
         sessionResponse.setDeviceVersion(session.getDeviceVersion());
         sessionResponse.setSecret(session.getSecret());
+        sessionResponse.setUpdateDt(session.getUpdateDt());
         return sessionResponse;
     }
 }

@@ -10,6 +10,7 @@ package com.comsince.github.controller.im.pojo;
 
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.immessage.pojo.MessagePayload;
 import io.netty.util.internal.StringUtil;
 
 public class BroadMessageData {

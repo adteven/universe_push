@@ -10,6 +10,7 @@ package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.SubSignal;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.model.UserResponse;
@@ -22,16 +23,14 @@ public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> 
     @Override
     public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.AddFriendRequest request, ImMessageProcessor.IMCallback callback) {
         LOG.info("targetUid {} reason {}",request.getTargetUid(),request.getReason());
-        long[] head = new long[1];
         AddFriendMessage addFriendMessage = new AddFriendMessage();
         addFriendMessage.setTargetUid(request.getTargetUid());
         addFriendMessage.setReason(request.getReason());
-        ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, addFriendMessage, head);
-        LOG.info("head time "+head[0]);
+        ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, addFriendMessage);
         if (errorCode == ERROR_CODE_SUCCESS) {
             UserResponse user = messageService.getUserInfo(request.getTargetUid());
             if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
-                publisher.publishNotification(IMTopic.NotifyFriendRequestTopic, request.getTargetUid(), head[0]);
+                publisher.publishNotification(SubSignal.FRN, request.getTargetUid(),0);
             }
         }
         return errorCode;

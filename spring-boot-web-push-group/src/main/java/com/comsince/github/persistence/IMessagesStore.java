@@ -18,9 +18,8 @@ package com.comsince.github.persistence;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
-import com.comsince.github.controller.im.pojo.FriendData;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
-import com.comsince.github.persistence.session.MessageGUID;
+import com.comsince.github.model.FriendData;
 import com.comsince.github.persistence.session.StoredMessage;
 import com.comsince.github.security.Topic;
 import java.util.Collection;

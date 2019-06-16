@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-package com.comsince.github.controller.im.pojo;
+package com.comsince.github.immessage.pojo;
 
 import cn.wildfirechat.proto.WFCMessage;
 import io.netty.util.internal.StringUtil;
