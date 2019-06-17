@@ -64,4 +64,13 @@ public class PullMessageResultResponse implements Serializable {
         }
         return builder.build();
     }
+
+    @Override
+    public String toString() {
+        return "PullMessageResultResponse{" +
+                "current=" + current +
+                ", head=" + head +
+                ", messageResponseList=" + messageResponseList +
+                '}';
+    }
 }

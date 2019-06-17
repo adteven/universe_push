@@ -381,6 +381,7 @@ public class DatabaseStore {
             Connection connection = null;
             PreparedStatement statement = null;
             try {
+                LOG.info("persistMessage messageId {} table name {}",message.getMessageId(),MessageShardingUtil.getMessageTable(message.getMessageId()));
                 connection = DBUtil.getConnection();
                 String sql = "insert into " + MessageShardingUtil.getMessageTable(message.getMessageId()) +
                     " (`_mid`, `_from`, `_type`, `_target`, `_line`, `_data`, `_searchable_key`, `_dt`) values(?, ?, ?, ?, ?, ?, ?, ?)" +
@@ -613,7 +614,7 @@ public class DatabaseStore {
             PreparedStatement statement = null;
             try {
                 connection = DBUtil.getConnection();
-
+                LOG.info("insert user message userId {} table  name {} ",userId,getUserMessageTable(userId));
                 String sql = "insert into " + getUserMessageTable(userId) + " (`_mid`, `_uid`, `_seq`) values(?, ?, ?)";
 
                 statement = connection.prepareStatement(sql);

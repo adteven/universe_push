@@ -110,6 +110,8 @@ public class MessageResponse implements Serializable {
     public static MessageResponse convertMessageResponse(WFCMessage.Message message){
         MessageResponse messageResponse = new MessageResponse();
         messageResponse.setFrom(message.getFromUser());
+        messageResponse.setMessageId(message.getMessageId());
+        messageResponse.setTimestamp(message.getServerTimestamp());
         WFCMessage.Conversation conversation  = message.getConversation();
         messageResponse.setConversationType(conversation.getType());
         messageResponse.setTarget(conversation.getTarget());
@@ -125,7 +127,8 @@ public class MessageResponse implements Serializable {
 
     public static WFCMessage.Message convertWFCMessage(MessageResponse messageResponse){
         WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder();
-
+        builder.setMessageId(messageResponse.getMessageId());
+        builder.setServerTimestamp(messageResponse.getTimestamp());
         if(!StringUtils.isEmpty(messageResponse.getFrom())){
             builder.setFromUser(messageResponse.getFrom());
         }
