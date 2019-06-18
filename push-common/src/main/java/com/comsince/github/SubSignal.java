@@ -29,7 +29,8 @@ public enum SubSignal {
     FP,
     MN,
     MS,
-    MP
+    MP,
+    FN
     ;
 
     public static SubSignal toEnum(int ordinal) {

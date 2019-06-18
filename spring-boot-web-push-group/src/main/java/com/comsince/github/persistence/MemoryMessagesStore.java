@@ -316,8 +316,9 @@ public class MemoryMessagesStore implements IMessagesStore {
                 long targetMessageId = entry.getValue();
 
                 MessageBundle bundle = mIMap.get(targetMessageId);
-                LOG.info("found user {} fromuser {} excepteClientId {}: bundleClient {} messageId {} content {}",
-                        user,bundle.getFromUser(),exceptClientId,bundle.getFromClientId(),targetMessageId,bundle.getMessage().getContent().getSearchableContent());
+                if(bundle != null){
+                    LOG.info("found user {} fromuser {} excepteClientId {}: bundleClient {} messageId {}", user,bundle.getFromUser(),exceptClientId,bundle.getFromClientId(),targetMessageId);
+                }
 
                 if (bundle != null) {
 //                    if (exceptClientId == null || !exceptClientId.equals(bundle.getFromClientId()) || !user.equals(bundle.getFromUser())) {
@@ -332,7 +333,6 @@ public class MemoryMessagesStore implements IMessagesStore {
                         if (size >= 1 * 1024 * 1024) { //3M
                             break;
                         }
-                        LOG.info("add bundle message {}",bundle.getMessage().getContent().getSearchableContent());
                         builder.addMessage(bundle.getMessage());
                     }
 //                }

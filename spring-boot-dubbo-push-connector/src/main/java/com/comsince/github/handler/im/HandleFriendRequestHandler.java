@@ -10,6 +10,7 @@ package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.SubSignal;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.ImMessageProcessor;
@@ -28,36 +29,38 @@ public class HandleFriendRequestHandler extends IMHandler<WFCMessage.HandleFrien
         long[] heads = new long[2];
         MessageResponse messageResponse = messageService.handleFriendRequest(fromUser, request.getTargetUid(),request.getStatus());
 
+        builder.setConversation(WFCMessage.Conversation.newBuilder().setTarget(messageResponse.getTarget()).setLine(messageResponse.getLine()).setType(messageResponse.getConversationType()).build());
+        builder.setContent(WFCMessage.MessageContent.newBuilder().setType(messageResponse.getContent().getType()).setSearchableContent(messageResponse.getContent().getSearchableContent()).build());
 
+        long messageId = MessageShardingUtil.generateId();
+        long timestamp = System.currentTimeMillis();
+        builder.setMessageId(messageId);
+        builder.setServerTimestamp(timestamp);
+        saveAndPublish(request.getTargetUid(), null, builder.build());
 
-//        long messageId = MessageShardingUtil.generateId();
-//        long timestamp = System.currentTimeMillis();
-//        builder.setMessageId(messageId);
-//        builder.setServerTimestamp(timestamp);
-//        saveAndPublish(request.getTargetUid(), null, builder.build());
-//
-//        WFCMessage.MessageContent.Builder contentBuilder = WFCMessage.MessageContent.newBuilder().setType(90).setContent("以上是打招呼信息");
-//        builder = WFCMessage.Message.newBuilder();
-//        builder.setFromUser(request.getTargetUid());
-//        builder.setConversation(WFCMessage.Conversation.newBuilder().setTarget(fromUser).setLine(0).setType(ProtoConstants.ConversationType.ConversationType_Private).build());
-//        builder.setContent(contentBuilder);
-//        timestamp = System.currentTimeMillis();
-//        builder.setServerTimestamp(timestamp);
-//
-//        messageId = MessageShardingUtil.generateId();
-//        builder.setMessageId(messageId);
-//        saveAndPublish(request.getTargetUid(), null, builder.build());
-//
-//        contentBuilder.setContent("你们已经成为好友了，现在可以开始聊天了");
-//        builder.setContent(contentBuilder);
-//        messageId = MessageShardingUtil.generateId();
-//        builder.setMessageId(messageId);
-//        timestamp = System.currentTimeMillis();
-//        builder.setServerTimestamp(timestamp);
-//        saveAndPublish(request.getTargetUid(), null, builder.build());
-//
-//        publisher.publishNotification(IMTopic.NotifyFriendTopic, request.getTargetUid(), heads[0]);
-//        publisher.publishNotification(IMTopic.NotifyFriendTopic, fromUser, heads[1]);
+        WFCMessage.MessageContent.Builder contentBuilder = WFCMessage.MessageContent.newBuilder().setType(90).setContent("以上是打招呼信息");
+        builder = WFCMessage.Message.newBuilder();
+        builder.setFromUser(request.getTargetUid());
+        builder.setConversation(WFCMessage.Conversation.newBuilder().setTarget(fromUser).setLine(0).setType(ProtoConstants.ConversationType.ConversationType_Private).build());
+        builder.setContent(contentBuilder);
+        timestamp = System.currentTimeMillis();
+        builder.setServerTimestamp(timestamp);
+
+        messageId = MessageShardingUtil.generateId();
+        builder.setMessageId(messageId);
+        saveAndPublish(request.getTargetUid(), null, builder.build());
+
+        contentBuilder.setContent("你们已经成为好友了，现在可以开始聊天了");
+        builder.setContent(contentBuilder);
+        messageId = MessageShardingUtil.generateId();
+        builder.setMessageId(messageId);
+        timestamp = System.currentTimeMillis();
+        builder.setServerTimestamp(timestamp);
+        saveAndPublish(request.getTargetUid(), null, builder.build());
+
+        publisher.publishNotification(SubSignal.FN, request.getTargetUid(), System.currentTimeMillis());
+        publisher.publishNotification(SubSignal.FN, fromUser, System.currentTimeMillis());
+
         return ERROR_CODE_SUCCESS;
     }
 }

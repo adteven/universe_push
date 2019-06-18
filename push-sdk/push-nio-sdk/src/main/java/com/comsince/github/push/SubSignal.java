@@ -27,7 +27,8 @@ public enum SubSignal {
     FP,
     MN,
     MS,
-    MP
+    MP,
+    FN
     ;
 
 
