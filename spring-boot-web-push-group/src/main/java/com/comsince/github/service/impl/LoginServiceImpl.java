@@ -1,7 +1,6 @@
 package com.comsince.github.service.impl;
 
 import com.alibaba.fastjson.JSONException;
-import com.comsince.github.common.ErrorCode;
 import com.comsince.github.configuration.IMConfig;
 import com.comsince.github.configuration.SMSConfig;
 import com.comsince.github.controller.im.model.Record;
