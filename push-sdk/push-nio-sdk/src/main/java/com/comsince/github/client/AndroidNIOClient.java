@@ -27,7 +27,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
     private int port;
     private Cancellable cancellable;
 
-    volatile ConnectStatus connectStatus = ConnectStatus.DISCONNECT;
+    public volatile ConnectStatus connectStatus = ConnectStatus.DISCONNECT;
 
     Header receiveHeader = null;
     ByteBufferList receiveBuffer = new ByteBufferList();

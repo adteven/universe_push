@@ -164,6 +164,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             mIMap.put(message.getMessageId(), messageBundle, 7, TimeUnit.DAYS);
         }
 
+        LOG.info("store message user {} size {}",fromUser,mIMap.size());
         return message;
     }
 
@@ -251,7 +252,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         WFCMessage.PullMessageResult.Builder builder = WFCMessage.PullMessageResult.newBuilder();
 
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
-
+        LOG.info("fetch message user {} message size {}",user,mIMap.size());
         Session session = memorySessionStore.getSession(exceptClientId);
         session.refreshLastActiveTime();
         if (pullType != ProtoConstants.PullType.Pull_ChatRoom) {
@@ -315,9 +316,11 @@ public class MemoryMessagesStore implements IMessagesStore {
                 long targetMessageId = entry.getValue();
 
                 MessageBundle bundle = mIMap.get(targetMessageId);
+                LOG.info("found user {} fromuser {} excepteClientId {}: bundleClient {} messageId {} content {}",
+                        user,bundle.getFromUser(),exceptClientId,bundle.getFromClientId(),targetMessageId,bundle.getMessage().getContent().getSearchableContent());
 
                 if (bundle != null) {
-                    if (exceptClientId == null || !exceptClientId.equals(bundle.getFromClientId()) || !user.equals(bundle.getFromUser())) {
+//                    if (exceptClientId == null || !exceptClientId.equals(bundle.getFromClientId()) || !user.equals(bundle.getFromUser())) {
 
                         if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
                             if (!bundle.getMessage().getConversation().getTarget().equals(chatroomId)) {
@@ -329,9 +332,10 @@ public class MemoryMessagesStore implements IMessagesStore {
                         if (size >= 1 * 1024 * 1024) { //3M
                             break;
                         }
+                        LOG.info("add bundle message {}",bundle.getMessage().getContent().getSearchableContent());
                         builder.addMessage(bundle.getMessage());
                     }
-                }
+//                }
             }
 
             Map.Entry<Long, Long> lastEntry = maps.lastEntry();
