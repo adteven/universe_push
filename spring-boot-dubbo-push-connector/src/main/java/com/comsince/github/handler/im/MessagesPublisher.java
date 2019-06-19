@@ -57,19 +57,20 @@ public class MessagesPublisher {
         Collection<SessionResponse> sessions = sessionService.sessionForUser(receiver);
         for (SessionResponse targetSession : sessions) {
             ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.clientID);
-            boolean targetIsActive = !channelContext.isClosed;
-            if (targetIsActive) {
-                PublishMessagePacket publishMessage = new PublishMessagePacket();
-                publishMessage.setSubSignal(subSignal);
-                ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-                byteBuffer.putLong(body);
-                publishMessage.setBody(byteBuffer.array());
-                boolean result = Tio.send(channelContext,publishMessage);
-                if (!result) {
-                    LOG.warn("Publish friend request failure");
+            if(channelContext != null){
+                boolean targetIsActive = !channelContext.isClosed;
+                if (targetIsActive) {
+                    PublishMessagePacket publishMessage = new PublishMessagePacket();
+                    publishMessage.setSubSignal(subSignal);
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+                    byteBuffer.putLong(body);
+                    publishMessage.setBody(byteBuffer.array());
+                    boolean result = Tio.send(channelContext,publishMessage);
+                    if (!result) {
+                        LOG.warn("Publish friend request failure");
+                    }
                 }
             }
-
         }
     }
 

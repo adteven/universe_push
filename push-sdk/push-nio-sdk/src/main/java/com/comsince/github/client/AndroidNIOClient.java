@@ -13,6 +13,7 @@ import com.comsince.github.push.SubSignal;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -26,7 +27,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
     private String host;
     private int port;
     private Cancellable cancellable;
-
+    private Object postTimoutScheduled;
     public volatile ConnectStatus connectStatus = ConnectStatus.DISCONNECT;
 
     Header receiveHeader = null;
@@ -52,9 +53,28 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
                 if(connectStatus == ConnectStatus.DISCONNECT){
                     connectStatus = ConnectStatus.CONNECTING;
                     cancellable = asyncServer.connectSocket(host,port,AndroidNIOClient.this);
+                    Runnable timeoutRunable = new Runnable() {
+                        @Override
+                        public void run() {
+                            close();
+                            connectStatus = ConnectStatus.DISCONNECT;
+                            if(pushMessageCallback != null){
+                                pushMessageCallback.receiveException(new TimeoutException("connect timeout 60s"));
+                            }
+                        }
+                    };
+                    postTimoutScheduled = asyncServer.postDelayed(timeoutRunable,60 * 1000);
                 }
             }
         });
+    }
+
+    public Object post(Runnable runnable,long delay){
+       return asyncServer.postDelayed(runnable,delay);
+    }
+
+    public void removeScheduled(Object scheduled){
+        asyncServer.removeAllCallbacks(scheduled);
     }
 
     public void close(){
@@ -209,6 +229,9 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
 
     @Override
     public void onConnectCompleted(Exception ex, AsyncSocket socket) {
+        if(postTimoutScheduled != null){
+            asyncServer.removeAllCallbacks(postTimoutScheduled);
+        }
         //ex为空，表示链接正常
         if(ex != null){
             if(pushMessageCallback != null){
@@ -218,7 +241,6 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
             log.e("connect failed",ex);
             return;
         }
-
 
         connectStatus = ConnectStatus.CONNECTED;
         this.asyncSocket = socket;
@@ -233,6 +255,9 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
 
     @Override
     public void onCompleted(Exception ex) {
+        if(postTimoutScheduled != null){
+            asyncServer.removeAllCallbacks(postTimoutScheduled);
+        }
         if(ex != null) {
             log.e("onCompleted ",ex);
         }
