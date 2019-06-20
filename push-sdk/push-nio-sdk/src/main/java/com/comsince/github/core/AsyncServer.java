@@ -330,6 +330,7 @@ public class AsyncServer {
                 catch (Throwable e) {
                     if (ckey != null)
                         ckey.cancel();
+                    log.e("comsince connect error connectResolvedInetSocketAddress",e);
                     StreamUtility.closeQuietly(socket);
                     cancel.setComplete(new RuntimeException(e));
                 }
@@ -801,6 +802,7 @@ public class AsyncServer {
                     catch (IOException ex) {
                         key.cancel();
                         StreamUtility.closeQuietly(sc);
+                        log.e("comsince connect error ",ex);
                         if (cancel.setComplete(ex))
                             cancel.callback.onConnectCompleted(ex, null);
                         continue;

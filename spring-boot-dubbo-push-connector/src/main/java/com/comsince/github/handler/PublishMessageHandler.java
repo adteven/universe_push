@@ -86,7 +86,8 @@ public class PublishMessageHandler {
         byte[] messageByte = new byte[payload.readableBytes()];
         payload.readBytes(messageByte);
         publishAckMessagePacket.setBody(messageByte);
-        Tio.sendToBsId(PushServer.serverGroupContext,clientId,publishAckMessagePacket);
+        boolean flag = Tio.sendToBsId(PushServer.serverGroupContext,clientId,publishAckMessagePacket);
+        LOG.info("send client {} message size {} {}",clientId,messageByte.length,flag ? "sucess":"fail");
     }
 
 

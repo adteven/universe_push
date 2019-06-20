@@ -953,6 +953,7 @@ public class Tio {
 	 */
 	private static Boolean sendToBsId(GroupContext groupContext, String bsId, Packet packet, boolean isBlock) {
 		ChannelContext channelContext = Tio.getChannelContextByBsId(groupContext, bsId);
+		log.info("sendToBsId channelContext {}",channelContext != null);
 		if (channelContext == null) {
 			if (groupContext.isCluster() && !packet.isFromCluster()) {
 				TioClusterConfig tioClusterConfig = groupContext.getTioClusterConfig();

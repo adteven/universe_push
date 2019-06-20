@@ -90,6 +90,7 @@ public class BsIds {
 				return;
 			}
 			String bsId = channelContext.getBsId();
+			log.info("unbind bsId {}",bsId);
 			if (StrUtil.isBlank(bsId)) {
 				return;
 			}

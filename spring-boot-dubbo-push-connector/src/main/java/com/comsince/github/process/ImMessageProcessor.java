@@ -129,7 +129,8 @@ public class ImMessageProcessor implements MessageProcessor{
     private void processConnectMessage(PushPacket pushPacket,ChannelContext channelContext){
         ConnectMessage connectMessage = Json.toBean(new String(pushPacket.getBody()),ConnectMessage.class);
         String clientId = connectMessage.getClientIdentifier();
-        LOG.info("Processing CONNECT message. CId={}, username={}", clientId, connectMessage.getUserName());
+        String userName = connectMessage.getUserName();
+        LOG.info("Processing CONNECT message. CId={}, username={}", clientId, userName);
         ConnectAckMessagePacket connectAckMessagePacket = new ConnectAckMessagePacket();
         if(!pushPacket.getHeader().isValid()){
              connectAckMessagePacket.setSubSignal(CONNECTION_REFUSED_UNACCEPTABLE_PROTOCOL_VERSION);
@@ -141,7 +142,7 @@ public class ImMessageProcessor implements MessageProcessor{
 
         if(clientId == null || clientId.length() == 0){
             connectAckMessagePacket.setSubSignal(CONNECTION_REFUSED_IDENTIFIER_REJECTED);
-            LOG.error("The client ID cannot be empty. Username={}", connectMessage.getUserName());
+            LOG.error("The client ID cannot be empty. Username={}", userName);
             Tio.send(channelContext,connectAckMessagePacket);
             Tio.close(channelContext,"The client ID cannot be empty");
         }
@@ -152,21 +153,19 @@ public class ImMessageProcessor implements MessageProcessor{
             return;
         }
 
-        if(!StringUtil.isNullOrEmpty(connectMessage.getClientIdentifier())){
-            ChannelContext existChannelContext = Tio.getChannelContextByBsId(channelContext.groupContext,connectMessage.getClientIdentifier());
+        if(!StringUtil.isNullOrEmpty(clientId)){
+            ChannelContext existChannelContext = Tio.getChannelContextByBsId(channelContext.groupContext,clientId);
+            LOG.info("has same channelContext {}",existChannelContext!=null);
             if(existChannelContext != null){
                 Tio.close(existChannelContext,"close exist im channel context");
             }
-            Tio.bindBsId(channelContext,connectMessage.getClientIdentifier());
-            channelContext.setAttribute(Constants.ATTR_USERNAME,connectMessage.getUserName());
-            channelContext.setAttribute(Constants.ATTR_CLIENTID,connectMessage.getClientIdentifier());
         } else {
             Tio.close(channelContext,"非法的链接，无效的clientID");
         }
 
         sendAck(channelContext,connectMessage,clientId);
 
-        if (!createOrLoadClientSession(connectMessage.getUserName(),connectMessage, clientId)) {
+        if (!createOrLoadClientSession(userName,connectMessage, clientId)) {
             ConnectAckMessagePacket badId = connAck(CONNECTION_REFUSED_SESSION_NOT_EXIST);
             Tio.send(channelContext,badId);
             Tio.close(channelContext,"session not exist");
@@ -178,7 +177,10 @@ public class ImMessageProcessor implements MessageProcessor{
             //远程调用可用有问题，不能刷新时间
             session.refreshLastActiveTime();
         }
-
+        LOG.info("start bind channelContext bsId {} warning ",clientId);
+        Tio.bindBsId(channelContext,clientId);
+        channelContext.setAttribute(Constants.ATTR_USERNAME,userName);
+        channelContext.setAttribute(Constants.ATTR_CLIENTID,clientId);
         LOG.info("The CONNECT message has been processed. CId={}, username={}", clientId, connectMessage.getUserName());
     }
 

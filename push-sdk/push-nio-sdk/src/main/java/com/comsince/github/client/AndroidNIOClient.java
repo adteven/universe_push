@@ -5,6 +5,7 @@ import com.comsince.github.core.callback.CompletedCallback;
 import com.comsince.github.core.callback.ConnectCallback;
 import com.comsince.github.core.callback.DataCallback;
 import com.comsince.github.core.future.Cancellable;
+import com.comsince.github.core.future.SimpleFuture;
 import com.comsince.github.logger.Log;
 import com.comsince.github.logger.LoggerFactory;
 import com.comsince.github.push.Header;
@@ -86,7 +87,11 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         removeTimeoutScheduled();
         connectStatus = ConnectStatus.DISCONNECT;
         if(cancellable != null){
-            cancellable.cancel();
+            if(cancellable instanceof SimpleFuture){
+                ((SimpleFuture) cancellable).cancelSilently();
+            } else {
+                cancellable.cancel();
+            }
         }
         if(asyncSocket!= null){
             asyncSocket.setDataCallback(null);
@@ -153,8 +158,10 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         sendMessage(signal, subSignal, messageId, body, new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
-                if(ex != null){
+                if(ex == null){
                     log.i("signal "+signal+" subsignal "+subSignal+" messageId "+messageId+" send success");
+                } else {
+                    log.e("signal "+signal+" subsignal "+subSignal+" messageId "+messageId,ex);
                 }
             }
         });
@@ -177,7 +184,6 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         Util.writeAll(asyncSocket, bufferList, new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
-                log.e("send heartbeat completed",ex);
                 completedCallback.onCompleted(ex);
             }
         });
@@ -266,11 +272,8 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
     @Override
     public void onCompleted(Exception ex) {
         removeTimeoutScheduled();
-        if(ex != null) {
-            log.e("onCompleted ",ex);
-        }
+        log.e("close callback onCompleted ",ex);
         connectStatus = ConnectStatus.DISCONNECT;
-
         if(pushMessageCallback != null){
             pushMessageCallback.receiveException(ex);
         }

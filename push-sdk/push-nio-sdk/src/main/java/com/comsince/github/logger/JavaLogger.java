@@ -14,8 +14,10 @@ public class JavaLogger implements Log {
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public JavaLogger(Class loggerClass){
-        this.loggerClass = loggerClass;
+
+    @Override
+    public void setTag(Class classTag) {
+        this.loggerClass = classTag;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class JavaLogger implements Log {
     }
 
     @Override
-    public void e(String message, Exception e) {
+    public void e(String message, Throwable e) {
         System.err.println("["+Thread.currentThread().getName()+"]"+" ["+dateFormat.format(new Date())+"] "+"["+loggerClass.getSimpleName()+"] "+"message: "+message+" "+(e != null ? getStackMsg(e):""));
     }
 
