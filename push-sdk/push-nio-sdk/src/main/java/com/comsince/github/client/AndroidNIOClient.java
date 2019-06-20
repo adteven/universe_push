@@ -57,7 +57,6 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
                         @Override
                         public void run() {
                             close();
-                            connectStatus = ConnectStatus.DISCONNECT;
                             if(pushMessageCallback != null){
                                 pushMessageCallback.receiveException(new TimeoutException("connect timeout 60s"));
                             }
@@ -74,17 +73,30 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
     }
 
     public void removeScheduled(Object scheduled){
-        asyncServer.removeAllCallbacks(scheduled);
+        if(scheduled != null){
+            asyncServer.removeAllCallbacks(scheduled);
+        }
+    }
+
+    private void removeTimeoutScheduled(){
+        removeScheduled(postTimoutScheduled);
     }
 
     public void close(){
+        removeTimeoutScheduled();
+        connectStatus = ConnectStatus.DISCONNECT;
         if(cancellable != null){
             cancellable.cancel();
         }
         if(asyncSocket!= null){
+            asyncSocket.setDataCallback(null);
+            asyncSocket.setClosedCallback(null);
             asyncSocket.close();
+            asyncSocket = null;
         }
     }
+
+
 
     public void sub(){
         sub("");
@@ -229,9 +241,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
 
     @Override
     public void onConnectCompleted(Exception ex, AsyncSocket socket) {
-        if(postTimoutScheduled != null){
-            asyncServer.removeAllCallbacks(postTimoutScheduled);
-        }
+        removeTimeoutScheduled();
         //ex为空，表示链接正常
         if(ex != null){
             if(pushMessageCallback != null){
@@ -255,9 +265,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
 
     @Override
     public void onCompleted(Exception ex) {
-        if(postTimoutScheduled != null){
-            asyncServer.removeAllCallbacks(postTimoutScheduled);
-        }
+        removeTimeoutScheduled();
         if(ex != null) {
             log.e("onCompleted ",ex);
         }
