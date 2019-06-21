@@ -8,6 +8,9 @@
 
 package com.comsince.github.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +22,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassUtil {
-
+    static Logger logger = LoggerFactory.getLogger(ClassUtil.class);
     /**
      * 获取同一路径下所有子类或接口实现类
      *
@@ -50,6 +53,7 @@ public class ClassUtil {
     public static List<Class<?>> getClasses(Class<?> cls) throws IOException,
         ClassNotFoundException {
         String pk = cls.getPackage().getName();
+        logger.info("cls {} pk {}",cls,pk);
 //        String path = pk.replace('.', '/');
 //        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 //        URL url = classloader.getResource(path);
@@ -60,14 +64,14 @@ public class ClassUtil {
 //
 //        return getClasses(new File(url.getFile()), pk);
         List<String> classNames = getClassName(pk, true);
+        logger.info("cassNames {}",classNames);
         List<Class<?>> classes = new ArrayList<>();
-        for (String className :
-             classNames) {
+        for (String className : classNames) {
             if (className.endsWith(".class")) {
                 className = className.substring(0, className.length() - 6);
                 className = className.substring(className.lastIndexOf("/")+1, className.length());
             }
-
+            logger.info("class name {}",className);
             classes.add(Class.forName(className));
         }
         return classes;
@@ -113,6 +117,7 @@ public class ClassUtil {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String packagePath = packageName.replace(".", "/");
         URL url = loader.getResource(packagePath);
+        logger.info("loader url {}",url);
         if (url != null) {
             String type = url.getProtocol();
             if (type.equals("file")) {
@@ -171,18 +176,25 @@ public class ClassUtil {
     private static List<String> getClassNameByJar(String jarPath, boolean childPackage) {
         List<String> myClassName = new ArrayList<String>();
         String[] jarInfo = jarPath.split("!");
+
         String jarFilePath = jarInfo[0].substring(jarInfo[0].indexOf("/"));
-        String packagePath = jarInfo[1].substring(1);
+        String packagePath = jarInfo[jarInfo.length -1].substring(1);
+        int jarInfoLength = jarInfo.length;
+        int middleInfoLength = 0;
+        if(jarInfoLength == 3){
+            middleInfoLength  = jarInfo[1].length();
+        }
         try {
             JarFile jarFile = new JarFile(jarFilePath);
             Enumeration<JarEntry> entrys = jarFile.entries();
             while (entrys.hasMoreElements()) {
                 JarEntry jarEntry = entrys.nextElement();
                 String entryName = jarEntry.getName();
-
                 if (entryName.endsWith(".class")) {
                     if (childPackage) {
-                        if (entryName.startsWith(packagePath)) {
+                        if (entryName.contains(packagePath)) {
+                            entryName = entryName.substring(middleInfoLength);
+                            logger.info("entry name {}",entryName);
                             entryName = entryName.replace("/", ".").substring(0, entryName.lastIndexOf("."));
                             myClassName.add(entryName);
                         }
