@@ -23,7 +23,7 @@ public class GroupController {
 
     Logger logger = LoggerFactory.getLogger(GroupController.class);
 
-    @Autowired
+    @Autowired(required = false)
     private RedissonClient redissonClient;
 
     /**

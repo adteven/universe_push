@@ -51,8 +51,10 @@ public class DBUtil {
             if (comboPooledDataSource == null) {
                 String migrateLocation;
                 if (IsEmbedDB) {
-                    migrateLocation = "filesystem:"+DBUtil.class.getResource("/").getPath()+"migrate/h2";
-                    //migrateLocation = "filesystem:./migrate/h2";
+//                    String configPath = DBUtil.class.getResource("/").getPath()+"migrate/h2";
+//                    migrateLocation = "filesystem:"+configPath;
+//                    LOG.info("migrateLocation {}",migrateLocation);
+                    migrateLocation = "classpath:migrate/h2";
                     comboPooledDataSource = new ComboPooledDataSource();
 
                     comboPooledDataSource.setJdbcUrl( "jdbc:h2:./h2db/wfchat;AUTO_SERVER=TRUE;MODE=MySQL" );
@@ -74,7 +76,7 @@ public class DBUtil {
                         System.exit(-1);
                     }
                 } else {
-                    migrateLocation = "filesystem:"+DBUtil.class.getResource("/").getPath()+"migrate/mysql";
+                    migrateLocation = "classpath:migrate/mysql";
                     comboPooledDataSource = new ComboPooledDataSource("mysql");
                     try {
                         String url01 = comboPooledDataSource.getJdbcUrl().substring(0,comboPooledDataSource.getJdbcUrl().indexOf("?"));

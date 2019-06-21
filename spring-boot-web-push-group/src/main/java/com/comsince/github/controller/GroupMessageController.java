@@ -24,7 +24,7 @@ public class GroupMessageController {
 
     Logger logger = LoggerFactory.getLogger(GroupMessageController.class);
 
-    @Autowired
+    @Autowired(required = false)
     private RedissonClient redissonClient;
 
 

@@ -3,6 +3,7 @@ package com.comsince.github.configuration;
 import com.comsince.github.MessageService;
 import com.comsince.github.SessionService;
 import com.comsince.github.sub.SubService;
+import io.netty.util.internal.StringUtil;
 import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -41,10 +42,14 @@ public class PushCommonConfiguration {
 
     @Bean(destroyMethod="shutdown")
     RedissonClient redissonClient() throws IOException {
-        Config config = new Config();
-        config.useSingleServer().setAddress(redisProperties.getAddress()).setPassword(redisProperties.getPassword());
-        RedissonClient redissonClient = Redisson.create(config);
-        logger.info("create redisson client successful");
+        RedissonClient redissonClient = null;
+        if(!StringUtil.isNullOrEmpty(redisProperties.getAddress())){
+            Config config = new Config();
+            config.useSingleServer().setAddress(redisProperties.getAddress()).setPassword(redisProperties.getPassword());
+            redissonClient = Redisson.create(config);
+            logger.info("create redisson client successful");
+        }
+
         return redissonClient;
     }
 

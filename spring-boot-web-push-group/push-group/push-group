@@ -1,6 +1,6 @@
 #!/bin/sh
 # 这里可以修改JAVA_HOME的路径
-JAVA_HOME=/opt/jdk1.8.0_131
+JAVA_HOME=/data/jdk
 
 APP_NAME=$(basename "$0")
 APP_DIR=/data/boot/${APP_NAME}
