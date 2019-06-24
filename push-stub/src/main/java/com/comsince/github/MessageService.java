@@ -1,5 +1,6 @@
 package com.comsince.github;
 
+import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.model.*;
@@ -27,6 +28,12 @@ public interface MessageService {
     boolean isForbiddenInGroup(String member, String groupId);
     boolean checkUserClientInChatroom(String user, String clientId, String chatroomId);
     boolean checkUserInChannel(String user, String channelId);
+
+    //group interface
+    GroupInfo getGroupInfo(String groupId);
+    GroupInfo createGroup(String operator, GroupInfo groupInfo, List<GroupMember> memberList);
+    List<GroupMember> getGroupMembers(String groupId, long maxDt);
+    List<GroupInfo> getGroupInfos(List<PullUserRequest.UserRequest> requests);
 
     boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse);
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);

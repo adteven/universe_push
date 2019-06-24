@@ -120,6 +120,33 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public GroupInfo getGroupInfo(String groupId) {
+        WFCMessage.GroupInfo groupInfo = messagesStore.getGroupInfo(groupId);
+        GroupInfo groupInfoResponse = GroupInfo.convert2GroupInfo(groupInfo);
+        return groupInfoResponse;
+    }
+
+    @Override
+    public GroupInfo createGroup(String operator, GroupInfo groupInfo, List<GroupMember> memberList) {
+
+        WFCMessage.GroupInfo wfcGroupInfo = messagesStore.createGroup(operator,GroupInfo.convertToWfcGroupInfo(groupInfo),GroupMember.convertToWfcMembers(memberList));
+        return GroupInfo.convert2GroupInfo(wfcGroupInfo);
+    }
+
+    @Override
+    public List<GroupMember> getGroupMembers(String groupId, long maxDt) {
+        List<WFCMessage.GroupMember> wfcGroupMembers = new ArrayList<>();
+        messagesStore.getGroupMembers(groupId,maxDt,wfcGroupMembers);
+        return GroupMember.convertToGroupMember(wfcGroupMembers);
+    }
+
+    @Override
+    public List<GroupInfo> getGroupInfos(List<PullUserRequest.UserRequest> requests) {
+        List<WFCMessage.GroupInfo> wfcGroupInfos = messagesStore.getGroupInfos(PullUserRequest.convert2WfcUserRequests(requests));
+        return GroupInfo.convert2GroupInfos(wfcGroupInfos);
+    }
+
+    @Override
     public boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse) {
         return messagesStore.storeMessage(fromUser,fromClientId,MessageResponse.convertWFCMessage(messageResponse)) != null ? true: false;
     }
