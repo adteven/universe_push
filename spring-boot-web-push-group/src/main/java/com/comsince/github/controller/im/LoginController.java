@@ -44,6 +44,7 @@ public class LoginController {
             File file = new File("/data/boot/download/" , fileName);
             if (file.exists()) {
                 response.setContentType("application/force-download");// 设置强制下载不打开
+                response.setContentLengthLong(file.length());
                 response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);// 设置文件名
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
