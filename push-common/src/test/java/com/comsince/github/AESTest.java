@@ -4,6 +4,7 @@ import com.comsince.github.security.AES;
 import com.comsince.github.security.DES;
 import com.comsince.github.security.TokenAuthenticator;
 import org.junit.Test;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.util.Base64;
 
@@ -54,7 +55,7 @@ public class AESTest {
         System.out.println(strToken);
 
         String encryptpwd = "N27r8+5kI6RPO7wom0U8+tuvzKnsU6DqDGaq+VYpyoK1MChIOf74U8v/IiLPdOPX";
-        byte[] result = AES.AESDecrypt(Base64.getDecoder().decode(encryptpwd),"718093a3-05c8-43d4-8955-e97950d53490",true);
+        byte[] result = AES.AESDecrypt(Base64.getDecoder().decode(encryptpwd),"718093a3-05c8-43d4-8955-e97950d53490",false);
         System.out.println(Base64.getEncoder().encodeToString(result));
 
         try {
@@ -63,6 +64,15 @@ public class AESTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testAES0(){
+        String token = "+utyyDqy8LlY93uQSTrG+6DNogVezwFaFFwel2SWd2Du/RWoDw3SLetH6KRq2Ck6gtnVzlcHulqR9ZGm7tBSApeQbLwItpFTYTfsAro8EXsXLURGJRMDqqA+J1BwSaUAUXD1lEoA++O1MOOqKQvoohnanw1XDvNFe7mtkxgVLnE=";
+        byte[]  result = AES.AESDecrypt(Base64.getDecoder().decode(token),"",false);
+        System.out.println("result "+(result == null));
+        System.out.println("result "+Base64.getEncoder().encodeToString(result));
+        System.out.println(new String(result));
     }
 
 
