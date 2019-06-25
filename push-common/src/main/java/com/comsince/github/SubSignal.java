@@ -30,7 +30,9 @@ public enum SubSignal {
     MN,
     MS,
     MP,
-    FN
+    FN,
+    GC,
+    GPGI
     ;
 
     public static SubSignal toEnum(int ordinal) {

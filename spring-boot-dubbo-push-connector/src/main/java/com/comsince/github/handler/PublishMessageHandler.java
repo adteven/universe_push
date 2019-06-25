@@ -79,7 +79,7 @@ public class PublishMessageHandler {
      * 第一个自己消息错误码，之后跟着消息体
      * */
     private void sendPubAck(String clientId, int messageID, ByteBuf payload, SubSignal subSignal){
-        LOG.info("clientId {} messagId {} send PUB_ACK message size {}",clientId,messageID,payload.readableBytes());
+        LOG.info("clientId {} messagId {} send PUB_ACK message size {} subSignal {}",clientId,messageID,payload.readableBytes(),subSignal);
         PublishAckMessagePacket publishAckMessagePacket = new PublishAckMessagePacket();
         publishAckMessagePacket.setMessageId(messageID);
         publishAckMessagePacket.setSubSignal(subSignal);

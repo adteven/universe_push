@@ -125,4 +125,18 @@ public class GroupInfo implements Serializable {
         }
         return groupInfos;
     }
+
+    @Override
+    public String toString() {
+        return "GroupInfo{" +
+                "target='" + target + '\'' +
+                ", name='" + name + '\'' +
+                ", portrait='" + portrait + '\'' +
+                ", owner='" + owner + '\'' +
+                ", type=" + type +
+                ", memberCount=" + memberCount +
+                ", extra='" + extra + '\'' +
+                ", updateDt=" + updateDt +
+                '}';
+    }
 }
