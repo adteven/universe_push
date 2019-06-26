@@ -125,6 +125,7 @@ public class MessageResponse implements Serializable {
         messageConentResponse.setContent(message.getContent().getContent());
         messageConentResponse.setPushContent(message.getContent().getPushContent());
         messageConentResponse.setSearchableContent(messageContent.getSearchableContent());
+        messageConentResponse.setRemoteMediaUrl(messageContent.getRemoteMediaUrl());
         messageResponse.setContent(messageConentResponse);
         return messageResponse;
     }
@@ -142,21 +143,27 @@ public class MessageResponse implements Serializable {
                 .setTarget(messageResponse.getTarget())
                 .build();
         builder.setConversation(conversation);
-        WFCMessage.MessageContent.Builder build = WFCMessage.MessageContent.newBuilder();
-        build.setType(messageResponse.getContent().getType());
+        WFCMessage.MessageContent.Builder messageContentBuilder = WFCMessage.MessageContent.newBuilder();
+        messageContentBuilder.setType(messageResponse.getContent().getType());
         if(messageResponse.getContent().getBinaryContent() != null){
-            build.setData(ByteString.copyFrom(messageResponse.getContent().getBinaryContent()));
+            messageContentBuilder.setData(ByteString.copyFrom(messageResponse.getContent().getBinaryContent()));
         }
         if(!StringUtils.isEmpty(messageResponse.getContent().getContent())){
-            build.setContent(messageResponse.getContent().getContent());
+            messageContentBuilder.setContent(messageResponse.getContent().getContent());
         }
         if(!StringUtils.isEmpty(messageResponse.getContent().getSearchableContent())){
-            build.setSearchableContent(messageResponse.getContent().getSearchableContent());
+            messageContentBuilder.setSearchableContent(messageResponse.getContent().getSearchableContent());
         }
         if(!StringUtils.isEmpty(messageResponse.getContent().getPushContent())){
-            build.setPushContent(messageResponse.getContent().getPushContent());
+            messageContentBuilder.setPushContent(messageResponse.getContent().getPushContent());
         }
-        builder.setContent(build.build());
+
+        messageContentBuilder.setMediaType(messageResponse.getContent().getMediaType());
+        if(!StringUtils.isEmpty(messageResponse.getContent().getRemoteMediaUrl())){
+            messageContentBuilder.setRemoteMediaUrl(messageResponse.getContent().getRemoteMediaUrl());
+        }
+
+        builder.setContent(messageContentBuilder.build());
         return builder.build();
     }
 
