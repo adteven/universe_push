@@ -101,7 +101,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public boolean isMemberInGroup(String member, String groupId) {
-        return false;
+        return messagesStore.isMemberInGroup(member,groupId);
     }
 
     @Override

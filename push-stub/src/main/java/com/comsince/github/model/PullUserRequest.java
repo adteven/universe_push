@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PullUserRequest implements Serializable {
 
-    public static class UserRequest {
+    public static class UserRequest implements Serializable{
         String uid;
         long updateDate;
 

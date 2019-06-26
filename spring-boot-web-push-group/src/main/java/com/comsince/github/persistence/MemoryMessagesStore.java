@@ -927,8 +927,8 @@ public class MemoryMessagesStore implements IMessagesStore {
 
         Collection<WFCMessage.GroupMember> members = groupMembers.get(groupId);
 
-        for (WFCMessage.GroupMember member : members
-            ) {
+        for (WFCMessage.GroupMember member : members) {
+            LOG.info("target memberId {} groupId {} <-> member {} memberType {}",memberId,groupId,member.getMemberId(),member.getType());
             if (member.getMemberId().equals(memberId) && member.getType() != ProtoConstants.GroupMemberType.GroupMemberType_Removed)
                 return true;
         }

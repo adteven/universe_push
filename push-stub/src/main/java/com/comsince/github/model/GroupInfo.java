@@ -89,6 +89,7 @@ public class GroupInfo implements Serializable {
         groupInfoResponse.setPortrait(groupInfo.getPortrait());
         groupInfoResponse.setType(groupInfo.getType());
         groupInfoResponse.setUpdateDt(groupInfo.getUpdateDt());
+        groupInfoResponse.setOwner(groupInfo.getOwner());
         return groupInfoResponse;
     }
 
@@ -102,6 +103,7 @@ public class GroupInfo implements Serializable {
         builder.setPortrait(groupInfoResponse.getPortrait());
         builder.setType(groupInfoResponse.getType());
         builder.setUpdateDt(groupInfoResponse.getUpdateDt());
+        builder.setOwner(groupInfoResponse.getOwner());
         return builder.build();
     }
 

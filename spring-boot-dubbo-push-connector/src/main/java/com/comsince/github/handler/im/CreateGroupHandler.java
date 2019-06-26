@@ -22,6 +22,7 @@ public class CreateGroupHandler extends GroupHandler<WFCMessage.CreateGroupReque
         GroupInfo groupInfo = messageService.createGroup(fromUser, GroupInfo.convert2GroupInfo(request.getGroup().getGroupInfo()) ,GroupMember.convertToGroupMember(request.getGroup().getMembersList()));
         LOG.info("create groupInfo {}",groupInfo);
         if (groupInfo != null) {
+            LOG.info("hasNotifyContent {}",request.hasNotifyContent());
             if(request.hasNotifyContent() && request.getNotifyContent().getType() > 0) {
                 sendGroupNotification(fromUser, groupInfo.getTarget(), request.getToLineList(), request.getNotifyContent());
             } else {

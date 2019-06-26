@@ -1,6 +1,7 @@
 package com.comsince.github.model;
 
 import cn.wildfirechat.proto.WFCMessage;
+import com.google.protobuf.ByteString;
 import io.netty.util.internal.StringUtil;
 import org.springframework.util.StringUtils;
 
@@ -120,6 +121,7 @@ public class MessageResponse implements Serializable {
         WFCMessage.MessageContent messageContent = message.getContent();
         MessageConentResponse messageConentResponse = new MessageConentResponse();
         messageConentResponse.setType(messageContent.getType());
+        messageConentResponse.setBinaryContent(messageContent.getData().toByteArray());
         messageConentResponse.setContent(message.getContent().getContent());
         messageConentResponse.setPushContent(message.getContent().getPushContent());
         messageConentResponse.setSearchableContent(messageContent.getSearchableContent());
@@ -142,6 +144,9 @@ public class MessageResponse implements Serializable {
         builder.setConversation(conversation);
         WFCMessage.MessageContent.Builder build = WFCMessage.MessageContent.newBuilder();
         build.setType(messageResponse.getContent().getType());
+        if(messageResponse.getContent().getBinaryContent() != null){
+            build.setData(ByteString.copyFrom(messageResponse.getContent().getBinaryContent()));
+        }
         if(!StringUtils.isEmpty(messageResponse.getContent().getContent())){
             build.setContent(messageResponse.getContent().getContent());
         }
