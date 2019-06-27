@@ -1,6 +1,5 @@
 package com.comsince.github;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.model.*;
@@ -21,6 +20,7 @@ public interface MessageService {
     MessageResponse handleFriendRequest(String userId, String targetId,int status);
     List<FriendData> getFriendList(String userId, long version);
     UserResponse getUserInfo(String userId);
+    ErrorCode modifyUserInfo(String userId, ModifyMyInfoRequest request);
 
     int getUserStatus(String userId);
     boolean isBlacked(String fromUser, String userId);
@@ -37,6 +37,7 @@ public interface MessageService {
     ErrorCode addGroupMembers(String operator, String groupId, List<GroupMember> memberList);
     ErrorCode kickoffGroupMembers(String operator, String groupId, List<String> memberList);
     ErrorCode quitGroup(String operator, String groupId);
+    ErrorCode modifyGroupInfo(String operator, String groupId, int modifyType, String value);
 
     boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse);
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);

@@ -88,6 +88,12 @@ public class MessageServiceImpl implements MessageService {
         return userResponse;
     }
 
+    @Override
+    public ErrorCode modifyUserInfo(String userId, ModifyMyInfoRequest request) {
+        WFCMessage.ModifyMyInfoRequest modifyMyInfoRequest = ModifyMyInfoRequest.convert2WfcMyInfoRequest(request);
+        return messagesStore.modifyUserInfo(userId,modifyMyInfoRequest);
+    }
+
 
     @Override
     public int getUserStatus(String userId) {
@@ -161,6 +167,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public ErrorCode quitGroup(String operator, String groupId) {
         return messagesStore.quitGroup(operator,groupId);
+    }
+
+    @Override
+    public ErrorCode modifyGroupInfo(String operator, String groupId, int modifyType, String value) {
+        return messagesStore.modifyGroupInfo(operator,groupId,modifyType,value);
     }
 
     @Override
