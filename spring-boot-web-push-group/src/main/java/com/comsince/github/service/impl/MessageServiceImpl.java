@@ -154,6 +154,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public ErrorCode kickoffGroupMembers(String operator, String groupId, List<String> memberList) {
+        return messagesStore.kickoffGroupMembers(operator,groupId,memberList);
+    }
+
+    @Override
     public boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse) {
         return messagesStore.storeMessage(fromUser,fromClientId,MessageResponse.convertWFCMessage(messageResponse)) != null ? true: false;
     }

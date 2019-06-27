@@ -675,6 +675,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         for (WFCMessage.GroupMember member : allMembers) {
             if (memberList.contains(member.getMemberId())) {
                 boolean removed = groupMembers.remove(groupId, member);
+                LOG.info("remove groupId "+groupId+" member "+member.getMemberId()+" removed "+removed);
                 if (removed) {
                     removeCount++;
                     member = member.toBuilder().setType(ProtoConstants.GroupMemberType.GroupMemberType_Removed).setUpdateDt(updateDt).build();
@@ -890,8 +891,15 @@ public class MemoryMessagesStore implements IMessagesStore {
         }
 
         MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
-
-        members.addAll(groupMembers.get(groupId));
+        for(WFCMessage.GroupMember groupMember : groupMembers.get(groupId)){
+            if(groupMember.getType() != ProtoConstants.GroupMemberType.GroupMemberType_Removed){
+                members.add(groupMember);
+            }
+        }
+//        members.addAll(groupMembers.get(groupId));
+        for(WFCMessage.GroupMember groupMember : members){
+            LOG.info("groupId "+groupId+" member "+groupMember.getMemberId());
+        }
         return ErrorCode.ERROR_CODE_SUCCESS;
     }
 

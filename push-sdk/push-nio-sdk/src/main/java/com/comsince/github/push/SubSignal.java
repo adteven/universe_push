@@ -32,7 +32,8 @@ public enum SubSignal {
     GC,
     GPGI,
     GPGM,
-    GAM
+    GAM,
+    GKM
     ;
 
 
