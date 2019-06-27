@@ -22,17 +22,15 @@ import static com.comsince.github.common.ErrorCode.ERROR_CODE_SUCCESS;
 public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> {
     @Override
     public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.AddFriendRequest request, ImMessageProcessor.IMCallback callback) {
-        LOG.info("targetUid {} reason {}",request.getTargetUid(),request.getReason());
         AddFriendMessage addFriendMessage = new AddFriendMessage();
         addFriendMessage.setTargetUid(request.getTargetUid());
         addFriendMessage.setReason(request.getReason());
-        ErrorCode errorCode = messageService.saveAddFriendRequest(fromUser, addFriendMessage);
-        if (errorCode == ERROR_CODE_SUCCESS) {
-            UserResponse user = messageService.getUserInfo(request.getTargetUid());
-            if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
-                publisher.publishNotification(SubSignal.FRN, request.getTargetUid(),0);
-            }
+        long head = messageService.saveAddFriendRequest(fromUser, addFriendMessage);
+        LOG.info("targetUid {} reason {} head {}",request.getTargetUid(),request.getReason(),head);
+        UserResponse user = messageService.getUserInfo(request.getTargetUid());
+        if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
+            publisher.publishNotification(SubSignal.FRN, request.getTargetUid(),head);
         }
-        return errorCode;
+        return ERROR_CODE_SUCCESS;
     }
 }

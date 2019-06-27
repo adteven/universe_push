@@ -14,7 +14,7 @@ import java.util.Set;
  * @Time 19-6-11 上午10:24
  **/
 public interface MessageService {
-    ErrorCode saveAddFriendRequest(String userId, AddFriendMessage request);
+    long saveAddFriendRequest(String userId, AddFriendMessage request);
     long SyncFriendRequestUnread(String userId, long unreadDt);
     List<FriendRequestResponse> getFriendRequestList(String userId, long version);
     MessageResponse handleFriendRequest(String userId, String targetId,int status);

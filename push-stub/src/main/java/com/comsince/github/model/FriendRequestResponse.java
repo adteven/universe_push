@@ -60,6 +60,18 @@ public class FriendRequestResponse implements Serializable {
         this.timestamp = timestamp;
     }
 
+    @Override
+    public String toString() {
+        return "FriendRequestResponse{" +
+                "direction=" + direction +
+                ", target='" + target + '\'' +
+                ", reason='" + reason + '\'' +
+                ", status=" + status +
+                ", readStatus=" + readStatus +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
     public static FriendRequestResponse convertFriendRequest(WFCMessage.FriendRequest friendRequest){
         FriendRequestResponse friendRequestResponse = new FriendRequestResponse();
         friendRequestResponse.setReason(friendRequest.getReason());
@@ -77,4 +89,6 @@ public class FriendRequestResponse implements Serializable {
                 .build();
         return friendRequest;
     }
+
+
 }

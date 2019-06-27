@@ -26,14 +26,15 @@ public class MessageServiceImpl implements MessageService {
     IMessagesStore messagesStore;
 
     @Override
-    public ErrorCode saveAddFriendRequest(String userId, AddFriendMessage request) {
+    public long saveAddFriendRequest(String userId, AddFriendMessage request) {
         logger.info("request targetUid {} reason {}",request.getTargetUid(),request.getReason());
         long[] head = new long[1];
         WFCMessage.AddFriendRequest addFriendRequest = WFCMessage.AddFriendRequest.newBuilder()
                 .setTargetUid(request.getTargetUid())
                 .setReason(request.getReason())
                 .build();
-        return messagesStore.saveAddFriendRequest(userId,addFriendRequest,head);
+        messagesStore.saveAddFriendRequest(userId,addFriendRequest,head);
+        return head[0];
     }
 
     @Override

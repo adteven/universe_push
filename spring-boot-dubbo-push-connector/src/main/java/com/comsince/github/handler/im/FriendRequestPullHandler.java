@@ -14,6 +14,7 @@ public class FriendRequestPullHandler extends IMHandler<WFCMessage.Version>{
     @Override
     public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.Version request, ImMessageProcessor.IMCallback callback) {
         List<FriendRequestResponse> friendDatas = messageService.getFriendRequestList(fromUser, request.getVersion());
+        LOG.info("pull friend request head {} friendDatas {}",request.getVersion(),friendDatas);
         List<WFCMessage.FriendRequest> friendRequests = new ArrayList<>();
         for(FriendRequestResponse friendRequestResponse : friendDatas){
             friendRequests.add(FriendRequestResponse.convertFriendRequestResponse(friendRequestResponse));
