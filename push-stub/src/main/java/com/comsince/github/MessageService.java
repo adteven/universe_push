@@ -34,6 +34,7 @@ public interface MessageService {
     GroupInfo createGroup(String operator, GroupInfo groupInfo, List<GroupMember> memberList);
     List<GroupMember> getGroupMembers(String groupId, long maxDt);
     List<GroupInfo> getGroupInfos(List<PullUserRequest.UserRequest> requests);
+    ErrorCode addGroupMembers(String operator, String groupId, List<GroupMember> memberList);
 
     boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse);
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);

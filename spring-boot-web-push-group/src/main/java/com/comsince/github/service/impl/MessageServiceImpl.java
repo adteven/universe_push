@@ -147,6 +147,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public ErrorCode addGroupMembers(String operator, String groupId, List<GroupMember> memberList) {
+        List<WFCMessage.GroupMember> wfcGroupMembers = GroupMember.convertToWfcMembers(memberList);
+        ErrorCode errorCode = messagesStore.addGroupMembers(operator,groupId,wfcGroupMembers);
+        return errorCode;
+    }
+
+    @Override
     public boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse) {
         return messagesStore.storeMessage(fromUser,fromClientId,MessageResponse.convertWFCMessage(messageResponse)) != null ? true: false;
     }
