@@ -36,6 +36,7 @@ public interface MessageService {
     List<GroupInfo> getGroupInfos(List<PullUserRequest.UserRequest> requests);
     ErrorCode addGroupMembers(String operator, String groupId, List<GroupMember> memberList);
     ErrorCode kickoffGroupMembers(String operator, String groupId, List<String> memberList);
+    ErrorCode quitGroup(String operator, String groupId);
 
     boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse);
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);

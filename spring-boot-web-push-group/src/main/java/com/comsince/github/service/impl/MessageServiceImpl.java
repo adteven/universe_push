@@ -159,6 +159,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public ErrorCode quitGroup(String operator, String groupId) {
+        return messagesStore.quitGroup(operator,groupId);
+    }
+
+    @Override
     public boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse) {
         return messagesStore.storeMessage(fromUser,fromClientId,MessageResponse.convertWFCMessage(messageResponse)) != null ? true: false;
     }
