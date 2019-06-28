@@ -330,10 +330,7 @@ public class MemoryMessagesStore implements IMessagesStore {
                         }
 
                         size += bundle.getMessage().getSerializedSize();
-                        //暂时限制条数
-                        if(builder.getMessageCount() > 100){
-                            break;
-                        }
+
                         if (size >= 1 * 1024 * 1024) { //3M
                             break;
                         }
