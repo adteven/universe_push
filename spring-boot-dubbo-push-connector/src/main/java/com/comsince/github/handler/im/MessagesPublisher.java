@@ -165,10 +165,10 @@ public class MessagesPublisher {
                 targetClients = messageService.getChatroomMemberClient(user);
             }
             for (SessionResponse targetSession : sessions) {
-                //超过7天不活跃的用户忽略
-                if(System.currentTimeMillis() - targetSession.getUpdateDt() > 7 * 24 * 60 * 60 * 1000) {
-                    continue;
-                }
+                //超过7天不活跃的用户忽略 暂时不校验session 过期
+//                if(System.currentTimeMillis() - targetSession.getUpdateDt() > 7 * 24 * 60 * 60 * 1000) {
+//                    continue;
+//                }
 
                 if (exceptClientId != null && exceptClientId.equals(targetSession.clientID)) {
                     continue;
@@ -254,6 +254,8 @@ public class MessagesPublisher {
                 publishMsg = new PublishMessagePacket();
                 publishMsg.setBody(byteData);
                 publishMsg.setSubSignal(SubSignal.MN);
+
+                LOG.info("send to clientId {}",targetSession.getClientID());
 
                 Tio.sendToBsId(PushServer.serverGroupContext,targetSession.getClientID(),publishMsg);
             }
