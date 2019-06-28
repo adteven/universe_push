@@ -77,7 +77,7 @@ public class FriendRequestResponse implements Serializable {
         friendRequestResponse.setReason(friendRequest.getReason());
         friendRequestResponse.setTimestamp(friendRequest.getUpdateDt());
         friendRequestResponse.setTarget(friendRequest.getFromUid());
-        friendRequestResponse.setReadStatus(friendRequest.getStatus());
+        friendRequestResponse.setStatus(friendRequest.getStatus());
         return friendRequestResponse;
     }
 
