@@ -9,7 +9,7 @@
 
 > 扫码体验APK下载
 
-![image](attachment/pushdemo-apk-qr-code.png)
+![image](attachment/qr-chat.png)
 
 # 部署说明
 

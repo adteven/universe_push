@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class Header {
-    public static final int LENGTH = 8;
-    public static final int VERSION = 1;
+    public static final int LENGTH = 10;
+    public static final int VERSION = 2;
     public static final byte magic = (byte)0xf8;
 
 
@@ -49,32 +49,37 @@ public class Header {
     }
 
     public Header setLength(int length) {
-        mContents[3] = (byte)((length >> 8) & 0xff);
-        mContents[4] = (byte)(length & 0xff);
+        mContents[3] = (byte)((length >> 24) & 0xff);
+        mContents[4] = (byte)((length >> 16) & 0xff);
+        mContents[5] = (byte)((length >> 8)  & 0xff);
+        mContents[6] = (byte)(length);
         return this;
     }
 
     public int getLength() {
-        return (((mContents[3] & 0xff) << 8) | (0xff & mContents[4]));
+        return ( ((mContents[3] & 0xff) << 24)
+                |((mContents[4] & 0xff) << 16)
+                |((mContents[5] & 0xff) << 8)
+                | (0xff & mContents[6]));
     }
 
     public Header setSubSignal(SubSignal subSignal){
-        mContents[5] = (byte)((mContents[5] & (0x01 << 7)) | subSignal.ordinal()) ;
+        mContents[7] = (byte)((mContents[7] & (0x01 << 7)) | subSignal.ordinal()) ;
         return this;
     }
 
     public SubSignal getSubSignal(){
-        return SubSignal.toEnum((~(0x01 << 7)) & mContents[5]);
+        return SubSignal.toEnum((~(0x01 << 7)) & mContents[7]);
     }
 
     public Header setMessageId(int messageId){
-        mContents[6] = (byte)((messageId >> 8) & 0xff);
-        mContents[7] = (byte)(messageId & 0xff);
+        mContents[8] = (byte)((messageId >> 8) & 0xff);
+        mContents[9] = (byte)(messageId & 0xff);
         return this;
     }
 
     public int getMessageId(){
-        return (((mContents[6] & 0xff) << 8) | (0xff & mContents[7]));
+        return (((mContents[8] & 0xff) << 8) | (0xff & mContents[9]));
     }
 
 
