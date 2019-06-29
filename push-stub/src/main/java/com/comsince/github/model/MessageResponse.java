@@ -126,6 +126,7 @@ public class MessageResponse implements Serializable {
         messageConentResponse.setPushContent(message.getContent().getPushContent());
         messageConentResponse.setSearchableContent(messageContent.getSearchableContent());
         messageConentResponse.setRemoteMediaUrl(messageContent.getRemoteMediaUrl());
+        messageConentResponse.setMediaType(messageContent.getMediaType());
         messageResponse.setContent(messageConentResponse);
         return messageResponse;
     }
