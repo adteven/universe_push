@@ -25,7 +25,8 @@ class SocketChannelWrapper extends ChannelWrapper {
     }
     @Override
     public int read(ByteBuffer buffer) throws IOException {
-        log.i("read from server:"+mChannel.getRemoteAddress()+","+"client:"+mChannel.getLocalAddress());
+        //暂时注释掉，getRemoteAddress()是java1.7开始的方法，防止低版本报错
+        //log.i("read from server:"+mChannel.getRemoteAddress()+","+"client:"+mChannel.getLocalAddress());
         return mChannel.read(buffer);
     }
     @Override
