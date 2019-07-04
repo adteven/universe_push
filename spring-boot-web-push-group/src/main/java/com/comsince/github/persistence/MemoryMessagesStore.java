@@ -963,7 +963,6 @@ public class MemoryMessagesStore implements IMessagesStore {
     @Override
     public ErrorCode recallMessage(long messageUid, String operatorId) {
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
-
         MessageBundle messageBundle = mIMap.get(messageUid);
         if (messageBundle != null) {
             WFCMessage.Message message = messageBundle.getMessage();
@@ -971,6 +970,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             if (message.getFromUser().equals(operatorId)) {
                 canRecall = true;
             }
+            LOG.info("recall messageUid {} operatorId {} fromUser {} callRecall {}",messageUid,operatorId,message.getFromUser(),canRecall);
 
             if (!canRecall && message.getConversation().getType() == ProtoConstants.ConversationType.ConversationType_Group) {
                 IMap<String, WFCMessage.GroupInfo> groupMap = hzInstance.getMap(GROUPS_MAP);

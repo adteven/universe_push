@@ -195,7 +195,13 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageResponse getMessage(long messageId) {
-        return null;
+        WFCMessage.Message wfcMessage = messagesStore.getMessage(messageId);
+        return MessageResponse.convertMessageResponse(wfcMessage);
+    }
+
+    @Override
+    public ErrorCode recallMessage(long messageUid, String operatorId) {
+        return messagesStore.recallMessage(messageUid,operatorId);
     }
 
     @Override

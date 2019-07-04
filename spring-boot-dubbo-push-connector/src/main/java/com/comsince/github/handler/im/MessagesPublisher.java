@@ -49,6 +49,46 @@ public class MessagesPublisher {
         this.messageService = messageService;
     }
 
+    public void publishRecall2Receivers(long messageUid, String operatorId, Set<String> receivers, String exceptClientId) {
+        publishRecall2ReceiversLocal(messageUid, operatorId, receivers, exceptClientId);
+    }
+
+    public void publishRecall2ReceiversLocal(long messageUid, String operatorId, Collection<String> receivers, String exceptClientId) {
+        for (String user : receivers) {
+            Collection<SessionResponse> sessions = sessionService.sessionForUser(user);
+            for (SessionResponse targetSession : sessions) {
+                if (exceptClientId != null && exceptClientId.equals(targetSession.clientID)) {
+                    continue;
+                }
+
+                if (targetSession.getClientID() == null) {
+                    continue;
+                }
+
+                //注意这里时单击模式下做法，集群模式有可能无法找到clientId对应的channelContext
+                ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.clientID);
+                boolean targetIsActive = !channelContext.isClosed;
+                if (targetIsActive) {
+                    LOG.info("send recall messageUid {} to receiver {} clientId {}",messageUid,user,targetSession.clientID);
+                    WFCMessage.NotifyRecallMessage notifyMessage = WFCMessage.NotifyRecallMessage
+                            .newBuilder()
+                            .setFromUser(operatorId)
+                            .setId(messageUid)
+                            .build();
+                    PublishMessagePacket publishMessage = new PublishMessagePacket();
+                    publishMessage.setSubSignal(SubSignal.RMN);
+                    publishMessage.setBody(notifyMessage.toByteArray());
+                    boolean result = Tio.send(channelContext,publishMessage);
+                    if (!result) {
+                        LOG.warn("Publish Recall request failure");
+                    }
+                } else {
+                    LOG.info("the target {} of user {} is not active", targetSession.getClientID(), targetSession.getUsername());
+                }
+            }
+        }
+    }
+
     public void publishNotification(SubSignal subSignal, String receiver, long body) {
         publishNotificationLocal(subSignal, receiver,body);
     }

@@ -39,7 +39,9 @@ public enum SubSignal {
     GQ,
     GMI,
     MMI,
-    GQNUT
+    GQNUT,
+    MR,
+    RMN
     ;
 
     public static SubSignal toEnum(int ordinal) {

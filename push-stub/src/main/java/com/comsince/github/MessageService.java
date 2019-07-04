@@ -43,6 +43,7 @@ public interface MessageService {
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);
     PullMessageResultResponse fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType);
     MessageResponse getMessage(long messageId);
+    ErrorCode recallMessage(long messageUid, String operatorId);
     long insertUserMessages(String sender, int conversationType, String target, int line, int messageContentType, String userId, long messageId);
     long insertChatroomMessages(String target, int line, long messageId);
     Collection<String> getChatroomMemberClient(String userId);
