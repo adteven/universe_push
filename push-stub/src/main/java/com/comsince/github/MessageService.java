@@ -1,5 +1,6 @@
 package com.comsince.github;
 
+import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.model.*;
@@ -42,6 +43,7 @@ public interface MessageService {
     boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse);
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);
     PullMessageResultResponse fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType);
+    PullMessageResultResponse loadRemoteMessages(String user, Conversation conversation, long beforeUid, int count);
     MessageResponse getMessage(long messageId);
     ErrorCode recallMessage(long messageUid, String operatorId);
     long insertUserMessages(String sender, int conversationType, String target, int line, int messageContentType, String userId, long messageId);

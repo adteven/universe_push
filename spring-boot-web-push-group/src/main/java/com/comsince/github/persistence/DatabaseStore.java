@@ -553,6 +553,7 @@ public class DatabaseStore {
     }
 
     List<WFCMessage.Message> loadRemoteMessagesFromTable(String user, WFCMessage.Conversation conversation, long beforeUid, int count, String table) {
+        LOG.info("loadRemoteMessagesFromTable  from user {} target {} beforeUid {} table {} ",user,conversation.getTarget(),beforeUid,table);
         String sql = "select `_mid`, `_from`, `_type`, `_target`, `_line`, `_data`, `_dt` from " + table +" where";
         if (conversation.getType() == ProtoConstants.ConversationType.ConversationType_Private) {
             sql += " _type = ? and _line = ? and _mid < ? and ((_target = ?  and _from = ?) or (_target = ?  and _from = ?))";

@@ -39,7 +39,8 @@ public enum SubSignal {
     MMI,
     GQNUT,
     MR,
-    RMN
+    RMN,
+    LRM
     ;
 
 

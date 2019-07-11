@@ -14,4 +14,9 @@ public class HeaderTest {
         System.out.println("signal "+header.getSignal()+" subSignal "+header.getSubSignal()+" messageId "+header.getMessageId());
         System.out.println("content length "+header.getLength());
     }
+
+    @Test
+    public void testMaxValue(){
+        System.out.println(Long.MAX_VALUE);
+    }
 }

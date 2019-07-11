@@ -194,6 +194,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public PullMessageResultResponse loadRemoteMessages(String user, Conversation conversation, long beforeUid, int count) {
+        WFCMessage.Conversation wfcConversation = Conversation.convert2WfcConversation(conversation);
+        WFCMessage.PullMessageResult pullMessageResult = messagesStore.loadRemoteMessages(user,wfcConversation,beforeUid,count);
+        return PullMessageResultResponse.convertPullMessage(pullMessageResult);
+    }
+
+    @Override
     public MessageResponse getMessage(long messageId) {
         WFCMessage.Message wfcMessage = messagesStore.getMessage(messageId);
         return MessageResponse.convertMessageResponse(wfcMessage);
