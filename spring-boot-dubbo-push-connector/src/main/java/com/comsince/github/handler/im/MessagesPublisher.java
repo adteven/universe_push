@@ -91,6 +91,30 @@ public class MessagesPublisher {
         }
     }
 
+    private void publishTransparentMessage2Receivers(long messageHead, Collection<String> receivers, int pullType) {
+        MessageResponse messageResponse = messageService.getMessage(messageHead);
+        if (messageResponse != null) {
+            for (String user : receivers) {
+                Collection<SessionResponse> sessions = sessionService.sessionForUser(user);
+
+                for (SessionResponse targetSession : sessions) {
+                    if (targetSession.getClientID() == null) {
+                        continue;
+                    }
+                    LOG.info("send transparent message {} to receiver {} clientId {}",messageHead,user,targetSession.clientID);
+                    WFCMessage.Message wfcMessage = MessageResponse.convertWFCMessage(messageResponse);
+                    WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.newBuilder()
+                            .addMessage(wfcMessage)
+                            .build();
+                    PublishAckMessagePacket publishAckMessagePacket = new PublishAckMessagePacket();
+                    publishAckMessagePacket.setSubSignal(SubSignal.MP);
+                    publishAckMessagePacket.setBody(pullMessageResult.toByteArray());
+                    Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishAckMessagePacket);
+                }
+            }
+        }
+    }
+
     public void publishNotification(SubSignal subSignal, String receiver, long body) {
         publishNotificationLocal(subSignal, receiver,body);
     }
@@ -168,7 +192,7 @@ public class MessagesPublisher {
 
     private void publish2Receivers(String sender, int conversationType, String target, int line, long messageHead, Collection<String> receivers, String pushContent, String exceptClientId, int pullType, int messageContentType, long serverTime, int mentionType, List<String> mentionTargets, int persistFlag) {
         if (persistFlag == Transparent) {
-            //publishTransparentMessage2Receivers(messageHead, receivers, pullType);
+            publishTransparentMessage2Receivers(messageHead, receivers, pullType);
             return;
         }
 
