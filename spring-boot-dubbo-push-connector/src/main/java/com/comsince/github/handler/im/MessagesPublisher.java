@@ -8,14 +8,9 @@ import com.comsince.github.SessionService;
 import com.comsince.github.SubSignal;
 import com.comsince.github.immessage.PublishAckMessagePacket;
 import com.comsince.github.immessage.PublishMessagePacket;
-import com.comsince.github.immessage.pojo.SendMessageData;
 import com.comsince.github.model.*;
-import com.comsince.github.utils.HttpUtils;
-import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.mqtt.MqttPublishMessage;
-import io.netty.handler.codec.mqtt.MqttQoS;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,10 +100,19 @@ public class MessagesPublisher {
                     WFCMessage.Message wfcMessage = MessageResponse.convertWFCMessage(messageResponse);
                     WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.newBuilder()
                             .addMessage(wfcMessage)
+                            .setCurrent(0)
+                            .setHead(0)
                             .build();
+                    //按照消息ack消息格式组装，第一个字节为错误码
+                    byte[] pullMessageByteArr = pullMessageResult.toByteArray();
+                    ByteBuf byteBuf = Unpooled.buffer();
+                    byteBuf.ensureWritable(1).writeByte(0);
+                    byteBuf.ensureWritable(pullMessageByteArr.length).writeBytes(pullMessageByteArr);
+                    byte[] bodyMessage = new byte[byteBuf.readableBytes()];
+                    byteBuf.readBytes(bodyMessage);
                     PublishAckMessagePacket publishAckMessagePacket = new PublishAckMessagePacket();
                     publishAckMessagePacket.setSubSignal(SubSignal.MP);
-                    publishAckMessagePacket.setBody(pullMessageResult.toByteArray());
+                    publishAckMessagePacket.setBody(bodyMessage);
                     Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishAckMessagePacket);
                 }
             }

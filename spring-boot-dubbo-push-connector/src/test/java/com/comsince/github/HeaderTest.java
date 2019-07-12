@@ -17,6 +17,9 @@ public class HeaderTest {
 
     @Test
     public void testMaxValue(){
-        System.out.println(Long.MAX_VALUE);
+        String uid = "VYVLVL22";
+        int hashId = Math.abs(uid.hashCode())%128;
+        String table = "t_user_messages_" + hashId;
+        System.out.println(table);
     }
 }

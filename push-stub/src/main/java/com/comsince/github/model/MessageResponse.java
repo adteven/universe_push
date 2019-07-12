@@ -8,6 +8,9 @@ import org.springframework.util.StringUtils;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
+import static com.comsince.github.model.MessageContentType.*;
+
 public class MessageResponse implements Serializable {
     private int conversationType;
     private String target;
@@ -164,8 +167,20 @@ public class MessageResponse implements Serializable {
             messageContentBuilder.setRemoteMediaUrl(messageResponse.getContent().getRemoteMediaUrl());
         }
 
+        if(isTransparentFlag(messageResponse.getContent().getType())){
+            messageContentBuilder.setPersistFlag(Transparent);
+        }
+
         builder.setContent(messageContentBuilder.build());
         return builder.build();
+    }
+
+    private static boolean isTransparentFlag(int contentType){
+        return contentType == ContentType_Typing ||
+                contentType == ContentType_Call_Accept_T ||
+                contentType == ContentType_Call_Signal ||
+                contentType == ContentType_Call_End ||
+                contentType == ContentType_Call_Accept ;
     }
 
     @Override
