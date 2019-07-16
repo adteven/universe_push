@@ -180,6 +180,7 @@ public class MessageResponse implements Serializable {
                 contentType == ContentType_Call_Accept_T ||
                 contentType == ContentType_Call_Signal ||
                 contentType == ContentType_Call_End ||
+                contentType == ContentType_Call_Modify ||
                 contentType == ContentType_Call_Accept ;
     }
 
