@@ -23,6 +23,7 @@ public class HeartbeatResponseProcessor implements MessageProcessor {
         HeartBeatBody heartBeatBody = Json.toBean(new String(pushPacket.getBody()),HeartBeatBody.class);
 
         HeartbeatResponsePacket heartbeatResponsePacket = new HeartbeatResponsePacket("ping back next interval "+heartBeatBody.getInterval());
+        heartbeatResponsePacket.setMessageId(pushPacket.getHeader().getMessageId());
         //设置链接心跳的间隔，如果超出范围自动断开链接
         channelContext.setHeartbeatTimeout(heartBeatBody.getInterval()+ 60 * 1000);
         Tio.send(channelContext,heartbeatResponsePacket);

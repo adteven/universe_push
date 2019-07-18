@@ -148,7 +148,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         Util.writeAll(asyncSocket, bufferList, new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
-                log.e("send heartbeat completed",ex);
+                log.e("send signal "+signal+" error",ex);
                 completedCallback.onCompleted(ex);
             }
         });
@@ -168,6 +168,10 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
     }
 
     public void sendMessage(Signal signal, SubSignal subSignal,int messageId, byte[] body, final CompletedCallback completedCallback){
+        if(asyncSocket == null){
+            completedCallback.onCompleted(new NullPointerException("socket not null"));
+            return;
+        }
         ByteBufferList bufferList = new ByteBufferList();
         Header header = new Header();
         header.setSignal(signal);
@@ -184,6 +188,7 @@ public class AndroidNIOClient implements ConnectCallback,DataCallback,CompletedC
         Util.writeAll(asyncSocket, bufferList, new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
+                log.e("send signal "+signal+" error",ex);
                 completedCallback.onCompleted(ex);
             }
         });
