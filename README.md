@@ -177,4 +177,5 @@ push.kafka.broker=172.16.177.107:9092
 ## 参考项目
 * [T-io](https://github.com/tywo45/t-io)
 * [蚂蚁通信框架实践](https://mp.weixin.qq.com/s/JRsbK1Un2av9GKmJ8DK7IQ)
+* [推荐阅读-新手入门一篇就够：从零开发移动端IM](http://www.52im.net/thread-464-1-1.html)
 
