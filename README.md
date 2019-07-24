@@ -13,6 +13,8 @@
 
 **NOTE:** 本apk基于[android-chat](https://github.com/comsince/android-chat)构建替换为java协议栈开发,登录输入你的手机号,使用超级验证码`66666`即可登录
 
+![image](attachment/chat-show.gif)
+
 # 部署说明
 
 ![image](attachment/push-universe.png)
