@@ -13,9 +13,12 @@
 
 **NOTE:** 本apk基于[android-chat](https://github.com/comsince/android-chat)构建替换为java协议栈开发,登录输入你的手机号,使用超级验证码`66666`即可登录
 
+> __<font color="#dd0000">Android 运行效果图</font>__
+
 ![image](attachment/chat-show.gif)
 
 # 部署说明
+**NOTE:** 如果只需要单机部署聊天服务，只需要部署`push-connect`和`push-group`服务
 
 ![image](attachment/push-universe.png)
 
@@ -24,7 +27,7 @@
 
 ## 依赖组件
 * __redis__  
-  `push-connector`集群模式下需要进行消息推送，利用redis的`sub/pub`进行消息的订阅与发布进而进行全局推送
+  `push-connector`集群模式下需要进行消息推送，利用redis的`sub/pub`进行消息的订阅与发布进而进行全局推送,集群模式现已经换成kafka发布订阅模式
 * __zookeeper__  
   dubbo使用了zookeeper作为注册中心，因此需要安装zookeeper
   
@@ -161,7 +164,8 @@ push.kafka.broker=172.16.177.107:9092
 提供推送Http接口服务，调用推送网关发送推送消息，此接口采用springboot开发web服务
 
 
-## Push-Group[开发中可能存在编译不通过的情况]
+## Push-Group
+此服务现已经改造成为聊天的基础服务，提供单聊，群聊的基本存储服务，提供RPC接口供`push-connect`调用
 * 单聊服务
 * 群组服务
 
