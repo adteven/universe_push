@@ -115,7 +115,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public RestResult login(String mobile, String code, String clientId) {
-        if (("13900000000".equals(mobile) || "13900000001".equals(mobile)) && code.equals("556677")) {
+        if (("13800000000".equals(mobile) || "13800000001".equals(mobile) || "13800000002".equals(mobile)) && code.equals("556677")) {
             LOG.info("is test account");
         } else if (StringUtils.isEmpty(mSMSConfig.getSuperCode()) || !code.equals(mSMSConfig.getSuperCode())) {
             Record record = mRecords.get(mobile);
