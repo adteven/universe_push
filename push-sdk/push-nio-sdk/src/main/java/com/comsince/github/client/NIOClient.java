@@ -130,7 +130,7 @@ public class NIOClient implements ConnectCallback,DataCallback,CompletedCallback
         asyncSocket.setDataCallback(this);
         asyncSocket.setClosedCallback(this);
 
-        sub();
+        //sub();
         scheduleHeartbeat();
 
     }
