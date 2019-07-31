@@ -21,16 +21,7 @@ public class PushNIOClientStarter {
             @Override
             public void run() {
                 for(int i=0;i<10000;i++){
-//            sendConnect("172.16.177.107",6789);
-//            sendConnect("172.16.176.23",6789);
-//            sendConnect("172.16.176.25",6789);
-            sendConnect("push.comsince.cn",6789);
-//                    sendConnect("152.136.147.18",6789);
-//                    try {
-//                        Thread.sleep(50);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
+                   sendConnect("localhost",6789);
                 }
             }
         });
