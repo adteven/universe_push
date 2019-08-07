@@ -1,0 +1,33 @@
+sudo: required
+
+services:
+  - docker
+
+language: java
+jdk: oraclejdk8
+
+env:
+  global:
+    - secure: "p0vozXSxltVDJlWZXoU9x263775HMYI6mHJTYx1nn29/H1/88VoPh4xLSWPVO/G0of128rkxj6I18+mkVS77Yk7wRPR23qMQ8gb8CikD94C5dlmuT5KNZY6xuaQZ5951CNZqfno3L+L7enKrAozoe+mRAcAzFOJSGwmqcMiHA8V+aEnXjFtiSS4NoEXmkHkYtv7ay5ydZeRUP23xGgz9RCt8GjQRf17fcejRUcjk4J7OMrWFhnb7pzdo9LOtlta0yAQFJNMYtAK3qm072QI+yxKdCIj0fV145x06WS4Cci3eloaj4mGLHzLHlEmdpw6Edi/t6p3V1DYcvE9hb830AxGJrdgilFVmNP5W0qnv7ZkRPASBZ1inr8NQI+E7P8YO2RUu76nqQprq2IvVLO4SjfRm7sdXty6LdA1p1NafazMpofYZkWibZzzdcRu0tbsrB/grN/vfIkdoMycn46xgHrdOGyia5JqDB6KCN8Dcyr5t8h+/1ZIrQpZ9vklght9c/6e6vo23+9Aepuctg/R+DrHSnnegxcZbQtr5V9RWtQsFGRtd5ZcwZzu/70V2/vBOGl763kZ+qNHxVrp9EAYj4eRnFDQEnYTIZKfzJpUKQJzIpiSLOM6mGJPufsrOONnzy9WpAaSC669Blw/XalXdympsg6Q2fYBDXHPlpAP46l0=" # DOCKER_EMAIL
+    - secure: "XxgNQunkxqdGnEOz96SoXhKbonkzOsvV0kZpakqyEwBYtVZim80M0ncUgF+yp1HK9w6MKin7BIZEXcAPWuK4POFJeKZxOMR+tv0veHw5N3PA85XY3tB/0FUtjfYmV8lZdLmpNwMlobYL6P9hFoS83tsYlT4edcV7OkSkz3zY5EuqbBFmu961sPCWw0mUQlkMHTVzhryuod/TlDjCMNq9afn1GqrYC7/8rh7m28KGoz9R5ZMSdDaGxdJ6dDFs2EombpeswEEU55gziQ0PmMwAyZOg5eE2xvep9QflDbsTFsw7isp67vHcstRaHjwHZK22qtuCJnk5VlLieAPQQ1TEjzDrqJftOkk3uHRusTGy4RNlQbTwnb2Zh9CmnhYMw05sPC0mgATeyDCDEqg1iR+lsCMA5N0hZ4APfPqXOrGbXNKv4lzrD/D33BIPosNJZgY9dDNg+imFhSILf+m6n4JpotymkNLiFwXv7P2wBNP2waRsSApTEOab2Raul29H8RNikUAQsJuV+0JDAv6C9hwlDo49SWpZ/lVol/l5jYnPc32rh0/nxjd7XeQPF2SdxcRViGGuTD8X8kuHRwdLQYltIahmRy9S9GXb8cDy02LUAi8NsqmNLUvh99LDNzRWKJbAmokG5TDS1M+9kNgU1iThv4G9UfOgqKV0DTB9f71L6mw=" # DOCKER_USER
+    - secure: "QBc52CAwpC6SD6+uv6AAQ0ZimaUr0Cqs0PGMVsvWXxU3mxX+eYElhdi12wmHSLpyr1p+nbG6x/jHxrj8C8S6S1N+zUamWTkxlUyCgNB/qa4uVrPy8oL8HbXTcHSDZZfZNE8Isd4JRn3sLUD80bbvE0Nt7hB8AQZ0WcIneMtCgth24fn9tBLEQxbrn3NYBwwW17OaumRyyr0seKxpC8IVd9uHym+E3B5P8eb6HqP314Qdh3Ykl1FA/GRRU6zV4UJ9RzlWNZhsEIjhPn3TVQMBEb505F6gZ17A9303zwzZO/5wIuzfvfooHdX5GFHHvVaI86YHFdOrCQSMwL+Wg+JRcJSXgMB0Sct7KRiX51auzxk2tDcTuLQPogIce02puEyKeXtfBPtvtd9CXChzGRY+bxgcHXmlAGeMisCA18oGk+RAJkfNnSJaym/rxBcFw2u2zpTv7Pd9VS22OHSgE/kEgpAhh9DZEpf9Dyh7QcqR7k0vwWPpG8SpGDrIEl2K7B+KjeHj+QjzlQSUQR4+XDCYcKDEclCHh8qMtdfUCJXXYI1jLrNseMPS7LhP8vIcBDz9BTykRxG3x7hEu0yWtFPi8asbtSnboWqUsI5PRdXA5opgO/bWBAcG2y7wWcV4KfArsLpO864qEQ1YgfJ/8syiVoyHjPNmN3WSo8N5IEzIOCc=" # DOCKER_PASS
+    - COMMIT=${TRAVIS_COMMIT::7}
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+  #TAG
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+
+  # push connector
+  - export CONNECTOR=comsince/push-connector
+  - docker build -t CONNECTOR:$COMMIT ./spring-boot-dubbo-push-connector
+  - docker tag $CONNECTOR:$COMMIT $CONNECTOR:$TAG
+  - docker push $CONNECTOR
+
+  # push group
+  - export GROUP=comsince/push-group
+  - docker build -t $GROUP:$COMMIT ./spring-boot-web-push-group
+  - docker tag $GROUP:$COMMIT $GROUP:$TAG
+  - docker push $GROUP

@@ -34,14 +34,15 @@
 * 任何一次构建都能触发一次发布
 * 只需发布一次artifact,即可随时发布
 
-以下是发布持续交付工作流图
+**NOTE:** 以下是发布持续交付工作流图
+
 ![image](https://cloud.githubusercontent.com/assets/6069066/14159789/0dd7a7ce-f6e9-11e5-9fbb-a7fe0f4431e3.png)
 
 ## 如何启动服务
-本机部署只需要两个SpringBoot服务，一个Mysql服务，一个zookeeper服务
+本机部署只需要两个`SpringBoot`服务，一个`Mysql`服务，一个`zookeeper`服务
 
 ### 部署前准备
-* 安装docker与docker-composer
+* 安装`docker`与`docker-composer`
 * 确保编译此项目`mvn clean package -Dmaven.test.skip=true`
 
 ### 生产模式
@@ -49,6 +50,7 @@
 
 ### 开发模式
 如果你希望自己编译镜像，你必须克隆此代码，并在本地编译此项目。然后执行`docker-compose -f docker-compose.yml -f docker-compose-dev.yml up`  
+
 **NOTE:** 如果你希望直接部署，[参考脚本部署](README-Linux.md)
 
 
