@@ -18,36 +18,9 @@ import java.nio.ByteBuffer;
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+public class AppTest{
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
-
-    private static void testWFCmessage(){
+    public static void testWFCmessage(){
         WFCMessage.AddFriendRequest addFriendRequest = WFCMessage.AddFriendRequest.newBuilder()
                 .setReason("comsince 请求添加好友")
                 .setTargetUid("comsince")
@@ -84,7 +57,7 @@ public class AppTest
 
     }
 
-    private static void testConnectMessage(){
+    public static void testConnectMessage(){
 
         ConnectMessage connectMessage = new ConnectMessage();
         connectMessage.setUserName("comsince");
