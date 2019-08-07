@@ -16,7 +16,7 @@ public class PushConnectorHandler extends PushMessageHandler{
     public void handler(Packet packet, ChannelContext channelContext) throws Exception {
         PushPacket pushPacket = (PushPacket) packet;
         Signal signal = pushPacket.getHeader().getSignal();
-        logger.info("handle signal ：" + signal.name());
+        logger.info("handle signal :" + signal.name());
         MessageDispatcher.handleMessage(pushPacket,channelContext);
     }
 }

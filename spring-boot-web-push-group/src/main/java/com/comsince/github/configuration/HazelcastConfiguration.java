@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
  * Copyright (c) [2019]
  * @Time 19-6-5 下午2:23
  **/
-@Configuration
 public class HazelcastConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(HazelcastConfiguration.class);
     @Bean
