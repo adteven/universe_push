@@ -28,6 +28,14 @@
 ### 消息服务
 用于用户处理用户管理，会话管理，离线消息处理，群组管理等功能，是整个即时通讯系统的业务处理模块
 
+## 自动化构建
+增加持续集成的好处
+* 随时随地发布软件
+* 任何一次构建都能触发一次发布
+* 只需发布一次artifact,即可随时发布
+
+以下是发布持续交付工作流图
+![image](https://cloud.githubusercontent.com/assets/6069066/14159789/0dd7a7ce-f6e9-11e5-9fbb-a7fe0f4431e3.png)
 
 ## 如何启动服务
 本机部署只需要两个SpringBoot服务，一个Mysql服务，一个zookeeper服务
@@ -40,7 +48,7 @@
 这种模式下，所有的镜像都会从Docker Hub下载，只需要复制`docker-compose.yml`,在该目录下执行`docker-compose up`即可
 
 ### 开发模式
-如果你希望自己编译镜像，你必须克隆此代码，并在本地编译此项目。然后执行`docker-compose -f docker-compose.yml -f docker-compose-dev.yml up`
+如果你希望自己编译镜像，你必须克隆此代码，并在本地编译此项目。然后执行`docker-compose -f docker-compose.yml -f docker-compose-dev.yml up`  
 **NOTE:** 如果你希望直接部署，[参考脚本部署](README-Linux.md)
 
 
