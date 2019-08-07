@@ -1,0 +1,21 @@
+version: '2.1'
+services:
+  zookeeper:
+    ports:
+      - 2181:2181
+
+  mysql:
+    ports:
+      - 3306:3306
+
+  push-connector:
+    build: spring-boot-dubbo-push-connector
+    ports:
+      - 6789:6789
+
+  push-group:
+    build: spring-boot-web-push-group
+    ports:
+      - 8081:8081
+      - 7463:7463
+
