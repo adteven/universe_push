@@ -14,7 +14,6 @@ env:
     - COMMIT=${TRAVIS_COMMIT::7}
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
 
   #TAG
@@ -22,7 +21,7 @@ after_success:
 
   # push connector
   - export CONNECTOR=comsince/push-connector
-  - docker build -t CONNECTOR:$COMMIT ./spring-boot-dubbo-push-connector
+  - docker build -t $CONNECTOR:$COMMIT ./spring-boot-dubbo-push-connector
   - docker tag $CONNECTOR:$COMMIT $CONNECTOR:$TAG
   - docker push $CONNECTOR
 
