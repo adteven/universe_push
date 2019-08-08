@@ -46,7 +46,8 @@
 * 确保编译此项目`mvn clean package -Dmaven.test.skip=true`
 
 ### 生产模式
-这种模式下，所有的镜像都会从Docker Hub下载，只需要复制`docker-compose.yml`,在该目录下执行`docker-compose up`即可
+这种模式下，所有的镜像都会从Docker Hub下载，只需要复制`docker-compose.yml`,在该目录下执行`docker-compose up`即可.
+如果要查看完整的部署步骤，请参考这里[基于Docker的即时通讯系统的持续集成发布说明](https://www.comsince.cn/2019/08/07/docker-continuous/#%E4%BB%8Edocker-hub%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F%E5%8F%91%E5%B8%83im%E7%B3%BB%E7%BB%9F)
 
 ### 开发模式
 如果你希望自己编译镜像，你必须克隆此代码，并在本地编译此项目。然后执行`docker-compose -f docker-compose.yml -f docker-compose-dev.yml up`  
@@ -55,7 +56,7 @@
 
 
 ## 欢迎为此项目作出贡献
-该项目时开源项目，欢迎提出建议或者提供意见反馈
+该项目是开源项目，欢迎提出建议或者提供意见反馈
 
 ## 感谢
 此项目时在参考其他项目基础上完成，在此表示感谢
