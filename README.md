@@ -42,7 +42,7 @@
 本机部署只需要两个`SpringBoot`服务，一个`Mysql`服务，一个`zookeeper`服务
 
 ### 部署前准备
-* 安装`docker`与`docker-composer`
+* 安装`docker`与`docker-composer`,如果需要在k8s中部署，请准备好相关的环境
 * 确保编译此项目`mvn clean package -Dmaven.test.skip=true`
 
 ### 生产模式
@@ -52,7 +52,13 @@
 ### 开发模式
 如果你希望自己编译镜像，你必须克隆此代码，并在本地编译此项目。然后执行`docker-compose -f docker-compose.yml -f docker-compose-dev.yml up`  
 
-**NOTE:** 如果你希望直接部署，[参考脚本部署](README-Linux.md)
+### K8S中部署
+如果想在k8s中部署，我们也提供yml配置，执行以下命令即可，详情参考[即时通讯服务在k8s容器的部署说明](https://www.comsince.cn/2019/08/12/cloud-native-intro/)
+```shell
+kubectl apply -f https://www.comsince.cn/download/cloud-native/universe-kube-deployment.yml
+```
+
+**NOTE:** 如果你希望直接脚本部署，[参考脚本部署](README-Linux.md)
 
 
 ## 欢迎为此项目作出贡献
