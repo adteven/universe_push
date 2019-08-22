@@ -60,28 +60,16 @@ public class MessagesPublisher {
                     continue;
                 }
 
-                //注意这里时单击模式下做法，集群模式有可能无法找到clientId对应的channelContext
-                ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.clientID);
-                if(channelContext != null){
-                    boolean targetIsActive = !channelContext.isClosed;
-                    if (targetIsActive) {
-                        LOG.info("send recall messageUid {} to receiver {} clientId {}",messageUid,user,targetSession.clientID);
-                        WFCMessage.NotifyRecallMessage notifyMessage = WFCMessage.NotifyRecallMessage
-                                .newBuilder()
-                                .setFromUser(operatorId)
-                                .setId(messageUid)
-                                .build();
-                        PublishMessagePacket publishMessage = new PublishMessagePacket();
-                        publishMessage.setSubSignal(SubSignal.RMN);
-                        publishMessage.setBody(notifyMessage.toByteArray());
-                        boolean result = Tio.send(channelContext,publishMessage);
-                        if (!result) {
-                            LOG.warn("Publish Recall request failure");
-                        }
-                    } else {
-                        LOG.info("the target {} of user {} is not active", targetSession.getClientID(), targetSession.getUsername());
-                    }
-                }
+                LOG.info("send recall messageUid {} to receiver {} clientId {}",messageUid,user,targetSession.clientID);
+                WFCMessage.NotifyRecallMessage notifyMessage = WFCMessage.NotifyRecallMessage
+                        .newBuilder()
+                        .setFromUser(operatorId)
+                        .setId(messageUid)
+                        .build();
+                PublishMessagePacket publishMessage = new PublishMessagePacket();
+                publishMessage.setSubSignal(SubSignal.RMN);
+                publishMessage.setBody(notifyMessage.toByteArray());
+                Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishMessage);
             }
         }
     }
@@ -126,21 +114,12 @@ public class MessagesPublisher {
     void publishNotificationLocal(SubSignal subSignal, String receiver,long body) {
         Collection<SessionResponse> sessions = sessionService.sessionForUser(receiver);
         for (SessionResponse targetSession : sessions) {
-            ChannelContext channelContext = Tio.getChannelContextByBsId(PushServer.serverGroupContext,targetSession.clientID);
-            if(channelContext != null){
-                boolean targetIsActive = !channelContext.isClosed;
-                if (targetIsActive) {
-                    PublishMessagePacket publishMessage = new PublishMessagePacket();
-                    publishMessage.setSubSignal(subSignal);
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-                    byteBuffer.putLong(body);
-                    publishMessage.setBody(byteBuffer.array());
-                    boolean result = Tio.send(channelContext,publishMessage);
-                    if (!result) {
-                        LOG.warn("Publish friend request failure");
-                    }
-                }
-            }
+            PublishMessagePacket publishMessage = new PublishMessagePacket();
+            publishMessage.setSubSignal(subSignal);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+            byteBuffer.putLong(body);
+            publishMessage.setBody(byteBuffer.array());
+            Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishMessage);
         }
     }
 
