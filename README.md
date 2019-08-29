@@ -24,7 +24,7 @@
 ## 服务说明
 聊天系统为了适应大规模用户的链接请求，将服务分为`链接服务`和`消息服务`，它们都是独立的，可以单独部署也可以集群部署
 ### 链接服务[push-connector]
-用于解决用户的链接请求，支撑百万级用户的链接，可单击部署，可集群部署，目前为了快速部署，暂时不启用集群部署。如果你存在大规模用户链接，可以启动集群模式,参考[K8s自动伸缩模式](#k8s_deployment)
+用于解决用户的链接请求，支撑百万级用户的链接，可单机部署，可集群部署。如果你存在大规模用户链接，可以启动集群模式,参考[K8s自动伸缩模式](#k8s_deployment)
 ### 消息服务[push-group]
 用于用户处理用户管理，会话管理，离线消息处理，群组管理等功能，是整个即时通讯系统的业务处理模块
 
@@ -53,7 +53,7 @@
 如果你希望自己编译镜像，你必须克隆此代码，并在本地编译此项目。然后执行`docker-compose -f docker-compose.yml -f docker-compose-dev.yml up`  
 
 ### K8S中部署<a name="k8s_deployment"/>
-如果想在k8s中部署，我们也提供yml配置，执行以下命令即可，详情参考[即时通讯服务在k8s容器的部署说明](https://www.comsince.cn/2019/08/12/cloud-native-intro/)
+如果想在k8s中部署，我们也提供yml配置，执行以下命令即可，详情参考[即时通讯服务在k8s容器的部署说明](https://www.comsince.cn/2019/08/12/universe-kubenetes-intro/)
 ```shell
 kubectl apply -f https://www.comsince.cn/download/cloud-native/universe-kube-deployment.yml
 ```
