@@ -61,3 +61,42 @@
 
 ## 负载均衡
 不同push-connector需要进行负载均衡，这里使用nginx的tcp代理模块实现
+
+# websocket 协议实现
+为了实现web端消息共享发送，因此实现websocket协议
+## 基本原理
+* 共享客户端登录状态  
+客户端登录策略采用统一的方式，利用用户名和统一识别id进行登录识别验证
+* 通讯协议格式
+web端通信统一采用json数据格式，进行websocket协议解析之后，转为服务端内部的二进制消息格式，便于统一处理
+* 消息解包  
+由于与web客户端交互的时websocket协议，所以web客户端发送的消息现在基本是基于json格式，在进行消息解码后需要发送给以前基于protobuf协议内部消息处理模块，因此需再进行格式转换
+在回复客户端消息前，消息需要在此进行protobuf向json格式转换，进行转发给web客户端
+
+## 消息格式
+* 基本数据结构  
+
+```json
+{
+	"signal": "connect",
+	"sub_signal": "conect_ack",
+	"message_id": 0,
+	"content": ""
+}
+```
+
+curl -H "Content-Type:application/json" -X POST --data '{"mobile": 13900000001,"code":556677,"clientId":"bccdb58cfdb34d861576810441000"}' http://push.comsince.cn:8080/login
+
+返回测试登录结果
+
+```json
+{
+	"code": 0,
+	"message": "success",
+	"result": {
+		"userId": "4A4A4Aaa",
+		"token": "Y07NMt60eQrcLimH6TPAeU4LvABnuN+N9b9ytv2BNGsdODgWWsf1gVOCFf+gPBbyX7PkBLRWl2H3UlXwcX8F4mGMcZfnn/tpn1zH3itSEgwFJIICehRkHm3j78QGSZ2ADClVzK4HWPEme2lNpPqfSdLlxEZ/NQytazBayTNlCfQ=",
+		"register": false
+	}
+}
+```

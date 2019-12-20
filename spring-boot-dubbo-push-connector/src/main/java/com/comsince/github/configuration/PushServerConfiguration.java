@@ -1,6 +1,7 @@
 package com.comsince.github.configuration;
 
 import com.comsince.github.PushServer;
+import com.comsince.github.websocket.WebSocketServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -20,5 +21,12 @@ public class PushServerConfiguration extends PushCommonConfiguration{
         PushServer pushServer = new PushServer();
         pushServer.init(kafkaProperties.getBroker());
         return pushServer;
+    }
+
+    @Bean
+    public WebSocketServer webSocketServer() throws Exception {
+        WebSocketServer webSocketServer = new WebSocketServer();
+        webSocketServer.init();
+        return webSocketServer;
     }
 }
