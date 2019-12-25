@@ -1,11 +1,19 @@
 package com.comsince.github.websocket;
 
+import com.comsince.github.Header;
+import com.comsince.github.PushPacket;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
+import com.comsince.github.process.MessageDispatcher;
+import com.comsince.github.websocket.model.WebSocketProtoMessage;
+import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
+import org.tio.utils.json.Json;
 import org.tio.websocket.common.WsRequest;
 import org.tio.websocket.common.WsResponse;
 import org.tio.websocket.common.WsSessionContext;
@@ -90,14 +98,27 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 			return null;
 		}
 
-		String msg = channelContext.getClientNode().toString() + " 说：" + text;
-		//用tio-websocket，服务器发送到客户端的Packet都是WsResponse
-		WsResponse wsResponse = WsResponse.fromText(msg, ShowcaseServerConfig.CHARSET);
-		//群发
-		Tio.sendToGroup(channelContext.groupContext, Const.GROUP_ID, wsResponse);
-
+		//接收到web端发送的消息，需要将其转换为二进制协议格式
+        if(!StringUtil.isNullOrEmpty(text)){
+			WebSocketProtoMessage webSocketProtoMessage = Json.toBean(text, WebSocketProtoMessage.class);
+			log.info("convert to websocket proto message {}",webSocketProtoMessage);
+			MessageDispatcher.handleMessage(convert2PushPacket(webSocketProtoMessage),channelContext);
+		}
 		//返回值是要发送给客户端的内容，一般都是返回null
 		return null;
+	}
+
+	private PushPacket convert2PushPacket(WebSocketProtoMessage webSocketProtoMessage){
+		PushPacket pushPacket = new PushPacket();
+		Header header = new Header();
+		header.setSignal(Signal.toEnum(webSocketProtoMessage.getSignal()));
+		header.setSubSignal(SubSignal.toEnum(webSocketProtoMessage.getSubSignal()));
+		header.setMessageId(webSocketProtoMessage.getMessageId());
+		int length = webSocketProtoMessage.getContent() != null ? webSocketProtoMessage.getContent().getBytes().length : 0;
+		header.setLength(length);
+		pushPacket.setHeader(header);
+		pushPacket.setBody(webSocketProtoMessage.getContent().getBytes());
+		return pushPacket;
 	}
 
 }

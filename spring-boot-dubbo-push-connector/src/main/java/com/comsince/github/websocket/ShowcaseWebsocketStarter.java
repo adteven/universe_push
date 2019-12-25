@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class ShowcaseWebsocketStarter {
 
-	private WsServerStarter wsServerStarter;
+	private PushWsServerStarter wsServerStarter;
 	private ServerGroupContext serverGroupContext;
 
 	/**
@@ -19,7 +19,7 @@ public class ShowcaseWebsocketStarter {
 	 * @author tanyaowu
 	 */
 	public ShowcaseWebsocketStarter(int port, ShowcaseWsMsgHandler wsMsgHandler) throws Exception {
-		wsServerStarter = new WsServerStarter(port, wsMsgHandler);
+		wsServerStarter = new PushWsServerStarter(port, wsMsgHandler);
 
 		serverGroupContext = wsServerStarter.getServerGroupContext();
 		serverGroupContext.setName(ShowcaseServerConfig.PROTOCOL_NAME);
@@ -57,7 +57,7 @@ public class ShowcaseWebsocketStarter {
 		return serverGroupContext;
 	}
 
-	public WsServerStarter getWsServerStarter() {
+	public PushWsServerStarter getWsServerStarter() {
 		return wsServerStarter;
 	}
 	

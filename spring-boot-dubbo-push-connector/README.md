@@ -73,6 +73,7 @@ web端通信统一采用json数据格式，进行websocket协议解析之后，�
 由于与web客户端交互的时websocket协议，所以web客户端发送的消息现在基本是基于json格式，在进行消息解码后需要发送给以前基于protobuf协议内部消息处理模块，因此需再进行格式转换
 在回复客户端消息前，消息需要在此进行protobuf向json格式转换，进行转发给web客户端
 
+
 ## 消息格式
 * 基本数据结构  
 
@@ -100,3 +101,10 @@ curl -H "Content-Type:application/json" -X POST --data '{"mobile": 13900000001,"
 	}
 }
 ```
+
+## 消息解析
+由于websocket 采用的json格式为的数据结构，为了复用以前protobuf的数据格式
+* decode 操作
+decode之后做相应的数据转换，在进行websocket消息格式解码后转为proto消息格式
+* encode 操作
+对消息进行encode操作符合websocket协议格式，但是在之前需要对proto格式消息转换为json消息格式

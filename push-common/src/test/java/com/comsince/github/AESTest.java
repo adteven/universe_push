@@ -3,9 +3,12 @@ package com.comsince.github;
 import com.comsince.github.security.AES;
 import com.comsince.github.security.DES;
 import com.comsince.github.security.TokenAuthenticator;
+import com.comsince.github.security.Tokenor;
+import org.checkerframework.dataflow.qual.TerminatesExecution;
 import org.junit.Test;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 /**
@@ -67,12 +70,36 @@ public class AESTest {
     }
 
     @Test
-    public void testAES0(){
-        String token = "+utyyDqy8LlY93uQSTrG+6DNogVezwFaFFwel2SWd2Du/RWoDw3SLetH6KRq2Ck6gtnVzlcHulqR9ZGm7tBSApeQbLwItpFTYTfsAro8EXsXLURGJRMDqqA+J1BwSaUAUXD1lEoA++O1MOOqKQvoohnanw1XDvNFe7mtkxgVLnE=";
+    public void testAES0() throws UnsupportedEncodingException {
+        String token = "4Nd2MH/j3esENLCZGbmOsRF4UTsCVS4bCUeU8P8shLgkc7QZvsaCQ3dlZbHC3TcZq3gnWR6ravqaFH7QNIf8SJoNEijms6MzQ503Af5HyPLZ1JghGSjKsvF8ugN+xxJmlsOHt/mf1WESEJAn7cF0Yty99bveBOhl+Y1b6ZyCuEo=";
         byte[]  result = AES.AESDecrypt(Base64.getDecoder().decode(token),"",false);
         System.out.println("result "+(result == null));
         System.out.println("result "+Base64.getEncoder().encodeToString(result));
-        System.out.println(new String(result));
+        System.out.println("result "+new String(result,"UTF-8"));
+    }
+
+
+    @Test
+    public void testAesDecryptLoginpwd() throws Exception {
+        byte[] encryptPwd = AES.AESEncrypt(Base64.getDecoder().decode("hN0AF2XX6+pGXT3ry6TPpaaRcS7Wx3QpkDmajUGat68="),"e9266a45-18dd-4180-a184-0c051cace456");
+        System.out.println("result "+Base64.getEncoder().encodeToString(encryptPwd)+" length "+encryptPwd.length);
+//        System.out.println("result code encrypt "+Base64.getEncoder().encodeToString(code));
+        String decryptPwd = "4sKuj7MjVL6egWm7ioJxmWNS3cayD3dhNsZtGQCBQ4a9h7gJfRtSiXLdyuUsHGs3";
+//        System.out.println("decrypt pwd length "+decryptPwd.getBytes().length);
+        byte[] result = AES.AESDecrypt(Base64.getDecoder().decode(decryptPwd),"e9266a45-18dd-4180-a184-0c051cace456",true);
+        System.out.println("result "+Base64.getEncoder().encodeToString(result));
+
+        String result1 = DES.decryptDES(Base64.getEncoder().encodeToString(result));
+        System.out.println(result1);
+    }
+
+    @Test
+    public void testGetToken() throws Exception {
+        String token = Tokenor.getToken("TYTzTz33");
+        System.out.println("token "+token);
+
+        String decrypteToken = DES.decryptDES("hN0AF2XX6+pGXT3ry6TPpaaRcS7Wx3QpkDmajUGat68=");
+        System.out.println("decrypteToken "+decrypteToken);
     }
 
 
