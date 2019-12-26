@@ -12,6 +12,8 @@ import com.comsince.github.utils.ClassUtil;
 import com.comsince.github.utils.Constants;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
 import com.comsince.github.utils.Utility;
+import com.comsince.github.websocket.ShowcaseWebsocketStarter;
+import com.comsince.github.websocket.WebSocketServer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
@@ -87,7 +89,10 @@ public class PublishMessageHandler {
         payload.readBytes(messageByte);
         publishAckMessagePacket.setBody(messageByte);
         boolean flag = Tio.sendToBsId(PushServer.serverGroupContext,clientId,publishAckMessagePacket);
-        LOG.info("send client {} message size {} {}",clientId,messageByte.length,flag ? "sucess":"fail");
+        LOG.info("send Push client {} message size {} {}",clientId,messageByte.length,flag ? "sucess":"fail");
+        //增加websocket发送
+        flag = Tio.sendToBsId(ShowcaseWebsocketStarter.serverGroupContext,clientId,publishAckMessagePacket);
+        LOG.info("send websocket client {} message size {} {}",clientId,messageByte.length,flag ? "sucess":"fail");
     }
 
 

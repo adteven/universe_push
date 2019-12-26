@@ -1,7 +1,15 @@
 package com.comsince.github.websocket;
 
+import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.PushPacket;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
+import com.comsince.github.model.FriendData;
+import com.comsince.github.websocket.model.ConnectAcceptedMessage;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tio.core.ChannelContext;
@@ -18,8 +26,11 @@ import org.tio.websocket.server.WsServerConfig;
 import org.tio.websocket.server.handler.IWsMsgHandler;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * @author comsicne
@@ -66,9 +77,7 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                 webSocketProtoMessage.setSignal(pushPacket.signal().name());
                 webSocketProtoMessage.setSubSignal(pushPacket.subSignal().name());
                 webSocketProtoMessage.setMessageId(pushPacket.messageId());
-                if(pushPacket.getBody() != null){
-                    webSocketProtoMessage.setContent(Base64.getEncoder().encodeToString(pushPacket.getBody()));
-                }
+                webSocketProtoMessage.setContent(convert2WebsocketMessage(pushPacket));
                 String websocketResponse = Json.toJson(webSocketProtoMessage);
                 log.info("websocket response json {}",websocketResponse);
                 wsResponse = WsResponse.fromText(websocketResponse,ShowcaseServerConfig.CHARSET);
@@ -76,5 +85,53 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
         }
         ByteBuffer byteBuffer = WsServerEncoder.encode(wsResponse, groupContext, channelContext);
         return byteBuffer;
+    }
+
+    private String convert2WebsocketMessage(PushPacket pushPacket){
+        String result = "";
+        if(pushPacket.getBody() != null){
+            if(Signal.CONNECT_ACK == pushPacket.signal()){
+                if(SubSignal.CONNECTION_ACCEPTED == pushPacket.subSignal()){
+                    try {
+                        WFCMessage.ConnectAckPayload connectAckPayload = WFCMessage.ConnectAckPayload.parseFrom(pushPacket.getBody());
+                        ConnectAcceptedMessage connectAcceptedMessage = new ConnectAcceptedMessage();
+                        connectAcceptedMessage.setFriendHead(connectAckPayload.getFriendHead());
+                        connectAcceptedMessage.setMessageHead(connectAckPayload.getMsgHead());
+                        log.info("msgHead {} friendHead {}",connectAckPayload.getMsgHead(),connectAckPayload.getFriendHead());
+                        result = Json.toJson(connectAcceptedMessage);
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if(Signal.PUB_ACK == pushPacket.signal()){
+                //pub_acK 返回的消息体中第一个字节代码成功与否
+                ByteBuffer byteBuffer = ByteBuffer.wrap(pushPacket.getBody());
+                byte code = byteBuffer.get();
+                byte[] wfcByte = new byte[byteBuffer.remaining()];
+                byteBuffer.get(wfcByte);
+                if(code == 0){
+                    if(SubSignal.FP ==  pushPacket.subSignal()){
+                        try {
+                            WFCMessage.GetFriendsResult getFriendsResult = WFCMessage.GetFriendsResult.parseFrom(wfcByte);
+                            log.info("getFriendsResult {} ",getFriendsResult.getEntryCount());
+                            List<FriendData> friendDataList = new ArrayList<>();
+                            for(WFCMessage.Friend friend : getFriendsResult.getEntryList()){
+                                FriendData friendData = new FriendData();
+                                friendData.setState(friend.getState());
+                                friendData.setAlias(friend.getAlias());
+                                friendData.setFriendUid(friend.getUid());
+                                friendData.setTimestamp(friend.getUpdateDt());
+                                friendDataList.add(friendData);
+                            }
+                            result = Json.toJson(friendDataList);
+                        } catch (Exception e){
+                            log.error("parse friend result error ",e);
+                        }
+                    }
+                }
+
+            }
+        }
+        return result;
     }
 }

@@ -1,10 +1,12 @@
 package com.comsince.github.websocket;
 
+import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.Header;
 import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.process.MessageDispatcher;
+import com.comsince.github.websocket.model.FrindRequestMessage;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ import org.tio.websocket.common.WsSessionContext;
 import org.tio.websocket.server.handler.IWsMsgHandler;
 
 import java.util.Objects;
+
+import static com.comsince.github.Signal.CONNECT;
 
 /**
  * @author tanyaowu
@@ -54,14 +58,14 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 	@Override
 	public void onAfterHandshaked(HttpRequest httpRequest, HttpResponse httpResponse, ChannelContext channelContext) throws Exception {
 		//绑定到群组，后面会有群发
-		Tio.bindGroup(channelContext, Const.GROUP_ID);
-		int count = Tio.getAllChannelContexts(channelContext.groupContext).getObj().size();
-
-		String msg = channelContext.getClientNode().toString() + " 进来了，现在共有【" + count + "】人在线";
-		//用tio-websocket，服务器发送到客户端的Packet都是WsResponse
-		WsResponse wsResponse = WsResponse.fromText(msg, ShowcaseServerConfig.CHARSET);
-		//群发
-		Tio.sendToGroup(channelContext.groupContext, Const.GROUP_ID, wsResponse);
+//		Tio.bindGroup(channelContext, Const.GROUP_ID);
+//		int count = Tio.getAllChannelContexts(channelContext.groupContext).getObj().size();
+//
+//		String msg = channelContext.getClientNode().toString() + " 进来了，现在共有【" + count + "】人在线";
+//		//用tio-websocket，服务器发送到客户端的Packet都是WsResponse
+//		WsResponse wsResponse = WsResponse.fromText(msg, ShowcaseServerConfig.CHARSET);
+//		//群发
+//		Tio.sendToGroup(channelContext.groupContext, Const.GROUP_ID, wsResponse);
 	}
 
 	/**
@@ -117,8 +121,29 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 		int length = webSocketProtoMessage.getContent() != null ? webSocketProtoMessage.getContent().getBytes().length : 0;
 		header.setLength(length);
 		pushPacket.setHeader(header);
-		pushPacket.setBody(webSocketProtoMessage.getContent().getBytes());
+		if(length != 0){
+			pushPacket.setBody(convert2ProtoMessage(header.getSignal(),header.getSubSignal(),webSocketProtoMessage.getContent()));
+		}
 		return pushPacket;
+	}
+
+	private byte[] convert2ProtoMessage(Signal signal,SubSignal subSignal,String content){
+		byte[] result = null;
+		switch  (signal) {
+			case CONNECT:
+				result = content.getBytes();
+				break;
+			case PUBLISH:
+				if(subSignal == SubSignal.FP){
+					FrindRequestMessage frindRequestMessage = Json.toBean(content,FrindRequestMessage.class);
+					WFCMessage.Version version = WFCMessage.Version.newBuilder().setVersion(frindRequestMessage.getVersion()).build();
+					result = version.toByteArray();
+				}
+				break;
+			default:
+				break;
+		}
+		return result;
 	}
 
 }

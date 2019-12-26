@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ShowcaseWebsocketStarter {
 
 	private PushWsServerStarter wsServerStarter;
-	private ServerGroupContext serverGroupContext;
+	public static ServerGroupContext serverGroupContext;
 
 	/**
 	 *
