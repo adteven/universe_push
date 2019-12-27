@@ -21,6 +21,8 @@ import org.tio.websocket.common.WsResponse;
 import org.tio.websocket.common.WsSessionContext;
 import org.tio.websocket.server.handler.IWsMsgHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static com.comsince.github.Signal.CONNECT;
@@ -138,6 +140,15 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					FrindRequestMessage frindRequestMessage = Json.toBean(content,FrindRequestMessage.class);
 					WFCMessage.Version version = WFCMessage.Version.newBuilder().setVersion(frindRequestMessage.getVersion()).build();
 					result = version.toByteArray();
+				} else if(subSignal == SubSignal.UPUI){
+					List<String> userIds = Json.toBean(content, ArrayList.class);
+					log.info("get user info userIds {}",userIds);
+					WFCMessage.PullUserRequest.Builder userRequestBuilder = WFCMessage.PullUserRequest.newBuilder();
+					for(String user : userIds){
+						WFCMessage.UserRequest userRequest = WFCMessage.UserRequest.newBuilder().setUid(user).build();
+						userRequestBuilder.addRequest(userRequest);
+					}
+					result = userRequestBuilder.build().toByteArray();
 				}
 				break;
 			default:

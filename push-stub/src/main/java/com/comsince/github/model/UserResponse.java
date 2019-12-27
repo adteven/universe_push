@@ -1,5 +1,7 @@
 package com.comsince.github.model;
 
+import cn.wildfirechat.proto.WFCMessage;
+
 import java.io.Serializable;
 
 /**
@@ -163,5 +165,22 @@ public class UserResponse implements Serializable {
                 ", updateDt=" + updateDt +
                 ", type=" + type +
                 '}';
+    }
+
+    public static UserResponse convertWFCUser(WFCMessage.User user){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUid(user.getUid());
+        userResponse.setAddress(user.getAddress());
+        userResponse.setCompany(user.getCompany());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setName(user.getName());
+        userResponse.setMobile(user.getMobile());
+        userResponse.setDisplayName(user.getDisplayName());
+        userResponse.setGender(user.getGender());
+        userResponse.setExtra(user.getExtra());
+        userResponse.setPortrait(user.getPortrait());
+        userResponse.setUpdateDt(user.getUpdateDt());
+        userResponse.setType(user.getType());
+        return userResponse;
     }
 }

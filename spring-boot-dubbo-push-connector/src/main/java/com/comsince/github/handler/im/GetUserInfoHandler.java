@@ -40,10 +40,9 @@ public class GetUserInfoHandler extends IMHandler<WFCMessage.PullUserRequest>{
                 userResultBuilder.setUser(WFCMessage.User.newBuilder().setUid(userRequest.getUid()).build());
                 resultBuilder.addResult(userResultBuilder);
             }
-
-            byte[] data = resultBuilder.build().toByteArray();
-            ackPayload.ensureWritable(data.length).writeBytes(data);
         }
+        byte[] data = resultBuilder.build().toByteArray();
+        ackPayload.ensureWritable(data.length).writeBytes(data);
         return ErrorCode.ERROR_CODE_SUCCESS;
     }
 }

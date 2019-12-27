@@ -5,6 +5,7 @@ import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.model.FriendData;
+import com.comsince.github.model.UserResponse;
 import com.comsince.github.websocket.model.ConnectAcceptedMessage;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -127,6 +128,18 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         } catch (Exception e){
                             log.error("parse friend result error ",e);
                         }
+                    } else if(SubSignal.UPUI == pushPacket.subSignal()){
+                        try {
+                            WFCMessage.PullUserResult pullUserResult = WFCMessage.PullUserResult.parseFrom(wfcByte);
+                            List<UserResponse> userResponseList = new ArrayList<>();
+                            for(WFCMessage.UserResult userResult : pullUserResult.getResultList()){
+                                WFCMessage.User user = userResult.getUser();
+                                userResponseList.add(UserResponse.convertWFCUser(user));
+                            }
+                            result = Json.toJson(userResponseList);
+                        } catch (Exception e){
+                            log.error("parse userinfo error ",e);
+                        }
                     }
                 }
 
@@ -134,4 +147,6 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
         }
         return result;
     }
+
+
 }

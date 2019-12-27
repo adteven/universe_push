@@ -84,7 +84,7 @@ public class MessageServiceImpl implements MessageService {
         messagesStore.getUserInfo(userRequests,resultBuilder);
         for(WFCMessage.UserResult userResult : resultBuilder.getResultList()){
             WFCMessage.User user = userResult.getUser();
-            userResponse = convertWFCUser(user);
+            userResponse = UserResponse.convertWFCUser(user);
         }
         return userResponse;
     }
@@ -266,7 +266,7 @@ public class MessageServiceImpl implements MessageService {
         List<UserResponse> userResponseList = new ArrayList<>();
         List<WFCMessage.User> users = messagesStore.searchUser(keyword,buzzy,page);
         for(WFCMessage.User user : users){
-            UserResponse userResponse = convertWFCUser(user);
+            UserResponse userResponse = UserResponse.convertWFCUser(user);
             userResponseList.add(userResponse);
         }
         return userResponseList;
@@ -282,23 +282,6 @@ public class MessageServiceImpl implements MessageService {
         return null;
     }
 
-
-    private UserResponse convertWFCUser(WFCMessage.User user){
-        UserResponse userResponse = new UserResponse();
-        userResponse.setUid(user.getUid());
-        userResponse.setAddress(user.getAddress());
-        userResponse.setCompany(user.getCompany());
-        userResponse.setEmail(user.getEmail());
-        userResponse.setName(user.getName());
-        userResponse.setMobile(user.getMobile());
-        userResponse.setDisplayName(user.getDisplayName());
-        userResponse.setGender(user.getGender());
-        userResponse.setExtra(user.getExtra());
-        userResponse.setPortrait(user.getPortrait());
-        userResponse.setUpdateDt(user.getUpdateDt());
-        userResponse.setType(user.getType());
-        return userResponse;
-    }
 
 
 
