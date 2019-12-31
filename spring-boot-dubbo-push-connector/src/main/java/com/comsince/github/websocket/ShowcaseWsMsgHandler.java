@@ -7,6 +7,7 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.process.MessageDispatcher;
 import com.comsince.github.websocket.model.FrindRequestMessage;
+import com.comsince.github.websocket.model.PullMessage;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
@@ -149,6 +150,13 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 						userRequestBuilder.addRequest(userRequest);
 					}
 					result = userRequestBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.MP){
+					PullMessage pullMessage = Json.toBean(content,PullMessage.class);
+					WFCMessage.PullMessageRequest pullMessageRequest = WFCMessage.PullMessageRequest.newBuilder()
+							.setId(pullMessage.getMessageId())
+							.setType(pullMessage.getType())
+							.build();
+					result = pullMessageRequest.toByteArray();
 				}
 				break;
 			default:

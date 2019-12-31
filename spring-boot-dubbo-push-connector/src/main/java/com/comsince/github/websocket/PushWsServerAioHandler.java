@@ -5,6 +5,7 @@ import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.model.FriendData;
+import com.comsince.github.model.PullMessageResultResponse;
 import com.comsince.github.model.UserResponse;
 import com.comsince.github.websocket.model.ConnectAcceptedMessage;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
@@ -139,6 +140,14 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             result = Json.toJson(userResponseList);
                         } catch (Exception e){
                             log.error("parse userinfo error ",e);
+                        }
+                    } else if(SubSignal.MP == pushPacket.subSignal()){
+                        try {
+                            WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.parseFrom(wfcByte);
+                            PullMessageResultResponse pullMessageResultResponse = PullMessageResultResponse.convertPullMessage(pullMessageResult);
+                            result = Json.toJson(pullMessageResultResponse);
+                        } catch (Exception e){
+                            log.error("parse message error ",e);
                         }
                     }
                 }
