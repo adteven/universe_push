@@ -5,15 +5,15 @@ package com.comsince.github.websocket.model;
  * Copyright (c) [2019]
  * @Time 19-12-30 下午3:22
  **/
-public class PullMessage {
-    private long messageId;
+public class WsPullMessageRequest {
+    private String messageId;
     private int type;
 
-    public long getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(long messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 

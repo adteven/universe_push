@@ -5,7 +5,7 @@ package com.comsince.github.websocket.model;
  * Copyright (c) [2019]
  * @Time 19-12-25 下午5:51
  **/
-public class ConnectAcceptedMessage {
+public class WsConnectAcceptedMessage {
     private long messageHead;
     private long friendHead;
 

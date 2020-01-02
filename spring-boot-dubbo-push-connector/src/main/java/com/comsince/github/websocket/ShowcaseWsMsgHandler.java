@@ -7,8 +7,8 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.MessageDispatcher;
-import com.comsince.github.websocket.model.FrindRequestMessage;
-import com.comsince.github.websocket.model.PullMessage;
+import com.comsince.github.websocket.model.WsFrindRequestMessage;
+import com.comsince.github.websocket.model.WsPullMessageRequest;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
@@ -19,15 +19,12 @@ import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
 import org.tio.utils.json.Json;
 import org.tio.websocket.common.WsRequest;
-import org.tio.websocket.common.WsResponse;
 import org.tio.websocket.common.WsSessionContext;
 import org.tio.websocket.server.handler.IWsMsgHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static com.comsince.github.Signal.CONNECT;
 
 /**
  * @author tanyaowu
@@ -139,7 +136,7 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 				break;
 			case PUBLISH:
 				if(subSignal == SubSignal.FP){
-					FrindRequestMessage frindRequestMessage = Json.toBean(content,FrindRequestMessage.class);
+					WsFrindRequestMessage frindRequestMessage = Json.toBean(content, WsFrindRequestMessage.class);
 					WFCMessage.Version version = WFCMessage.Version.newBuilder().setVersion(frindRequestMessage.getVersion()).build();
 					result = version.toByteArray();
 				} else if(subSignal == SubSignal.UPUI){
@@ -152,9 +149,10 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					}
 					result = userRequestBuilder.build().toByteArray();
 				} else if(subSignal == SubSignal.MP){
-					PullMessage pullMessage = Json.toBean(content,PullMessage.class);
+					WsPullMessageRequest pullMessage = Json.toBean(content, WsPullMessageRequest.class);
+					log.info("pull message {}",pullMessage.getMessageId());
 					WFCMessage.PullMessageRequest pullMessageRequest = WFCMessage.PullMessageRequest.newBuilder()
-							.setId(pullMessage.getMessageId())
+							.setId(Long.parseLong(pullMessage.getMessageId()) - 1)
 							.setType(pullMessage.getType())
 							.build();
 					result = pullMessageRequest.toByteArray();

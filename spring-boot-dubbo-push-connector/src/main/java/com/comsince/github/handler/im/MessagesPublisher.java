@@ -9,6 +9,7 @@ import com.comsince.github.SubSignal;
 import com.comsince.github.immessage.PublishAckMessagePacket;
 import com.comsince.github.immessage.PublishMessagePacket;
 import com.comsince.github.model.*;
+import com.comsince.github.websocket.ShowcaseWebsocketStarter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.StringUtil;
@@ -290,7 +291,7 @@ public class MessagesPublisher {
                     }
                 }
 
-                LOG.info("NotifyMessage pullType {}  messageSeq {}",pullType,messageSeq);
+                LOG.info("WsNotifyMessage pullType {}  messageSeq {}",pullType,messageSeq);
 
                 WFCMessage.NotifyMessage notifyMessage = WFCMessage.NotifyMessage
                         .newBuilder()
@@ -307,6 +308,10 @@ public class MessagesPublisher {
                 LOG.info("send to clientId {}",targetSession.getClientID());
 
                 Tio.sendToBsId(PushServer.serverGroupContext,targetSession.getClientID(),publishMsg);
+
+                LOG.info("send to websocket clientId {}",targetSession.getClientID());
+                //这里要通知websocket客户端，因此需要发送到websocket消息
+                Tio.sendToBsId(ShowcaseWebsocketStarter.serverGroupContext,targetSession.getClientID(),publishMsg);
             }
         }
     }

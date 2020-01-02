@@ -5,11 +5,11 @@ package com.comsince.github.websocket.model;
  * Copyright (c) [2019]
  * @Time 19-12-31 下午6:00
  **/
-public class SendMessageResponse {
+public class WsSendMessageResponse {
     private long messageId;
     private long timestamp;
 
-    public SendMessageResponse(long messageId, long timestamp) {
+    public WsSendMessageResponse(long messageId, long timestamp) {
         this.messageId = messageId;
         this.timestamp = timestamp;
     }

@@ -7,12 +7,8 @@ import com.comsince.github.SubSignal;
 import com.comsince.github.model.FriendData;
 import com.comsince.github.model.PullMessageResultResponse;
 import com.comsince.github.model.UserResponse;
-import com.comsince.github.websocket.model.ConnectAcceptedMessage;
-import com.comsince.github.websocket.model.SendMessageResponse;
-import com.comsince.github.websocket.model.WebSocketProtoMessage;
+import com.comsince.github.websocket.model.*;
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tio.core.ChannelContext;
@@ -29,10 +25,8 @@ import org.tio.websocket.server.WsServerConfig;
 import org.tio.websocket.server.handler.IWsMsgHandler;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -97,7 +91,7 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                 if(SubSignal.CONNECTION_ACCEPTED == pushPacket.subSignal()){
                     try {
                         WFCMessage.ConnectAckPayload connectAckPayload = WFCMessage.ConnectAckPayload.parseFrom(pushPacket.getBody());
-                        ConnectAcceptedMessage connectAcceptedMessage = new ConnectAcceptedMessage();
+                        WsConnectAcceptedMessage connectAcceptedMessage = new WsConnectAcceptedMessage();
                         connectAcceptedMessage.setFriendHead(connectAckPayload.getFriendHead());
                         connectAcceptedMessage.setMessageHead(connectAckPayload.getMsgHead());
                         log.info("msgHead {} friendHead {}",connectAckPayload.getMsgHead(),connectAckPayload.getFriendHead());
@@ -146,7 +140,9 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         try {
                             WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.parseFrom(wfcByte);
                             PullMessageResultResponse pullMessageResultResponse = PullMessageResultResponse.convertPullMessage(pullMessageResult);
-                            result = Json.toJson(pullMessageResultResponse);
+                            WsPullMessageResponse wsPullMessageResponse = new WsPullMessageResponse(Long.toString(pullMessageResultResponse.getCurrent()),
+                                    Long.toString(pullMessageResultResponse.getHead()),pullMessageResultResponse.getMessageResponseList());
+                            result = Json.toJson(wsPullMessageResponse);
                         } catch (Exception e){
                             log.error("parse message error ",e);
                         }
@@ -155,13 +151,24 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             ByteBuffer resultBuf = ByteBuffer.wrap(wfcByte);
                             long messageUid = resultBuf.getLong();
                             long timestamp = resultBuf.getLong();
-                            result = Json.toJson(new SendMessageResponse(messageUid,timestamp));
+                            result = Json.toJson(new WsSendMessageResponse(messageUid,timestamp));
                         } catch (Exception e){
                             log.error("parse ms message error ",e);
                         }
                     }
                 }
 
+            } else if(Signal.PUBLISH == pushPacket.signal()){
+                log.info("receiver signal publish subsignal  {}",pushPacket.subSignal());
+                if(SubSignal.MN == pushPacket.subSignal()){
+                    try {
+                        WFCMessage.NotifyMessage notifyMessage = WFCMessage.NotifyMessage.parseFrom(pushPacket.getBody());
+                        log.info("notify message messageSeq {} type {}",notifyMessage.getHead(),notifyMessage.getType());
+                        result = Json.toJson(new WsNotifyMessage(Long.toString(notifyMessage.getHead()),notifyMessage.getType()));
+                    } catch (Exception e){
+                        log.error("parse mn message error ",e);
+                    }
+                }
             }
         }
         return result;

@@ -5,7 +5,7 @@ package com.comsince.github.websocket.model;
  * Copyright (c) [2019]
  * @Time 19-12-26 上午10:37
  **/
-public class FrindRequestMessage {
+public class WsFrindRequestMessage {
     long version;
 
     public long getVersion() {
