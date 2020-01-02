@@ -8,6 +8,7 @@ import com.comsince.github.model.FriendData;
 import com.comsince.github.model.PullMessageResultResponse;
 import com.comsince.github.model.UserResponse;
 import com.comsince.github.websocket.model.ConnectAcceptedMessage;
+import com.comsince.github.websocket.model.SendMessageResponse;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
@@ -148,6 +149,15 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             result = Json.toJson(pullMessageResultResponse);
                         } catch (Exception e){
                             log.error("parse message error ",e);
+                        }
+                    } else  if(SubSignal.MS == pushPacket.subSignal()){
+                        try {
+                            ByteBuffer resultBuf = ByteBuffer.wrap(wfcByte);
+                            long messageUid = resultBuf.getLong();
+                            long timestamp = resultBuf.getLong();
+                            result = Json.toJson(new SendMessageResponse(messageUid,timestamp));
+                        } catch (Exception e){
+                            log.error("parse ms message error ",e);
                         }
                     }
                 }
