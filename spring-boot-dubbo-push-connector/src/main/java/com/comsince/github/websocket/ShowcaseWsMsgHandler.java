@@ -7,6 +7,7 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.MessageDispatcher;
+import com.comsince.github.websocket.model.DisConnectMessage;
 import com.comsince.github.websocket.model.WsFrindRequestMessage;
 import com.comsince.github.websocket.model.WsPullMessageRequest;
 import com.comsince.github.websocket.model.WebSocketProtoMessage;
@@ -133,6 +134,12 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 		switch  (signal) {
 			case CONNECT:
 				result = content.getBytes();
+				break;
+			case DISCONNECT:
+				DisConnectMessage disConnectMessage = Json.toBean(content,DisConnectMessage.class);
+				byte[] clearSession = new byte[1];
+				clearSession[0] = (byte)disConnectMessage.getClearSession();
+				result = clearSession;
 				break;
 			case PUBLISH:
 				if(subSignal == SubSignal.FP){
