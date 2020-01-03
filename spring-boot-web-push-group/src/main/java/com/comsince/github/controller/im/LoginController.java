@@ -4,10 +4,7 @@ import com.comsince.github.controller.im.pojo.LoginRequest;
 import com.comsince.github.controller.im.pojo.SendCodeRequest;
 import com.comsince.github.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +27,7 @@ public class LoginController {
         return loginService.sendCode(request.getMobile());
     }
 
+    @CrossOrigin("*")
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8"   )
     public Object login(@RequestBody LoginRequest request) {
         return loginService.login(request.getMobile(), request.getCode(), request.getClientId());
