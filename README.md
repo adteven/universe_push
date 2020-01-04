@@ -21,7 +21,7 @@
 * 请选择其中任何一个帐号密码进行登录即可
 ```properties
 帐号：13800000000, 13800000001, 13800000002
-密码：556677
+验证码：556677
 ```
 
 * 技术咨询  
@@ -29,6 +29,7 @@
 
 ### 基于Vue的web客户端
 web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，目前正在紧张的开发中，敬请期待[vue-chat](https://github.com/comsince/vue-chat)
+**NOTE:** [演示地址](http://www.comsince.cn/chat/index.htm) 演示账号验证码同手机版一致
 ![image](./attachment/vue-chat.png)
 
 ## 服务说明
