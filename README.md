@@ -31,6 +31,7 @@
 web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，目前正在紧张的开发中，敬请期待[vue-chat](https://github.com/comsince/vue-chat)
 
 * 项目预览  
+
 ![image](./attachment/vue-chat.png)
 
 **NOTE:** [演示地址](http://www.comsince.cn/chat/index.htm) 演示`账号`,`验证码`同手机版一致
