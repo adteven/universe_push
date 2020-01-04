@@ -29,8 +29,11 @@
 
 ### 基于Vue的web客户端
 web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，目前正在紧张的开发中，敬请期待[vue-chat](https://github.com/comsince/vue-chat)
-**NOTE:** [演示地址](http://www.comsince.cn/chat/index.htm) 演示账号验证码同手机版一致
+
+* 项目预览
 ![image](./attachment/vue-chat.png)
+
+**NOTE:** [演示地址](http://www.comsince.cn/chat/index.htm) 演示`账号`,`验证码`同手机版一致
 
 ## 服务说明
 聊天系统为了适应大规模用户的链接请求，将服务分为`链接服务`和`消息服务`，它们都是独立的，可以单独部署也可以集群部署
