@@ -14,7 +14,7 @@
         <!-- 指定数据库连接源的基本属性 -->
         <!--MySQL数据库驱动程序-->
         <property name="driverClass">com.mysql.cj.jdbc.Driver</property>
-        <!--MySQL数据库地址-->
+        <!--MySQL数据库地址 注意的这里的mysql,由于阿里云限制，这里mysql要设置为localhost地址127.0.0.1-->
         <property name="jdbcUrl">jdbc:mysql://mysql:3306/wfchat?useSSL=false&amp;serverTimezone=GMT&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=utf8</property>
         <!--MySQL数据库用户名-->
         <property name="user">root</property>

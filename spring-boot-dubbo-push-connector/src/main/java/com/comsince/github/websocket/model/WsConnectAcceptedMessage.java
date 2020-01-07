@@ -6,14 +6,14 @@ package com.comsince.github.websocket.model;
  * @Time 19-12-25 下午5:51
  **/
 public class WsConnectAcceptedMessage {
-    private long messageHead;
+    private String messageHead;
     private long friendHead;
 
-    public long getMessageHead() {
+    public String getMessageHead() {
         return messageHead;
     }
 
-    public void setMessageHead(long messageHead) {
+    public void setMessageHead(String messageHead) {
         this.messageHead = messageHead;
     }
 

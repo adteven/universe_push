@@ -5,6 +5,7 @@ import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.model.FriendData;
+import com.comsince.github.model.GroupInfo;
 import com.comsince.github.model.PullMessageResultResponse;
 import com.comsince.github.model.UserResponse;
 import com.comsince.github.websocket.model.*;
@@ -93,7 +94,7 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         WFCMessage.ConnectAckPayload connectAckPayload = WFCMessage.ConnectAckPayload.parseFrom(pushPacket.getBody());
                         WsConnectAcceptedMessage connectAcceptedMessage = new WsConnectAcceptedMessage();
                         connectAcceptedMessage.setFriendHead(connectAckPayload.getFriendHead());
-                        connectAcceptedMessage.setMessageHead(connectAckPayload.getMsgHead());
+                        connectAcceptedMessage.setMessageHead(String.valueOf(connectAckPayload.getMsgHead()));
                         log.info("msgHead {} friendHead {}",connectAckPayload.getMsgHead(),connectAckPayload.getFriendHead());
                         result = Json.toJson(connectAcceptedMessage);
                     } catch (InvalidProtocolBufferException e) {
@@ -136,7 +137,15 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         } catch (Exception e){
                             log.error("parse userinfo error ",e);
                         }
-                    } else if(SubSignal.MP == pushPacket.subSignal()){
+                    } else if(SubSignal.GPGI == pushPacket.subSignal()){
+                        try {
+                            WFCMessage.PullGroupInfoResult groupInfoResult = WFCMessage.PullGroupInfoResult.parseFrom(wfcByte);
+                            List<GroupInfo> groupInfos = GroupInfo.convert2GroupInfos(groupInfoResult.getInfoList());
+                            result = Json.toJson(groupInfos);
+                        } catch (Exception e){
+                            log.error("parse groupinfo error ",e);
+                        }
+                    }else if(SubSignal.MP == pushPacket.subSignal()){
                         try {
                             WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.parseFrom(wfcByte);
                             PullMessageResultResponse pullMessageResultResponse = PullMessageResultResponse.convertPullMessage(pullMessageResult);

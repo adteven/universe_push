@@ -155,11 +155,27 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 						userRequestBuilder.addRequest(userRequest);
 					}
 					result = userRequestBuilder.build().toByteArray();
-				} else if(subSignal == SubSignal.MP){
+				} else if(subSignal == SubSignal.GPGI){
+                    List<String> groupIds = Json.toBean(content,ArrayList.class);
+                    log.info("get group info group ids {}",groupIds);
+					WFCMessage.PullUserRequest.Builder userRequestBuilder = WFCMessage.PullUserRequest.newBuilder();
+					for(String groupId : groupIds){
+						WFCMessage.UserRequest userRequest = WFCMessage.UserRequest.newBuilder().setUid(groupId).build();
+						userRequestBuilder.addRequest(userRequest);
+					}
+					result = userRequestBuilder.build().toByteArray();
+				}else if(subSignal == SubSignal.MP){
 					WsPullMessageRequest pullMessage = Json.toBean(content, WsPullMessageRequest.class);
-					log.info("pull message {}",pullMessage.getMessageId());
+					log.info("pull message {} sendMessageCount {} pullType {}",pullMessage.getMessageId(),pullMessage.getSendMessageCount(),pullMessage.getPullType());
+					//只有通知下拉消息才需要消息Id减1,在这里做减1操作，主要时因为js对long类型精度丢失无法做加减操作
+					long pullMessageId = Long.parseLong(pullMessage.getMessageId());
+					if(pullMessage.getPullType() == 1){
+						pullMessageId -= 1;
+					} else if(pullMessage.getPullType() == 0){
+						pullMessageId = pullMessageId + pullMessage.getSendMessageCount();
+					}
 					WFCMessage.PullMessageRequest pullMessageRequest = WFCMessage.PullMessageRequest.newBuilder()
-							.setId(Long.parseLong(pullMessage.getMessageId()) - 1)
+							.setId(pullMessageId)
 							.setType(pullMessage.getType())
 							.build();
 					result = pullMessageRequest.toByteArray();
