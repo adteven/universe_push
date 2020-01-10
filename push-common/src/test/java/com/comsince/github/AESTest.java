@@ -86,7 +86,7 @@ public class AESTest {
 //        System.out.println("result code encrypt "+Base64.getEncoder().encodeToString(code));
         String decryptPwd = "4sKuj7MjVL6egWm7ioJxmWNS3cayD3dhNsZtGQCBQ4a9h7gJfRtSiXLdyuUsHGs3";
 //        System.out.println("decrypt pwd length "+decryptPwd.getBytes().length);
-        byte[] result = AES.AESDecrypt(Base64.getDecoder().decode(decryptPwd),"e9266a45-18dd-4180-a184-0c051cace456",true);
+        byte[] result = AES.AESDecrypt(Base64.getDecoder().decode(decryptPwd),"e9266a45-18dd-4180-a184-0c051cace456",false);
         System.out.println("result "+Base64.getEncoder().encodeToString(result));
 
         String result1 = DES.decryptDES(Base64.getEncoder().encodeToString(result));
