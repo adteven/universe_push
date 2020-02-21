@@ -7,10 +7,7 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.MessageDispatcher;
-import com.comsince.github.websocket.model.DisConnectMessage;
-import com.comsince.github.websocket.model.WsFrindRequestMessage;
-import com.comsince.github.websocket.model.WsPullMessageRequest;
-import com.comsince.github.websocket.model.WebSocketProtoMessage;
+import com.comsince.github.websocket.model.*;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +181,11 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					log.info("message send {}",messageResponse);
 					WFCMessage.Message message = MessageResponse.convertWFCMessage(messageResponse);
 					result = message.toByteArray();
+				} else if(subSignal == SubSignal.GQNUT){
+					WsUploadTokenRequest wsUploadTokenRequest = Json.toBean(content,WsUploadTokenRequest.class);
+					log.info("upload media type {}",wsUploadTokenRequest.getMediaType());
+					result = new byte[1];
+					result[0] = (byte) wsUploadTokenRequest.getMediaType();
 				}
 				break;
 			default:

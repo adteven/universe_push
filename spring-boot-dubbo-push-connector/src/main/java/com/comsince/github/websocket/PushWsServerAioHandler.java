@@ -164,6 +164,19 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         } catch (Exception e){
                             log.error("parse ms message error ",e);
                         }
+                    } else if(SubSignal.GQNUT == pushPacket.subSignal()){
+                        try {
+                            WFCMessage.GetUploadTokenResult getUploadTokenResult = WFCMessage.GetUploadTokenResult.parseFrom(wfcByte);
+                            WsUploadTokenResponse wsUploadTokenResponse = new WsUploadTokenResponse();
+                            wsUploadTokenResponse.setDomain(getUploadTokenResult.getDomain());
+                            wsUploadTokenResponse.setServer(getUploadTokenResult.getServer());
+                            wsUploadTokenResponse.setPort(getUploadTokenResult.getPort());
+                            wsUploadTokenResponse.setToken(getUploadTokenResult.getToken());
+                            log.info("get upload response {}",wsUploadTokenResponse);
+                            result = Json.toJson(wsUploadTokenResponse);
+                        } catch (Exception e){
+                            log.error("parse upload token error",e);
+                        }
                     }
                 }
 
