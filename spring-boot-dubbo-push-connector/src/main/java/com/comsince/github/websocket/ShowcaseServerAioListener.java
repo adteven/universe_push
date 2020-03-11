@@ -29,7 +29,7 @@ public class ShowcaseServerAioListener extends WsServerAioListener {
 	public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect) throws Exception {
 		super.onAfterConnected(channelContext, isConnected, isReconnect);
 		if (log.isInfoEnabled()) {
-			log.info("onAfterConnected\r\n{}", channelContext);
+			log.info("onAfterConnected client {}", channelContext.getClientNode());
 		}
 
 	}
@@ -38,7 +38,7 @@ public class ShowcaseServerAioListener extends WsServerAioListener {
 	public void onAfterSent(ChannelContext channelContext, Packet packet, boolean isSentSuccess) throws Exception {
 		super.onAfterSent(channelContext, packet, isSentSuccess);
 		if (log.isInfoEnabled()) {
-			log.info("onAfterSent\r\n{}\r\n{}", packet.logstr(), channelContext);
+			log.info("onAfterSent client:"+channelContext.getClientNode()+" bsId "+channelContext.getBsId()+" sendSuccess "+isSentSuccess);
 		}
 	}
 
@@ -65,26 +65,17 @@ public class ShowcaseServerAioListener extends WsServerAioListener {
 
 	@Override
 	public void onAfterDecoded(ChannelContext channelContext, Packet packet, int packetSize) throws Exception {
-		super.onAfterDecoded(channelContext, packet, packetSize);
-		if (log.isInfoEnabled()) {
-			log.info("onAfterDecoded\r\n{}\r\n{}", packet.logstr(), channelContext);
-		}
+
 	}
 
 	@Override
 	public void onAfterReceivedBytes(ChannelContext channelContext, int receivedBytes) throws Exception {
-		super.onAfterReceivedBytes(channelContext, receivedBytes);
-		if (log.isInfoEnabled()) {
-			log.info("onAfterReceivedBytes\r\n{}", channelContext);
-		}
+
 	}
 
 	@Override
 	public void onAfterHandled(ChannelContext channelContext, Packet packet, long cost) throws Exception {
-		super.onAfterHandled(channelContext, packet, cost);
-		if (log.isInfoEnabled()) {
-			log.info("onAfterHandled\r\n{}\r\n{}", packet.logstr(), channelContext);
-		}
+		log.info("onAfterHandled client {} message {}", channelContext.getClientNode(),packet.logstr());
 	}
 
 }

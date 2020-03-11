@@ -85,7 +85,7 @@ public class MessagesPublisher {
                     if (targetSession.getClientID() == null) {
                         continue;
                     }
-                    LOG.info("send transparent message {} to receiver {} clientId {}",messageHead,user,targetSession.clientID);
+                    LOG.info("send transparent message {} contentType {} to receiver {} clientId {}",messageHead,messageResponse.getContent().getType(),user,targetSession.clientID);
                     WFCMessage.Message wfcMessage = MessageResponse.convertWFCMessage(messageResponse);
                     WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.newBuilder()
                             .addMessage(wfcMessage)
@@ -103,6 +103,10 @@ public class MessagesPublisher {
                     publishAckMessagePacket.setSubSignal(SubSignal.MP);
                     publishAckMessagePacket.setBody(bodyMessage);
                     Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishAckMessagePacket);
+
+                    LOG.info("send transparent message to websocket clientId {}",targetSession.getClientID());
+                    //这里要通知websocket客户端，因此需要发送到websocket消息
+                    Tio.sendToBsId(ShowcaseWebsocketStarter.serverGroupContext,targetSession.getClientID(),publishAckMessagePacket);
                 }
             }
         }

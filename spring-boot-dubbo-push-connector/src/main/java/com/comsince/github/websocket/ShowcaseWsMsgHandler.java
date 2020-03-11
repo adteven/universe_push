@@ -95,7 +95,7 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 			log.debug("握手包:{}", httpRequest);
 		}
 
-		log.info("收到ws消息:{}", text);
+		log.info("收到client: {} ws消息:{}",channelContext.getClientNode(),text);
 
 		if (Objects.equals("心跳内容", text)) {
 			return null;
