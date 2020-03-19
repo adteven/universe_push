@@ -28,7 +28,8 @@
 当你登录上面其中一个测试帐号后，如果你有什么问题，请到通讯录找到`官方人员`发消息即可，你也可以在`IM即时通讯交流组`提问，如果在研究过程中有问题，可以随时咨询，本人尽量提供技术支持，但并不保证随时在线，请尽量在工作日时间发消息
 
 ### 基于Vue的web客户端
-web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，目前正在紧张的开发中，敬请期待[vue-chat](https://github.com/comsince/vue-chat)
+web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，详情参见[vue-chat](https://github.com/comsince/vue-chat),支持文本，图片类型发送，支持实时音视频，支持音视频与[android-chat](https://github.com/comsince/android-chat)客户端互通
+
 
 * 项目预览  
 
@@ -79,8 +80,31 @@ kubectl apply -f ./universe-kube-deployment.yml
 
 ![image](attachment/push-connector-scale.png)
 
-**NOTE:** 如果你希望直接脚本部署，[参考脚本部署](README-Linux.md)
+## 本地开发测试
+**NOTE:** 准备好mysql与zookeeper服务，配置好相应的配置，直接启动`push-connector`和`push-group`两个spring-boot服务即可
 
+## 虚拟机部署
+**NOTE:** 如果你希望直接脚本部署，[参考脚本部署](README-Linux.md),例如如下是`push-connector`服务
+
+* 启动`spring-boot-dubbo-push-connector`链接网关服务
+```shell
+/opt/boot/push-api
+├── jvm.ini
+├── push-connector //可执行启动脚本
+└── log
+   └── push-connector.log //存放日志
+└── lib
+   └── spring-boot-dubbo-push-connector-1.0.0-SNAPSHOT.jar //可运行的jar
+```
+
+* 执行启动服务
+
+```shell
+# 启动服务
+./push-connector start
+# 停止服务
+./push-connector stop
+```
 
 ## 欢迎为此项目作出贡献
 该项目是开源项目，欢迎提出建议或者提供意见反馈，如果你喜欢此项目，请点击`star`支持我们不断改进
