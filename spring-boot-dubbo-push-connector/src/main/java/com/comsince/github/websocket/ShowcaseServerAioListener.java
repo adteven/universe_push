@@ -3,13 +3,15 @@
  */
 package com.comsince.github.websocket;
 
+import com.comsince.github.SessionService;
+import com.comsince.github.configuration.PushCommonConfiguration;
+import com.comsince.github.context.SpringApplicationContext;
+import com.comsince.github.utils.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tio.core.ChannelContext;
-import org.tio.core.Tio;
 import org.tio.core.intf.Packet;
-import org.tio.websocket.common.WsResponse;
-import org.tio.websocket.common.WsSessionContext;
 import org.tio.websocket.server.WsServerAioListener;
 
 /**
@@ -46,20 +48,10 @@ public class ShowcaseServerAioListener extends WsServerAioListener {
 	public void onBeforeClose(ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove) throws Exception {
 		super.onBeforeClose(channelContext, throwable, remark, isRemove);
 		if (log.isInfoEnabled()) {
-			log.info("onBeforeClose\r\n{}", channelContext);
+			log.info("onBeforeClose {}", channelContext);
 		}
-
-		WsSessionContext wsSessionContext = (WsSessionContext) channelContext.getAttribute();
-
-		if (wsSessionContext.isHandshaked()) {
-			
-//			int count = Tio.getAllChannelContexts(channelContext.groupContext).getObj().size();
-//
-//			String msg = channelContext.getClientNode().toString() + " 离开了，现在共有【" + count + "】人在线";
-//			//用tio-websocket，服务器发送到客户端的Packet都是WsResponse
-//			WsResponse wsResponse = WsResponse.fromText(msg, ShowcaseServerConfig.CHARSET);
-//			//群发
-//			Tio.sendToGroup(channelContext.groupContext, Const.GROUP_ID, wsResponse);
+		if(StringUtils.isNotBlank(channelContext.getBsId())){
+			sessionService().cleanSession(channelContext.getBsId());
 		}
 	}
 
@@ -76,6 +68,11 @@ public class ShowcaseServerAioListener extends WsServerAioListener {
 	@Override
 	public void onAfterHandled(ChannelContext channelContext, Packet packet, long cost) throws Exception {
 		log.info("onAfterHandled client {} message {}", channelContext.getClientNode(),packet.logstr());
+	}
+
+	private SessionService sessionService(){
+		PushCommonConfiguration pushServerConfiguration = (PushCommonConfiguration) SpringApplicationContext.getBean(Constants.PUSHSERVER_CONFIGURATION);
+		return pushServerConfiguration.sessionService();
 	}
 
 }
