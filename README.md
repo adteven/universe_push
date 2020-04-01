@@ -10,6 +10,7 @@
 提供Android客户端类似微信功能，包括`好友添加`，`私聊`，`群聊`，等基本功能
 
 ### Android 客户端
+[android-chat](https://github.com/comsince/android-chat)客户端，基于java nio实现TCP长连接，使用自定义的二进制协议，全新的心跳设计，实现与web端消息同步，音视频通话等功能。
 
 ![image](attachment/chat-show.gif)
 

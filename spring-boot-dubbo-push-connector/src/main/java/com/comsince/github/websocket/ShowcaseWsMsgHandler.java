@@ -103,9 +103,13 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 
 		//接收到web端发送的消息，需要将其转换为二进制协议格式
         if(!StringUtil.isNullOrEmpty(text)){
-			WebSocketProtoMessage webSocketProtoMessage = Json.toBean(text, WebSocketProtoMessage.class);
-			log.info("convert to websocket proto message {}",webSocketProtoMessage);
-			MessageDispatcher.handleMessage(convert2PushPacket(webSocketProtoMessage),channelContext);
+        	try {
+				WebSocketProtoMessage webSocketProtoMessage = Json.toBean(text, WebSocketProtoMessage.class);
+				log.info("convert to websocket proto message {}",webSocketProtoMessage);
+				MessageDispatcher.handleMessage(convert2PushPacket(webSocketProtoMessage),channelContext);
+			} catch (Exception e){
+        		log.error("parse websocket message error",e);
+			}
 		}
 		//返回值是要发送给客户端的内容，一般都是返回null
 		return null;
