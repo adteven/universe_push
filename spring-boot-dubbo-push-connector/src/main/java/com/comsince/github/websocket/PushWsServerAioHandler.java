@@ -34,7 +34,7 @@ import java.util.List;
  * @author comsicne
  * Copyright (c) [2019]
  * @Time 19-12-24 下午2:46
- * websocket 消息解码器，在原有的基础上扩展功能以支持proto消息格式转换
+ * websocket 消息解码器，在原有的基础上扩展功能以支持proto消息格式转换,时间紧迫，目前没有重构代码，忘见谅
  **/
 public class PushWsServerAioHandler extends WsServerAioHandler {
     private static Logger log = LoggerFactory.getLogger(PushWsServerAioHandler.class);
@@ -177,6 +177,19 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         } catch (Exception e){
                             log.error("parse upload token error",e);
                         }
+                    } else if(SubSignal.US == pushPacket.subSignal()){
+                         try {
+                             WFCMessage.SearchUserResult searchUserResult = WFCMessage.SearchUserResult.parseFrom(wfcByte);
+                             List<UserResponse> userResponseList = new ArrayList<>();
+                             for(WFCMessage.User user : searchUserResult.getEntryList()){
+                                 userResponseList.add(UserResponse.convertWFCUser(user));
+                             }
+                             result = Json.toJson(userResponseList);
+                         } catch (Exception e){
+                             log.error("parse user search result error ",e);
+                         }
+                    } else if(SubSignal.FAR == pushPacket.subSignal()){
+                        result ="{\"code\":200}";
                     }
                 }
 

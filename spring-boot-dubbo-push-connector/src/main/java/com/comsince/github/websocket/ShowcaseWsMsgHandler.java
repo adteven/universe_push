@@ -190,6 +190,23 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					log.info("upload media type {}",wsUploadTokenRequest.getMediaType());
 					result = new byte[1];
 					result[0] = (byte) wsUploadTokenRequest.getMediaType();
+				} else if(subSignal == SubSignal.US){
+                    WsUserSearchRequest wsUserSearchRequest = Json.toBean(content,WsUserSearchRequest.class);
+                    log.info("user search {}",wsUserSearchRequest);
+					WFCMessage.SearchUserRequest request = WFCMessage.SearchUserRequest.newBuilder()
+							.setKeyword(wsUserSearchRequest.getKeyword())
+							.setFuzzy(wsUserSearchRequest.getFuzzy())
+							.setPage(wsUserSearchRequest.getPage())
+							.build();
+					result = request.toByteArray();
+				} else if(subSignal == SubSignal.FAR){
+					WsFriendAddRequest wsFriendAddRequest = Json.toBean(content,WsFriendAddRequest.class);
+					log.info("friend add request {}",wsFriendAddRequest);
+					WFCMessage.AddFriendRequest friendRequest = WFCMessage.AddFriendRequest.newBuilder()
+							.setReason(wsFriendAddRequest.getReason())
+							.setTargetUid(wsFriendAddRequest.getTargetUserId())
+							.build();
+					result = friendRequest.toByteArray();
 				}
 				break;
 			default:
