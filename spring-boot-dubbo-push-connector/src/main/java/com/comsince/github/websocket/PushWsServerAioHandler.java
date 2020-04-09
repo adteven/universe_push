@@ -4,10 +4,7 @@ import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
-import com.comsince.github.model.FriendData;
-import com.comsince.github.model.GroupInfo;
-import com.comsince.github.model.PullMessageResultResponse;
-import com.comsince.github.model.UserResponse;
+import com.comsince.github.model.*;
 import com.comsince.github.websocket.model.*;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.slf4j.Logger;
@@ -190,6 +187,19 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                          }
                     } else if(SubSignal.FAR == pushPacket.subSignal()){
                         result ="{\"code\":200}";
+                    } else if(SubSignal.FRP == pushPacket.subSignal()){
+                        try {
+                            WFCMessage.GetFriendRequestResult getFriendRequestResult = WFCMessage.GetFriendRequestResult.parseFrom(wfcByte);
+                            List<FriendRequestResponse> friendRequestResponses = new ArrayList<>();
+                            for(WFCMessage.FriendRequest friendRequest : getFriendRequestResult.getEntryList()){
+                                friendRequestResponses.add(FriendRequestResponse.convertFriendRequest(friendRequest));
+                            }
+                            result = Json.toJson(friendRequestResponses);
+                        } catch (Exception e){
+                            log.error("parse friend request error ",e);
+                        }
+                    } else if(SubSignal.FHR == pushPacket.subSignal()){
+                        result ="{\"code\":200}";
                     }
                 }
 
@@ -203,6 +213,17 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                     } catch (Exception e){
                         log.error("parse mn message error ",e);
                     }
+                } else if(SubSignal.FRN == pushPacket.subSignal()){
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(pushPacket.getBody());
+                    long version = byteBuffer.getLong();
+                    WsFriendRequestNotificationMessage friendRequestNotificationMessage = new WsFriendRequestNotificationMessage(String.valueOf(version));
+                    log.info("friend request notification version {}",version);
+                    result = Json.toJson(friendRequestNotificationMessage);
+                } else if(SubSignal.FN == pushPacket.subSignal()){
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(pushPacket.getBody());
+                    long version = byteBuffer.getLong();
+                    WsFriendNotificationMessage wsFriendNotificationMessage = new WsFriendNotificationMessage(String.valueOf(version));
+                    result = Json.toJson(wsFriendNotificationMessage);
                 }
             }
         }

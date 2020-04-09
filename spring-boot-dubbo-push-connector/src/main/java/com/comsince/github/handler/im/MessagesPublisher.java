@@ -38,7 +38,6 @@ public class MessagesPublisher {
 
     private SessionService sessionService;
     private MessageService messageService;
-    private static ExecutorService executorCallback = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public MessagesPublisher(SessionService sessionService, MessageService messageService) {
         this.sessionService = sessionService;
@@ -125,18 +124,14 @@ public class MessagesPublisher {
             byteBuffer.putLong(body);
             publishMessage.setBody(byteBuffer.array());
             Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishMessage);
+
+            //send publish notification to websocket client
+            Tio.sendToBsId(ShowcaseWebsocketStarter.serverGroupContext,targetSession.getClientID(),publishMessage);
         }
     }
 
     public void publish2Receivers(WFCMessage.Message message, Set<String> receivers, String exceptClientId, int pullType) {
-//        if (message.getConversation().getType() == ProtoConstants.ConversationType.ConversationType_Channel) {
-//            ChannelInfoResult channelInfo = messageService.getChannelInfo(message.getConversation().getTarget());
-//            if (channelInfo != null && !StringUtil.isNullOrEmpty(channelInfo.getCallback())) {
-//                executorCallback.execute(() -> HttpUtils.httpJsonPost(channelInfo.getCallback() + "/message", new Gson().toJson(SendMessageData.fromProtoMessage(message), SendMessageData.class)));
-//            }
-//        }
         long messageId = message.getMessageId();
-
         String pushContent = message.getContent().getPushContent();
         if (StringUtil.isNullOrEmpty(pushContent)) {
             int type = message.getContent().getType();
@@ -183,23 +178,7 @@ public class MessagesPublisher {
             publishTransparentMessage2Receivers(messageHead, receivers, pullType);
             return;
         }
-
-        WFCMessage.Message message = null;
         for (String user : receivers) {
-//            if (!user.equals(sender)) {
-//                UserResponse userInfo = messageService.getUserInfo(user);
-//                if (userInfo != null && userInfo.getType() == ProtoConstants.UserType.UserType_Robot) {
-//                    RobotResult robot = messageService.getRobot(user);
-//                    if (robot != null && !StringUtil.isNullOrEmpty(robot.getCallback())) {
-//                        if (message == null) {
-//                            message = messageService.getMessage(messageHead);
-//                        }
-//                        final WFCMessage.Message finalMsg = message;
-//                        executorCallback.execute(() -> HttpUtils.httpJsonPost(robot.getCallback(), new Gson().toJson(SendMessageData.fromProtoMessage(finalMsg), SendMessageData.class)));
-//                        continue;
-//                    }
-//                }
-//            }
             long messageSeq;
             if (pullType != ProtoConstants.PullType.Pull_ChatRoom) {
                 messageSeq = messageService.insertUserMessages(sender, conversationType, target, line, messageContentType, user, messageHead);
@@ -209,10 +188,6 @@ public class MessagesPublisher {
 
             Collection<SessionResponse> sessions = sessionService.sessionForUser(user);
             LOG.info("current user {} sessions {}",user,sessions);
-            String senderName = null;
-            String targetName = null;
-            boolean nameLoaded = false;
-
 
             Collection<String> targetClients = null;
             if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
@@ -255,12 +230,6 @@ public class MessagesPublisher {
 
                     if (!user.equals(sender)) {
                         ConversationResult conversation = new ConversationResult();
-//                        if (conversationType == ProtoConstants.ConversationType.ConversationType_Private) {
-//                            conversation = WFCMessage.Conversation.newBuilder().setType(conversationType).setLine(line).setTarget(sender).build();
-//                        } else {
-//                            conversation = WFCMessage.Conversation.newBuilder().setType(conversationType).setLine(line).setTarget(target).build();
-//                        }
-
                         if (conversationType == ProtoConstants.ConversationType.ConversationType_Private){
                             conversation.setType(conversationType);
                             conversation.setLine(line);
@@ -319,29 +288,4 @@ public class MessagesPublisher {
             }
         }
     }
-
-//    private void publishTransparentMessage2Receivers(long messageHead, Collection<String> receivers, int pullType) {
-//        WFCMessage.Message message = messageService.getMessage(messageHead);
-//
-//        if (message != null) {
-//            for (String user : receivers) {
-//                Collection<SessionResponse> sessions = sessionService.sessionForUser(user);
-//
-//                for (SessionResponse targetSession : sessions) {
-//                    if (targetSession.getClientID() == null) {
-//                        continue;
-//                    }
-//
-//                    ByteBuf payload = Unpooled.buffer();
-//                    byte[] byteData = message.toByteArray();
-//                    payload.ensureWritable(byteData.length).writeBytes(byteData);
-//                    PublishMessagePacket publishMsg;
-//                    publishMsg = new PublishMessagePacket();
-//                    publishMsg.setSubSignal(SubSignal.MS);
-//                    publishMsg.setBody(byteData);
-//                    Tio.sendToBsId(PushServer.serverGroupContext,targetSession.getClientID(),publishMsg);
-//                }
-//            }
-//        }
-//    }
 }

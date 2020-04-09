@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class FriendRequestResponse implements Serializable {
     private int direction;
+    private String from;
     private String target;
     private String reason;
     private int status;
@@ -60,10 +61,19 @@ public class FriendRequestResponse implements Serializable {
         this.timestamp = timestamp;
     }
 
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
     @Override
     public String toString() {
         return "FriendRequestResponse{" +
                 "direction=" + direction +
+                ", from='" + from + '\'' +
                 ", target='" + target + '\'' +
                 ", reason='" + reason + '\'' +
                 ", status=" + status +
@@ -76,16 +86,19 @@ public class FriendRequestResponse implements Serializable {
         FriendRequestResponse friendRequestResponse = new FriendRequestResponse();
         friendRequestResponse.setReason(friendRequest.getReason());
         friendRequestResponse.setTimestamp(friendRequest.getUpdateDt());
-        friendRequestResponse.setTarget(friendRequest.getFromUid());
+        friendRequestResponse.setFrom(friendRequest.getFromUid());
+        friendRequestResponse.setTarget(friendRequest.getToUid());
         friendRequestResponse.setStatus(friendRequest.getStatus());
         return friendRequestResponse;
     }
 
     public static WFCMessage.FriendRequest convertFriendRequestResponse(FriendRequestResponse friendRequestResponse){
         WFCMessage.FriendRequest friendRequest = WFCMessage.FriendRequest.newBuilder()
+                .setFromUid(friendRequestResponse.getFrom())
                 .setToUid(friendRequestResponse.getTarget())
                 .setReason(friendRequestResponse.getReason())
                 .setStatus(friendRequestResponse.getStatus())
+                .setUpdateDt(friendRequestResponse.getTimestamp())
                 .build();
         return friendRequest;
     }

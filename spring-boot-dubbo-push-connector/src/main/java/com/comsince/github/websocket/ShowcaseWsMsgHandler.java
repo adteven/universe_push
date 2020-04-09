@@ -207,6 +207,19 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 							.setTargetUid(wsFriendAddRequest.getTargetUserId())
 							.build();
 					result = friendRequest.toByteArray();
+				} else if(subSignal == SubSignal.FRP){
+                    WsFriendRequestPullRequest wsFriendRequestPullRequest = Json.toBean(content,WsFriendRequestPullRequest.class);
+                    log.info("friend pull request {} ",wsFriendRequestPullRequest);
+                    long requestVersion = Long.parseLong(wsFriendRequestPullRequest.getVersion());
+					WFCMessage.Version version = WFCMessage.Version.newBuilder().setVersion( requestVersion - 1000).build();
+					result = version.toByteArray();
+				} else if(subSignal == SubSignal.FHR){
+					WsFriendHandleRequest wsFriendHandleRequest = Json.toBean(content,WsFriendHandleRequest.class);
+					WFCMessage.HandleFriendRequest handleFriendRequest = WFCMessage.HandleFriendRequest.newBuilder()
+							.setTargetUid(wsFriendHandleRequest.getTargetUid())
+							.setStatus(wsFriendHandleRequest.getStatus())
+							.build();
+					result = handleFriendRequest.toByteArray();
 				}
 				break;
 			default:
