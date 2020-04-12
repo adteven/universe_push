@@ -22,6 +22,7 @@ import org.tio.websocket.server.handler.IWsMsgHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -220,6 +221,15 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 							.setStatus(wsFriendHandleRequest.getStatus())
 							.build();
 					result = handleFriendRequest.toByteArray();
+				} else if(subSignal == SubSignal.MMI){
+                    WsModifyMyInfoRequest wsModifyMyInfoRequest = Json.toBean(content,WsModifyMyInfoRequest.class);
+                    log.info("modify myInfo {}",wsModifyMyInfoRequest);
+					WFCMessage.ModifyMyInfoRequest.Builder modifyMyInfoBuilder = WFCMessage.ModifyMyInfoRequest.newBuilder();
+					WFCMessage.InfoEntry infoEntry = WFCMessage.InfoEntry.newBuilder()
+							.setType(wsModifyMyInfoRequest.getType())
+							.setValue(wsModifyMyInfoRequest.getValue()).build();
+					modifyMyInfoBuilder.addEntry(infoEntry);
+					result = modifyMyInfoBuilder.build().toByteArray();
 				}
 				break;
 			default:

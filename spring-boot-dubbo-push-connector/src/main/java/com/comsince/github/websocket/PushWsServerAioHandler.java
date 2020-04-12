@@ -199,7 +199,9 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             log.error("parse friend request error ",e);
                         }
                     } else if(SubSignal.FHR == pushPacket.subSignal()){
-                        result ="{\"code\":200}";
+                        result = "{\"code\":200}";
+                    } else if(SubSignal.MMI == pushPacket.subSignal()){
+                        result = "{\"code\":200}";
                     }
                 }
 
