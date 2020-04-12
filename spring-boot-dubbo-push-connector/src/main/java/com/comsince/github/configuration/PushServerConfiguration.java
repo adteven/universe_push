@@ -1,7 +1,9 @@
 package com.comsince.github.configuration;
 
 import com.comsince.github.PushServer;
-import com.comsince.github.websocket.WebSocketServer;
+import com.comsince.github.websocket.ShowcaseServerConfig;
+import com.comsince.github.websocket.ShowcaseWebsocketStarter;
+import com.comsince.github.websocket.ShowcaseWsMsgHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -24,9 +26,13 @@ public class PushServerConfiguration extends PushCommonConfiguration{
     }
 
     @Bean
-    public WebSocketServer webSocketServer() throws Exception {
-        WebSocketServer webSocketServer = new WebSocketServer();
-        webSocketServer.init();
-        return webSocketServer;
+    public ShowcaseWebsocketStarter webSocketServer() throws Exception {
+        ShowcaseWebsocketStarter showcaseWebsocketStarter = new ShowcaseWebsocketStarter(ShowcaseServerConfig.SERVER_PORT,
+                ShowcaseWsMsgHandler.me,
+                sslConfiguration.getKeystore(),
+                sslConfiguration.getTruststore(),
+                sslConfiguration.password);
+        showcaseWebsocketStarter.getWsServerStarter().start();
+        return showcaseWebsocketStarter;
     }
 }

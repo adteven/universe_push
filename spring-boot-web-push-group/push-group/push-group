@@ -28,7 +28,7 @@ SERVER_PORT=$(echo ${JVM_OPTIONS} | sed 's/.*server\.port=\([[:digit:]]*\).*$/\1
 if [ -z "$SERVER_PORT" ]; then
   SERVER_PORT=8081
 fi
-
+SERVER_PORT=8081
 echo "server port ${SERVER_PORT}"
 
 

@@ -31,6 +31,9 @@ public class PushCommonConfiguration {
     @Autowired
     KafkaProperties kafkaProperties;
 
+    @Autowired
+    SslConfiguration sslConfiguration;
+
     @Reference
     private SubService subService;
 
