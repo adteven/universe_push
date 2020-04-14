@@ -92,7 +92,7 @@ public class LoginServiceImpl implements LoginService {
             String[] params = {code};
             SmsSingleSender ssender = new SmsSingleSender(mSMSConfig.getAppid(), mSMSConfig.getAppkey());
             SmsSingleSenderResult result = ssender.sendWithParam("86", mobile,
-                    mSMSConfig.getTemplateId(), params, null, "", "");
+                    mSMSConfig.getTemplateId(), params, "", "", "");
             if (result.result == 0) {
                 mRecords.put(mobile, new Record(code, mobile));
                 return RestResult.ok(null);
