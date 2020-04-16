@@ -115,6 +115,10 @@ kubectl apply -f ./universe-kube-deployment.yml
 ./push-connector stop
 ```
 
+## CentOS部署
+
+* [即时聊天系统在Centos上单机部署实践](https://www.comsince.cn/2020/04/13/universe-push-start-on-centos/)
+
 ## 欢迎为此项目作出贡献
 该项目是开源项目，欢迎提出建议或者提供意见反馈，如果你喜欢此项目，请点击`star`支持我们不断改进
 
