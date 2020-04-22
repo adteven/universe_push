@@ -142,6 +142,14 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         } catch (Exception e){
                             log.error("parse groupinfo error ",e);
                         }
+                    } else if(SubSignal.GPGM == pushPacket.subSignal()){
+                        try {
+                            WFCMessage.PullGroupMemberResult pullGroupMemberResult = WFCMessage.PullGroupMemberResult.parseFrom(wfcByte);
+                            List<GroupMember> groupMemberList = GroupMember.convertToGroupMember(pullGroupMemberResult.getMemberList());
+                            result = Json.toJson(groupMemberList);
+                        } catch (Exception e) {
+                            log.error("parse group member error ",e);
+                        }
                     }else if(SubSignal.MP == pushPacket.subSignal()){
                         try {
                             WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.parseFrom(wfcByte);

@@ -166,6 +166,13 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 						userRequestBuilder.addRequest(userRequest);
 					}
 					result = userRequestBuilder.build().toByteArray();
+				} else if(subSignal == subSignal.GPGM){
+                    WsGetGroupMemberRequest getGroupMemberRequest = Json.toBean(content,WsGetGroupMemberRequest.class);
+                    log.info("get group member {}",getGroupMemberRequest);
+					WFCMessage.PullGroupMemberRequest.Builder groupMemberBuilder = WFCMessage.PullGroupMemberRequest.newBuilder();
+					groupMemberBuilder.setTarget(getGroupMemberRequest.getGroupId());
+					groupMemberBuilder.setHead(getGroupMemberRequest.getVersion());
+					result = groupMemberBuilder.build().toByteArray();
 				}else if(subSignal == SubSignal.MP){
 					WsPullMessageRequest pullMessage = Json.toBean(content, WsPullMessageRequest.class);
 					log.info("pull message {} sendMessageCount {} pullType {}",pullMessage.getMessageId(),pullMessage.getSendMessageCount(),pullMessage.getPullType());

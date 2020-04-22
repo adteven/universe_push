@@ -22,7 +22,7 @@ import java.util.Enumeration;
  * keytool -export -alias certificatekey -keystore keystore.jks -rfc -file keycert.cer
  * 我们获得证书后，再将证书添加到truststore中，可以运行如下命令（alias的值在上面java代码运行时会打印出来，替代certificatekey即可，file后面的cer是我们上一步导出的公钥）：
  *
- * keytool -import -alias certificatekey -file keycert.cer  -keystore trustkeystore.jks
+ * keytool -import -alias certificatekey -file keycert.cer  -keystore github.comsince.cn.trustkeystore.jks
  * */
 public class JksTest {
     public static final String PFX_KEYSTORE_FILE = "classpath:github.comsince.cn.pfx";// pfx文件位置
