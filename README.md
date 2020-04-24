@@ -28,6 +28,10 @@
 * 技术咨询  
 当你登录上面其中一个测试帐号后，如果你有什么问题，请到通讯录找到`官方人员`发消息即可，你也可以在`IM即时通讯交流组`提问，如果在研究过程中有问题，可以随时咨询，本人尽量提供技术支持，但并不保证随时在线，请尽量在工作日时间发消息
 
+* 官方QQ群交流
+
+![image](attachment/qq_qrcode_universe_push.jpg)
+
 ### 基于Vue的web客户端
 web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，详情参见[vue-chat](https://github.com/comsince/vue-chat),支持文本，图片类型发送，支持实时音视频，支持音视频与[android-chat](https://github.com/comsince/android-chat)客户端互通
 
