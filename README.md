@@ -12,11 +12,11 @@
 ### Android 客户端
 [android-chat](https://github.com/comsince/android-chat)客户端，基于java nio实现TCP长连接，使用自定义的二进制协议，全新的心跳设计，实现与web端消息同步，音视频通话等功能。
 
-![image](attachment/chat-show.gif)
+![image](http://image.comsince.cn/chat-show.gif)
 
 > __<font color="#dd0000">扫码体验APK下载</font>__
 
-![image](attachment/qr-chat.png)
+![image](http://image.comsince.cn/qr-chat.png)
 
 **NOTE:** 本apk基于[android-chat](https://github.com/comsince/android-chat)构建替换为java协议栈开发
 * 请选择其中任何一个帐号密码进行登录即可
@@ -38,15 +38,15 @@ web客户端基于websocket通信，在此协议之上使用json格式的协议�
 
 * 项目预览  
 
-![image](./attachment/vue-chat.png)
+![image](https://user-gold-cdn.xitu.io/2020/4/23/171a4cad1136926f?w=2162&h=1286&f=png&s=487836)
 
 * 语音通话
 
-![image](./attachment/vue-chat-audio.png)
+![image](http://image.comsince.cn/vue-chat-audio.png)
 
 * 视频通话
 
-![image](./attachment/vue-chat-video.png)
+![image](http://image.comsince.cn/vue-chat-video.png)
 
 **NOTE:** [演示地址](http://www.comsince.cn/chat/index.html) 演示`账号`,`验证码`同手机版一致.由于这里使用的是http服务，chrome浏览器对非https的权限管控，建议使用edge浏览器测试音视频通话，当然你也可以本地部署
 
@@ -96,7 +96,7 @@ kubectl apply -f https://www.comsince.cn/download/cloud-native/universe-kube-dep
 kubectl apply -f ./universe-kube-deployment.yml
 ```
 
-![image](attachment/push-connector-scale.png)
+![image](http://image.comsince.cn/push-connector-scale.png)
 
 ## 本地开发测试
 **NOTE:** 准备好mysql与zookeeper服务，配置好相应的配置，直接启动`push-connector`和`push-group`两个spring-boot服务即可
