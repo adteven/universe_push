@@ -42,11 +42,11 @@ web客户端基于websocket通信，在此协议之上使用json格式的协议�
 
 * 语音通话
 
-![image](http://image.comsince.cn/vue-chat-audio.png)
+![image](https://user-gold-cdn.xitu.io/2020/3/20/170f70e65d19d2ac?w=2880&h=1800&f=png&s=1120425)
 
 * 视频通话
 
-![image](http://image.comsince.cn/vue-chat-video.png)
+![image](https://user-gold-cdn.xitu.io/2020/3/20/170f70e73e8ad91e?w=2880&h=1800&f=png&s=1323835)
 
 **NOTE:** [演示地址](http://www.comsince.cn/chat/index.html) 演示`账号`,`验证码`同手机版一致.由于这里使用的是http服务，chrome浏览器对非https的权限管控，建议使用edge浏览器测试音视频通话，当然你也可以本地部署
 
