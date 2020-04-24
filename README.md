@@ -30,7 +30,7 @@
 
 * 官方QQ群交流
 
-![image](attachment/qq_qrcode_universe_push.jpg)
+![image](http://image.comsince.cn/1-VYVLVL22-1587711095978-/storage/emulated/0/Tencent/QQ_Images/qrcode_1587711062833.jpg)
 
 ### 基于Vue的web客户端
 web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，详情参见[vue-chat](https://github.com/comsince/vue-chat),支持文本，图片类型发送，支持实时音视频，支持音视频与[android-chat](https://github.com/comsince/android-chat)客户端互通
