@@ -74,6 +74,9 @@ abstract public class GroupHandler<T> extends IMHandler<T> {
                 String localPortrait = DownloadManager.get().download(portrait,"/data/boot/portrait");
                 if(!StringUtil.isNullOrEmpty(localPortrait)){
                     localPortraitPaths.add(localPortrait);
+                    if(localPortraitPaths.size() == 9){
+                        break;
+                    }
                 }
             }
             if(localPortraitPaths.size() > 1){
