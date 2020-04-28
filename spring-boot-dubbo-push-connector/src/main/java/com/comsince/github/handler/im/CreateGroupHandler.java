@@ -9,6 +9,9 @@ import com.comsince.github.process.ImMessageProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.internal.StringUtil;
 
+import java.util.List;
+
+
 @Handler(value = IMTopic.CreateGroupTopic)
 public class CreateGroupHandler extends GroupHandler<WFCMessage.CreateGroupRequest> {
     @Override
@@ -19,7 +22,16 @@ public class CreateGroupHandler extends GroupHandler<WFCMessage.CreateGroupReque
                 return ErrorCode.ERROR_CODE_GROUP_ALREADY_EXIST;
             }
         }
-        GroupInfo groupInfo = messageService.createGroup(fromUser, GroupInfo.convert2GroupInfo(request.getGroup().getGroupInfo()) ,GroupMember.convertToGroupMember(request.getGroup().getMembersList()));
+        GroupInfo groupInfoRequest = GroupInfo.convert2GroupInfo(request.getGroup().getGroupInfo());
+        List<GroupMember> groupMemberListRequest = GroupMember.convertToGroupMember(request.getGroup().getMembersList());
+
+        if(StringUtil.isNullOrEmpty(groupInfoRequest.getPortrait())){
+            String groupPortrait = createGroupPortrait(groupMemberListRequest);
+            if(!StringUtil.isNullOrEmpty(groupPortrait)){
+                groupInfoRequest.setPortrait(groupPortrait);
+            }
+        }
+        GroupInfo groupInfo = messageService.createGroup(fromUser, groupInfoRequest ,groupMemberListRequest);
         LOG.info("create groupInfo {}",groupInfo);
         if (groupInfo != null) {
             LOG.info("hasNotifyContent {}",request.hasNotifyContent());
@@ -34,4 +46,7 @@ public class CreateGroupHandler extends GroupHandler<WFCMessage.CreateGroupReque
         ackPayload.ensureWritable(data.length).writeBytes(data);
         return ErrorCode.ERROR_CODE_SUCCESS;
     }
+
+
+
 }

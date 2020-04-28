@@ -1,10 +1,12 @@
 package com.comsince.github.websocket;
 
+import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.Header;
 import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
+import com.comsince.github.model.GroupMember;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.MessageDispatcher;
 import com.comsince.github.websocket.model.*;
@@ -57,15 +59,6 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 	 */
 	@Override
 	public void onAfterHandshaked(HttpRequest httpRequest, HttpResponse httpResponse, ChannelContext channelContext) throws Exception {
-		//绑定到群组，后面会有群发
-//		Tio.bindGroup(channelContext, Const.GROUP_ID);
-//		int count = Tio.getAllChannelContexts(channelContext.groupContext).getObj().size();
-//
-//		String msg = channelContext.getClientNode().toString() + " 进来了，现在共有【" + count + "】人在线";
-//		//用tio-websocket，服务器发送到客户端的Packet都是WsResponse
-//		WsResponse wsResponse = WsResponse.fromText(msg, ShowcaseServerConfig.CHARSET);
-//		//群发
-//		Tio.sendToGroup(channelContext.groupContext, Const.GROUP_ID, wsResponse);
 	}
 
 	/**
@@ -173,7 +166,50 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					groupMemberBuilder.setTarget(getGroupMemberRequest.getGroupId());
 					groupMemberBuilder.setHead(getGroupMemberRequest.getVersion());
 					result = groupMemberBuilder.build().toByteArray();
-				}else if(subSignal == SubSignal.MP){
+				} else if(subSignal == subSignal.GC){
+					WsCreateGroupRequest wsCreateGroupRequest = Json.toBean(content,WsCreateGroupRequest.class);
+                    log.info("create group {}",wsCreateGroupRequest);
+                    String groupId = wsCreateGroupRequest.getGroupInfo().getTarget();
+                    String groupPortrait = wsCreateGroupRequest.getGroupInfo().getPortrait();
+					WFCMessage.GroupInfo groupInfo = WFCMessage.GroupInfo.newBuilder()
+							.setName(wsCreateGroupRequest.getGroupInfo().getName())
+							.setTargetId(StringUtil.isNullOrEmpty(groupId)? "":groupId)
+							.setPortrait(StringUtil.isNullOrEmpty(groupPortrait)? "":groupPortrait)
+							.setType(ProtoConstants.GroupType.GroupType_Normal)
+							.build();
+
+					WFCMessage.Group.Builder groupBuilder = WFCMessage.Group.newBuilder();
+					groupBuilder.setGroupInfo(groupInfo);
+					if(wsCreateGroupRequest.getGroupMembers() != null){
+						for(GroupMember groupMember : wsCreateGroupRequest.getGroupMembers()){
+							WFCMessage.GroupMember member = WFCMessage.GroupMember.newBuilder()
+									.setMemberId(groupMember.memberId)
+									.setType(groupMember.type)
+									.build();
+							groupBuilder.addMembers(member);
+						}
+					}
+					WFCMessage.CreateGroupRequest.Builder createGroupRequestBuilder = WFCMessage.CreateGroupRequest.newBuilder();
+					createGroupRequestBuilder.setGroup(groupBuilder.build());
+					if(wsCreateGroupRequest.getLines() != null){
+						createGroupRequestBuilder.addAllToLine(wsCreateGroupRequest.getLines());
+					}
+					result = createGroupRequestBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.GAM){
+					WsAddGroupMemberRequest wsAddGroupMemberRequest = Json.toBean(content,WsAddGroupMemberRequest.class);
+					WFCMessage.AddGroupMemberRequest.Builder memberRequestBuilder = WFCMessage.AddGroupMemberRequest.newBuilder();
+					memberRequestBuilder.setGroupId(wsAddGroupMemberRequest.getGroupId());
+					if(wsAddGroupMemberRequest.getGroupMembers() != null){
+						for(GroupMember gm : wsAddGroupMemberRequest.getGroupMembers()){
+							WFCMessage.GroupMember groupMember = WFCMessage.GroupMember.newBuilder()
+									.setMemberId(gm.getMemberId())
+									.setType(gm.type)
+									.build();
+							memberRequestBuilder.addAddedMember(groupMember);
+						}
+					}
+					result = memberRequestBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.MP){
 					WsPullMessageRequest pullMessage = Json.toBean(content, WsPullMessageRequest.class);
 					log.info("pull message {} sendMessageCount {} pullType {}",pullMessage.getMessageId(),pullMessage.getSendMessageCount(),pullMessage.getPullType());
 					//只有通知下拉消息才需要消息Id减1,在这里做减1操作，主要时因为js对long类型精度丢失无法做加减操作

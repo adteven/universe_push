@@ -35,6 +35,52 @@ public class DownloadManager {
         download(url, saveDir, null,listener);
     }
 
+    public String download(String url, String saveDir){
+        String localDownPath = null;
+        Request request = new Request.Builder().url(url).build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            InputStream is = null;
+            byte[] buf = new byte[2048];
+            int len = 0;
+            FileOutputStream fos = null;
+            // 储存下载文件的目录
+            String savePath = isExistDir(saveDir);
+            String fileName = getNameFromUrl(url);
+            try {
+                is = response.body().byteStream();
+                File file = new File(savePath, fileName);
+                fos = new FileOutputStream(file);
+                while ((len = is.read(buf)) != -1) {
+                    fos.write(buf, 0, len);
+                }
+                fos.flush();
+                localDownPath = file.getAbsolutePath();
+            } catch (Exception e) {
+                File file = new File(savePath, fileName);
+                if (file.exists()) {
+                    file.delete();
+                }
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (IOException e) {
+                }
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return localDownPath;
+    }
+
     public void download(final String url, final String saveDir, String name, final OnDownloadListener listener) {
         Request request = new Request.Builder().url(url).build();
         okHttpClient.newCall(request).enqueue(new Callback() {

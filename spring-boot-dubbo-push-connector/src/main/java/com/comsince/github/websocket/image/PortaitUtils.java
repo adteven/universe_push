@@ -3,6 +3,7 @@ package com.comsince.github.websocket.image;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,6 +16,8 @@ import java.util.concurrent.CountDownLatch;
  * @author comsicne
  * Copyright (c) [2019]
  * @Time 20-4-16 下午5:06
+ * https://blog.csdn.net/qiaolevip/article/details/6738841
+ * https://blog.csdn.net/u010326875/article/details/103678572
  **/
 public class PortaitUtils {
     /**
@@ -31,7 +34,7 @@ public class PortaitUtils {
      * @throws IOException
      */
     public static void generate(List<String> paths, String outPath) throws IOException {
-        generate(paths, 166, 2, outPath);
+        generate(paths, 166, 5, outPath);
     }
 
     /**
@@ -53,7 +56,8 @@ public class PortaitUtils {
         }
         List<BufferedImage> bufferedImages = new ArrayList<BufferedImage>();
         for (int i = 0; i < paths.size(); i++) {
-            bufferedImages.add(resize(paths.get(i), wh, wh, false));
+            BufferedImage bufferedImage = resizeImage(wh, wh,ImageIO.read(new File(paths.get(i))));
+            bufferedImages.add(bufferedImage);
         }
         // BufferedImage.TYPE_INT_RGB可以自己定义可查看API
         BufferedImage outImage = new BufferedImage(length, length, BufferedImage.TYPE_INT_RGB);
@@ -140,6 +144,45 @@ public class PortaitUtils {
         return null;
     }
 
+
+
+    /**
+     * 重新设置图片大小
+     *
+     * @param width
+     * @param height
+     * @param bufferedImage
+     * @return
+     */
+    private static BufferedImage resizeImage(int width, int height, BufferedImage bufferedImage) {
+        BufferedImage newBufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        newBufferedImage.getGraphics().drawImage(bufferedImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
+        return newBufferedImage;
+    }
+
+
+    /**
+     * 图片切圆角
+     *  圆角矩形：
+     *  RoundRectangle2D rectRound = new RoundRectangle2D.Double(20,30,130,100,18,15);//左上角是(20，30)，宽是130，高是100，圆角的长轴是18，短轴是15。
+     *
+     * @param srcImage  BufferedImage
+     * @param radius    radius
+     * @return          BufferedImage
+     */
+    private static BufferedImage setClip(BufferedImage srcImage, int radius){
+        int width = srcImage.getWidth();
+        int height = srcImage.getHeight();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gs = image.createGraphics();
+        gs.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        gs.setClip(new RoundRectangle2D.Double(0, 0, width, height, radius, radius));
+        gs.drawImage(srcImage, 0, 0, null);
+        gs.dispose();
+        return image;
+    }
+
+
     /**
      * 图片缩放
      *
@@ -153,7 +196,7 @@ public class PortaitUtils {
             double ratio = 0; // 缩放比例
             File f = new File(filePath);
             BufferedImage bi = ImageIO.read(f);
-            Image itemp = bi.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            Image itemp = bi.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
             // 计算比例
             if ((bi.getHeight() > height) || (bi.getWidth() > width)) {
                 if (bi.getHeight() > bi.getWidth()) {
@@ -185,50 +228,15 @@ public class PortaitUtils {
     }
 
 
-    public static void main(String[]  args){
-        String[] imageUrls = new String[9];
-        imageUrls[0] = "http://image.comsince.cn/1-qJqkqkBB-1586859367172-152c33b18a346dbc7f4b9d95511e1c47.jpg";
-        imageUrls[1] = "http://image.comsince.cn/1-373z3zNN-1586769371016-1f54b568b4e9d2444cef785f21dbf6de.jpeg";
-        imageUrls[2] = "http://image.comsince.cn/1-MRM5M5UU-1586769718913-4496d7098c1f9729ec7dcc8222276c0f.jpeg";
-        imageUrls[3] = "http://image.comsince.cn/1-8C8181CC-1586779409545-7b04ff294513d5d045c8d9c6f2ae1b55.jpeg";
-        imageUrls[4] = "http://image.comsince.cn/1-8C8181CC-1586779409545-7b04ff294513d5d045c8d9c6f2ae1b55.jpeg";
-        imageUrls[5] = "http://image.comsince.cn/1-t0tptp00-1586779480758-53181fc0e8d6a9976f52996dd2957484.jpg";
-        imageUrls[6] = "http://image.comsince.cn/1-VdVMVMss-1586779593209-14c9b43d92d6df7cd3e3fd26f30c4453.jpg";
-        imageUrls[7] = "http://b-ssl.duitang.com/uploads/item/201808/03/20180803090324_qrygh.thumb.700_0.jpeg";
-        imageUrls[8] = "http://b-ssl.duitang.com/uploads/item/201803/19/20180319132911_UxCLe.thumb.700_0.jpeg";
-
-        CountDownLatch countDownLatch = new CountDownLatch(imageUrls.length);
+    public static void main(String[]  args) throws IOException {
         List<String> portraitList = new ArrayList<>();
-        for(String url : imageUrls){
-            DownloadManager.get().download(url, "/data/boot/download",  new DownloadManager.OnDownloadListener() {
-                @Override
-                public void onSuccess(File file) {
-                    portraitList.add(file.getAbsolutePath());
-                    countDownLatch.countDown();
-                }
+//        portraitList.add("/data/boot/portrait/5-1B1313yy-1577413787826");
+        portraitList.add("/data/boot/portrait/1-JMJJJJ33-1588037582096-760617cdd7ff56a2a72fbac4c055b8f6.jpg");
+        portraitList.add("/data/boot/portrait/1-TYTzTz33-1588037643921-b866940030faa2e8359bf358e23c0048.jpg");
+        portraitList.add("/data/boot/portrait/1-vzvnvnmm-1588037616253-1f54b568b4e9d2444cef785f21dbf6de.jpeg");
+        portraitList.add("/data/boot/portrait/5-vzvnvnmm-1578365484418");
+        generate(portraitList,"/data/boot/one.jpg");
 
-                @Override
-                public void onProgress(int progress) {
-
-                }
-
-                @Override
-                public void onFail() {
-
-                }
-            });
-        }
-
-        try {
-            countDownLatch.await();
-            System.out.println("portrait list "+portraitList);
-            generate(portraitList,"/data/boot/one.jpg");
-            System.out.println("generate success");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 }

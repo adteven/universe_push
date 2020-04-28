@@ -132,7 +132,7 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             }
                             result = Json.toJson(userResponseList);
                         } catch (Exception e){
-                            log.error("parse userinfo error ",e);
+                            log.error("parse user info error ",e);
                         }
                     } else if(SubSignal.GPGI == pushPacket.subSignal()){
                         try {
@@ -140,7 +140,7 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             List<GroupInfo> groupInfos = GroupInfo.convert2GroupInfos(groupInfoResult.getInfoList());
                             result = Json.toJson(groupInfos);
                         } catch (Exception e){
-                            log.error("parse groupinfo error ",e);
+                            log.error("parse group info error ",e);
                         }
                     } else if(SubSignal.GPGM == pushPacket.subSignal()){
                         try {
@@ -150,7 +150,11 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         } catch (Exception e) {
                             log.error("parse group member error ",e);
                         }
-                    }else if(SubSignal.MP == pushPacket.subSignal()){
+                    } else if(SubSignal.GC == pushPacket.subSignal()){
+                        result ="{\"code\":200}";
+                    } else if(SubSignal.GAM == pushPacket.subSignal()) {
+                        result ="{\"code\":200}";
+                    } else if(SubSignal.MP == pushPacket.subSignal()){
                         try {
                             WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.parseFrom(wfcByte);
                             PullMessageResultResponse pullMessageResultResponse = PullMessageResultResponse.convertPullMessage(pullMessageResult);

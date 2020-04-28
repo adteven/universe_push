@@ -96,4 +96,15 @@ public class GroupMember implements Serializable {
         }
         return groupMembers;
     }
+
+    @Override
+    public String toString() {
+        return "GroupMember{" +
+                "groupId='" + groupId + '\'' +
+                ", memberId='" + memberId + '\'' +
+                ", alias='" + alias + '\'' +
+                ", type=" + type +
+                ", updateDt=" + updateDt +
+                '}';
+    }
 }
