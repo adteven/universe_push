@@ -197,6 +197,7 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					result = createGroupRequestBuilder.build().toByteArray();
 				} else if(subSignal == SubSignal.GAM){
 					WsAddGroupMemberRequest wsAddGroupMemberRequest = Json.toBean(content,WsAddGroupMemberRequest.class);
+					log.info("add group member {}",wsAddGroupMemberRequest);
 					WFCMessage.AddGroupMemberRequest.Builder memberRequestBuilder = WFCMessage.AddGroupMemberRequest.newBuilder();
 					memberRequestBuilder.setGroupId(wsAddGroupMemberRequest.getGroupId());
 					if(wsAddGroupMemberRequest.getGroupMembers() != null){
@@ -209,6 +210,20 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 						}
 					}
 					result = memberRequestBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.GMI){
+                   WsModifyGroupInfoRequest wsModifyGroupInfoRequest = Json.toBean(content,WsModifyGroupInfoRequest.class);
+                   log.info("modify group info {}",wsModifyGroupInfoRequest);
+                   WFCMessage.ModifyGroupInfoRequest.Builder modifyGroupInfoBuilder = WFCMessage.ModifyGroupInfoRequest.newBuilder();
+                   modifyGroupInfoBuilder.setGroupId(wsModifyGroupInfoRequest.getGroupId());
+                   modifyGroupInfoBuilder.setType(wsModifyGroupInfoRequest.getType());
+                   modifyGroupInfoBuilder.setValue(wsModifyGroupInfoRequest.getValue());
+                   result = modifyGroupInfoBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.GQ){
+                   WsGroupQuitRequest wsGroupQuitRequest = Json.toBean(content,WsGroupQuitRequest.class);
+                   log.info("quit group info {}",wsGroupQuitRequest.getGroupId());
+					WFCMessage.QuitGroupRequest.Builder builder = WFCMessage.QuitGroupRequest.newBuilder();
+					builder.setGroupId(wsGroupQuitRequest.getGroupId());
+					result = builder.build().toByteArray();
 				} else if(subSignal == SubSignal.MP){
 					WsPullMessageRequest pullMessage = Json.toBean(content, WsPullMessageRequest.class);
 					log.info("pull message {} sendMessageCount {} pullType {}",pullMessage.getMessageId(),pullMessage.getSendMessageCount(),pullMessage.getPullType());
