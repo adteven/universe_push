@@ -288,6 +288,13 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 							.setValue(wsModifyMyInfoRequest.getValue()).build();
 					modifyMyInfoBuilder.addEntry(infoEntry);
 					result = modifyMyInfoBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.MR){
+					WsRecallMessageRequest wsRecallMessageRequest = Json.toBean(content,WsRecallMessageRequest.class);
+					log.info("recall messageUid {}",wsRecallMessageRequest.getMessageUid());
+					WFCMessage.INT64Buf int64Buf = WFCMessage.INT64Buf.newBuilder()
+							.setId(Long.parseLong(wsRecallMessageRequest.getMessageUid()))
+							.build();
+					result = int64Buf.toByteArray();
 				}
 				break;
 			default:

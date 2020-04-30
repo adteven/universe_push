@@ -173,7 +173,7 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                             ByteBuffer resultBuf = ByteBuffer.wrap(wfcByte);
                             long messageUid = resultBuf.getLong();
                             long timestamp = resultBuf.getLong();
-                            result = Json.toJson(new WsSendMessageResponse(messageUid,timestamp));
+                            result = Json.toJson(new WsSendMessageResponse(String.valueOf(messageUid),timestamp));
                         } catch (Exception e){
                             log.error("parse ms message error ",e);
                         }
@@ -218,6 +218,8 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         result = "{\"code\":200}";
                     } else if(SubSignal.MMI == pushPacket.subSignal()){
                         result = "{\"code\":200}";
+                    } else if(SubSignal.MR == pushPacket.subSignal()){
+                        result = "{\"code\":200}";
                     }
                 }
 
@@ -242,6 +244,13 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                     long version = byteBuffer.getLong();
                     WsFriendNotificationMessage wsFriendNotificationMessage = new WsFriendNotificationMessage(String.valueOf(version));
                     result = Json.toJson(wsFriendNotificationMessage);
+                } else if(SubSignal.RMN == pushPacket.subSignal()){
+                    try {
+                        WFCMessage.NotifyRecallMessage notifyRecallMessage = WFCMessage.NotifyRecallMessage.parseFrom(pushPacket.getBody());
+                        result = Json.toJson(new WsRecallNotifyMessage(notifyRecallMessage.getFromUser(),String.valueOf(notifyRecallMessage.getId())));
+                    } catch (Exception e){
+                        log.error("parse recall notify message error ",e);
+                    }
                 }
             }
         }

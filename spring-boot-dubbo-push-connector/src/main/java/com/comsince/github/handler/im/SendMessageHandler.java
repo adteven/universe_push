@@ -39,6 +39,7 @@ public class SendMessageHandler extends IMHandler<WFCMessage.Message> {
 
             long timestamp = System.currentTimeMillis();
             long messageId = MessageShardingUtil.generateId();
+            LOG.info("generate messageId "+messageId);
             message = message.toBuilder().setFromUser(fromUser).setMessageId(messageId).setServerTimestamp(timestamp).build();
 
 

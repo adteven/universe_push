@@ -70,6 +70,10 @@ public class MessagesPublisher {
                 publishMessage.setSubSignal(SubSignal.RMN);
                 publishMessage.setBody(notifyMessage.toByteArray());
                 Tio.sendToBsId(PushServer.serverGroupContext,targetSession.clientID,publishMessage);
+
+                LOG.info("send recall message to websocket clientId {}",targetSession.getClientID());
+                //这里要通知websocket客户端，因此需要发送到websocket消息
+                Tio.sendToBsId(ShowcaseWebsocketStarter.serverGroupContext,targetSession.getClientID(),publishMessage);
             }
         }
     }

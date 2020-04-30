@@ -6,19 +6,20 @@ package com.comsince.github.websocket.model;
  * @Time 19-12-31 下午6:00
  **/
 public class WsSendMessageResponse {
-    private long messageId;
+    //js 大数丢失，全部换成String 类型
+    private String messageId;
     private long timestamp;
 
-    public WsSendMessageResponse(long messageId, long timestamp) {
+    public WsSendMessageResponse(String messageId, long timestamp) {
         this.messageId = messageId;
         this.timestamp = timestamp;
     }
 
-    public long getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(long messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 
