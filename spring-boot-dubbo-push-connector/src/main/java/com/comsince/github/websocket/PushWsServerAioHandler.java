@@ -154,6 +154,8 @@ public class PushWsServerAioHandler extends WsServerAioHandler {
                         result ="{\"code\":200}";
                     } else if(SubSignal.GAM == pushPacket.subSignal()) {
                         result ="{\"code\":200}";
+                    } else if(SubSignal.GKM == pushPacket.subSignal()){
+                        result ="{\"code\":200}";
                     } else if(SubSignal.GMI == pushPacket.subSignal()){
                         result = "{\"code\":200}";
                     } else if(SubSignal.GQ == pushPacket.subSignal()){

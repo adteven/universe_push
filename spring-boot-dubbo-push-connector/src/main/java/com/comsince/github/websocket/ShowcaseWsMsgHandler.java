@@ -210,6 +210,15 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 						}
 					}
 					result = memberRequestBuilder.build().toByteArray();
+				} else if(subSignal == SubSignal.GKM){
+					WsKickGroupMembersRequest kickGroupMembersRequest = Json.toBean(content,WsKickGroupMembersRequest.class);
+					log.info("kick group members {}",kickGroupMembersRequest);
+					WFCMessage.RemoveGroupMemberRequest.Builder removeGroupMemberRequest = WFCMessage.RemoveGroupMemberRequest.newBuilder();
+					removeGroupMemberRequest.setGroupId(kickGroupMembersRequest.getGroupId());
+					for(String memberId : kickGroupMembersRequest.getMemberIds()){
+						removeGroupMemberRequest.addRemovedMember(memberId);
+					}
+					result = removeGroupMemberRequest.build().toByteArray();
 				} else if(subSignal == SubSignal.GMI){
                    WsModifyGroupInfoRequest wsModifyGroupInfoRequest = Json.toBean(content,WsModifyGroupInfoRequest.class);
                    log.info("modify group info {}",wsModifyGroupInfoRequest);
