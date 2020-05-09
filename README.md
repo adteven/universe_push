@@ -9,6 +9,12 @@
 这是一个聊天系统的简单架构，解决大量用户需要即时通讯的解决方案，基于RPC框架Dubbo,SpringBoot构建微服务应用，提供Docker快速部署的解决方案。
 提供Android客户端类似微信功能，包括`好友添加`，`私聊`，`群聊`，等基本功能
 
+### 架构图
+
+**NOTE:** 基本架构图说明为了帮助大家更快了解系统依赖的组件,方便大家快速本地部署
+
+![image](attachment/push-universe.png)
+
 ### Android 客户端
 [android-chat](https://github.com/comsince/android-chat)客户端，基于java nio实现TCP长连接，使用自定义的二进制协议，全新的心跳设计，实现与web端消息同步，音视频通话等功能。
 
@@ -33,7 +39,7 @@
 
 ![image](http://image.comsince.cn/1-VYVLVL22-1587711095978-/storage/emulated/0/Tencent/QQ_Images/qrcode_1587711062833.jpg)
 
-### 基于Vue的web客户端
+### 基于Vue的Web客户端
 web客户端基于websocket通信，在此协议之上使用json格式的协议进行通讯，详情参见[vue-chat](https://github.com/comsince/vue-chat),支持文本，图片类型发送，支持实时音视频，支持音视频与[android-chat](https://github.com/comsince/android-chat)客户端互通
 
 
