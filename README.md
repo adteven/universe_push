@@ -3,11 +3,12 @@
 [![Gitee stars](https://gitee.com/comsince/universe_push/badge/star.svg?theme=white)](https://gitee.com/comsince/universe_push)
 [![GitHub stars](https://img.shields.io/github/stars/comsince/universe_push?style=social)](https://github.com/comsince/universe_push)
 
-# 支持集群的分布式即时聊天系统
+# 飞享
+支持集群的分布式全开源即时聊天系统,该项目是`飞享`聊天系统服务端源码
 
 ## 适合快速部署的聊天系统
 这是一个聊天系统的简单架构，解决大量用户需要即时通讯的解决方案，基于RPC框架Dubbo,SpringBoot构建微服务应用，提供Docker快速部署的解决方案。
-提供Android客户端类似微信功能，包括`好友添加`，`私聊`，`群聊`，等基本功能
+提供Android客户端,Web客户端类似微信功能，包括`好友添加`，`私聊`，`群聊`，`一对一音视频通话`等基本功能
 
 ### 架构图
 
