@@ -156,7 +156,7 @@ kubectl apply -f ./universe-kube-deployment.yml
 
 | 支付宝      | 微信| 
 | :--------: | :--------:| 
-|<img src="http://image.comsince.cn/zfb-purse.png" alt="图片替换文本" width="500" height="200" align="center" />|<img src="http://image.comsince.cn/wx-purse.png" alt="图片替换文本" width="500" height="200" align="center" />|
+|<img src="http://image.comsince.cn/zfb-purse.png" alt="图片替换文本" width="300" height="300" align="center" />|<img src="http://image.comsince.cn/wx-purse.png" alt="图片替换文本" width="300" height="300" align="center" />|
 
 ## 永久授权
 
