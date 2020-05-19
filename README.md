@@ -4,6 +4,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/comsince/universe_push?style=social)](https://github.com/comsince/universe_push)
 
 # 飞享
+
+![image](http://image.comsince.cn/fx-chat.png)
+
 支持集群的分布式全开源即时聊天系统,该项目是`飞享`聊天系统服务端源码
 
 ## 适合快速部署的聊天系统
