@@ -39,6 +39,7 @@ public interface MessageService {
     ErrorCode kickoffGroupMembers(String operator, String groupId, List<String> memberList);
     ErrorCode quitGroup(String operator, String groupId);
     ErrorCode modifyGroupInfo(String operator, String groupId, int modifyType, String value);
+    ErrorCode dismissGroup(String operator, String groupId, boolean isAdmin);
 
     boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse);
     Set<String> getNotifyReceivers(String fromUser, MessageResponse message);

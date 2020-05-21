@@ -176,6 +176,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public ErrorCode dismissGroup(String operator, String groupId, boolean isAdmin) {
+        return messagesStore.dismissGroup(operator,groupId,isAdmin);
+    }
+
+    @Override
     public boolean storeMessage(String fromUser, String fromClientId, MessageResponse messageResponse) {
         return messagesStore.storeMessage(fromUser,fromClientId,MessageResponse.convertWFCMessage(messageResponse)) != null ? true: false;
     }

@@ -233,7 +233,12 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 					WFCMessage.QuitGroupRequest.Builder builder = WFCMessage.QuitGroupRequest.newBuilder();
 					builder.setGroupId(wsGroupQuitRequest.getGroupId());
 					result = builder.build().toByteArray();
-				} else if(subSignal == SubSignal.MP){
+				} else if(subSignal == SubSignal.GD){
+					WsGroupDismissRequest wsGroupDismissRequest = Json.toBean(content,WsGroupDismissRequest.class);
+					WFCMessage.DismissGroupRequest.Builder builder = WFCMessage.DismissGroupRequest.newBuilder();
+					builder.setGroupId(wsGroupDismissRequest.getGroupId());
+					result = builder.build().toByteArray();
+				}else if(subSignal == SubSignal.MP){
 					WsPullMessageRequest pullMessage = Json.toBean(content, WsPullMessageRequest.class);
 					log.info("pull message {} sendMessageCount {} pullType {}",pullMessage.getMessageId(),pullMessage.getSendMessageCount(),pullMessage.getPullType());
 					//只有通知下拉消息才需要消息Id减1,在这里做减1操作，主要时因为js对long类型精度丢失无法做加减操作
