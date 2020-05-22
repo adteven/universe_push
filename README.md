@@ -17,7 +17,7 @@
 
 **NOTE:** 基本架构图说明为了帮助大家更快了解系统依赖的组件,方便大家快速本地部署
 
-![image](attachment/push-universe.png)
+![image](http://image.comsince.cn/push-universe.png)
 
 ### Android 客户端
 [android-chat](https://github.com/comsince/android-chat)客户端，基于java nio实现TCP长连接，使用自定义的二进制协议，全新的心跳设计，实现与web端消息同步，音视频通话等功能。

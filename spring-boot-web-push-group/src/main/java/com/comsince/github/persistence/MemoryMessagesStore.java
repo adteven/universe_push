@@ -321,22 +321,46 @@ public class MemoryMessagesStore implements IMessagesStore {
                 }
 
                 if (bundle != null) {
-//                    if (exceptClientId == null || !exceptClientId.equals(bundle.getFromClientId()) || !user.equals(bundle.getFromUser())) {
 
-                        if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
-                            if (!bundle.getMessage().getConversation().getTarget().equals(chatroomId)) {
+
+                    if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
+                        if (!bundle.getMessage().getConversation().getTarget().equals(chatroomId)) {
+                            continue;
+                        }
+                    }
+
+                    // 过滤已经退出群组的消息,已经解散的群组消息,首次加载消息过滤
+                    if(ProtoConstants.ConversationType.ConversationType_Group == bundle.getType() && fromMessageId == 0){
+                        WFCMessage.GroupInfo groupInfo = this.getGroupInfo(bundle.getTargetId());
+                        if(groupInfo == null){
+                            LOG.info("target {} group have dismissed",bundle.getTargetId());
+                            continue;
+                        } else {
+                            boolean isGroupMember = true;
+                            MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+                            if(groupMembers != null){
+                                for(WFCMessage.GroupMember groupMember : groupMembers.get(bundle.getTargetId())){
+                                    if(groupMember.getMemberId().equals(user) && groupMember.getType() == ProtoConstants.GroupMemberType.GroupMemberType_Removed){
+                                        isGroupMember = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if(!isGroupMember){
+                                LOG.info("current user {} is not in group {}",user,bundle.getTargetId());
                                 continue;
                             }
                         }
+                    }
 
-                        size += bundle.getMessage().getSerializedSize();
+                    size += bundle.getMessage().getSerializedSize();
 
                         if (size >= 1 * 1024 * 1024) { //3M
                             break;
                         }
                         builder.addMessage(bundle.getMessage());
                     }
-//                }
             }
 
             Map.Entry<Long, Long> lastEntry = maps.lastEntry();
@@ -868,7 +892,8 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.GroupInfo getGroupInfo(String groupId) { IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+    public WFCMessage.GroupInfo getGroupInfo(String groupId) {
+        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
         WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
