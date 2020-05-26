@@ -155,12 +155,14 @@ kubectl apply -f ./universe-kube-deployment.yml
 
 ## 一次性赞助
 
-是采用 MIT 许可的开源项目，个人研究使用完全免费。但是随着项目的增长，也需要相应的资金支持，你可以通过以下方式来赞助此项目
+本项目使用非商业性署名协议[Creative Commons Attribution Non Commercial 3.0 Unported](LICENSE)
+
+个人研究使用完全免费。但是随着项目的增长，也需要相应的资金支持，你可以通过以下方式来赞助此项目
 
 | 支付宝      | 微信| 
 | :--------: | :--------:| 
 |<img src="http://image.comsince.cn/zfb-purse.png" alt="图片替换文本" width="300" height="300" align="center" />|<img src="http://image.comsince.cn/wx-purse.png" alt="图片替换文本" width="300" height="300" align="center" />|
 
-## 永久授权
+## 技术支持
 
-如果公司采用本项目或者需要有商业需求，需要二次开发，可以申请软件授权，收取一次性费用，可以提供6个月的技术支持，联系QQ：`1282212195`
+如果公司采用本项目或者需要有商业需求，需要二次开发,提供技术支持,联系QQ：`1282212195`
