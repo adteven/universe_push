@@ -157,7 +157,7 @@ kubectl apply -f ./universe-kube-deployment.yml
 
 本项目使用非商业性署名协议[Creative Commons Attribution Non Commercial 3.0 Unported](LICENSE)
 
-个人研究使用完全免费。但是随着项目的增长，也需要相应的资金支持，你可以通过以下方式来赞助此项目
+但是随着项目的增长，也需要相应的资金支持，你可以通过以下方式来赞助此项目
 
 | 支付宝      | 微信| 
 | :--------: | :--------:| 
