@@ -3,6 +3,8 @@ package com.comsince.github.websocket.im;
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.PushPacket;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.GroupMember;
@@ -15,9 +17,9 @@ import io.netty.util.internal.StringUtil;
  * @Time 20-5-27 上午11:21
  **/
 @Handler(value = IMTopic.CreateGroupTopic)
-public class CreateGroupHandler extends WsImHandler<WsCreateGroupRequest> {
+public class CreateGroupHandler extends WsImHandler<WsCreateGroupRequest,Byte> {
     @Override
-    public byte[] convert2ProtoMessage(WsCreateGroupRequest wsCreateGroupRequest) {
+    public byte[] request(Signal signal, SubSignal subSignal, WsCreateGroupRequest wsCreateGroupRequest) {
         log.info("create group {}",wsCreateGroupRequest);
         String groupId = wsCreateGroupRequest.getGroupInfo().getTarget();
         String groupPortrait = wsCreateGroupRequest.getGroupInfo().getPortrait();
@@ -48,7 +50,7 @@ public class CreateGroupHandler extends WsImHandler<WsCreateGroupRequest> {
     }
 
     @Override
-    public String convert2WebsocketMessage(PushPacket pushPacket) {
+    public String result(Signal signal, SubSignal subSignal, Byte result) {
         return null;
     }
 }

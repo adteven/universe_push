@@ -2,6 +2,8 @@ package com.comsince.github.websocket.im;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.PushPacket;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.websocket.model.WsModifyMyInfoRequest;
@@ -12,9 +14,10 @@ import com.comsince.github.websocket.model.WsModifyMyInfoRequest;
  * @Time 20-5-27 下午2:26
  **/
 @Handler(IMTopic.ModifyMyInfoTopic)
-public class ModifyMyInfoHandler extends WsImHandler<WsModifyMyInfoRequest>{
+public class ModifyMyInfoHandler extends WsImHandler<WsModifyMyInfoRequest,Byte>{
+
     @Override
-    public byte[] convert2ProtoMessage(WsModifyMyInfoRequest wsModifyMyInfoRequest) {
+    public byte[] request(Signal signal, SubSignal subSignal, WsModifyMyInfoRequest wsModifyMyInfoRequest) {
         log.info("modify myInfo {}",wsModifyMyInfoRequest);
         WFCMessage.ModifyMyInfoRequest.Builder modifyMyInfoBuilder = WFCMessage.ModifyMyInfoRequest.newBuilder();
         WFCMessage.InfoEntry infoEntry = WFCMessage.InfoEntry.newBuilder()
@@ -25,7 +28,7 @@ public class ModifyMyInfoHandler extends WsImHandler<WsModifyMyInfoRequest>{
     }
 
     @Override
-    public String convert2WebsocketMessage(PushPacket pushPacket) {
+    public String result(Signal signal, SubSignal subSignal, Byte result) {
         return null;
     }
 }

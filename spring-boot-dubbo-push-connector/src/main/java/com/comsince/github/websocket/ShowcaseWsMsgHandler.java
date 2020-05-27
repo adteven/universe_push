@@ -120,25 +120,25 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 		header.setLength(length);
 		pushPacket.setHeader(header);
 		if(length != 0){
-			pushPacket.setBody(convert2ProtoMessage(header.getSignal(),header.getSubSignal(),webSocketProtoMessage.getContent()));
+			pushPacket.setBody(WsMessageHandler.getInstance().handleRequest(header.getSignal(),header.getSubSignal(),webSocketProtoMessage.getContent()));
 		}
 		return pushPacket;
 	}
 
-	private byte[] convert2ProtoMessage(Signal signal,SubSignal subSignal,String content){
-		byte[] result = null;
-		switch  (signal) {
-			case CONNECT:
-				result = content.getBytes();
-				break;
-			case DISCONNECT:
-				DisConnectMessage disConnectMessage = Json.toBean(content,DisConnectMessage.class);
-				byte[] clearSession = new byte[1];
-				clearSession[0] = (byte)disConnectMessage.getClearSession();
-				result = clearSession;
-				break;
-			case PUBLISH:
-				result = WsMessageHandler.getInstance().handlePublishMessage(subSignal,content);
+//	private byte[] convert2ProtoMessage(Signal signal,SubSignal subSignal,String content){
+//		byte[] result = null;
+//		switch  (signal) {
+//			case CONNECT:
+//				result = content.getBytes();
+//				break;
+//			case DISCONNECT:
+//				DisConnectMessage disConnectMessage = Json.toBean(content,DisConnectMessage.class);
+//				byte[] clearSession = new byte[1];
+//				clearSession[0] = (byte)disConnectMessage.getClearSession();
+//				result = clearSession;
+//				break;
+//			case PUBLISH:
+//				result = WsMessageHandler.getInstance().handleRequest(signal,subSignal,content);
 //				if(subSignal == SubSignal.FP){
 //					WsFrindRequestMessage frindRequestMessage = Json.toBean(content, WsFrindRequestMessage.class);
 //					WFCMessage.Version version = WFCMessage.Version.newBuilder().setVersion(frindRequestMessage.getVersion()).build();
@@ -312,11 +312,11 @@ public class ShowcaseWsMsgHandler implements IWsMsgHandler {
 //							.build();
 //					result = int64Buf.toByteArray();
 //				}
-				break;
-			default:
-				break;
-		}
-		return result;
-	}
+//				break;
+//			default:
+//				break;
+//		}
+//		return result;
+//	}
 
 }

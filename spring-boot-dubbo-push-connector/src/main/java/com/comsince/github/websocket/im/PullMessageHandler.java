@@ -2,6 +2,8 @@ package com.comsince.github.websocket.im;
 
 import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.PushPacket;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.websocket.model.WsPullMessageRequest;
@@ -12,9 +14,10 @@ import com.comsince.github.websocket.model.WsPullMessageRequest;
  * @Time 20-5-27 下午2:14
  **/
 @Handler(value = IMTopic.PullMessageTopic)
-public class PullMessageHandler extends WsImHandler<WsPullMessageRequest>{
+public class PullMessageHandler extends WsImHandler<WsPullMessageRequest,WFCMessage.PullMessageResult>{
+
     @Override
-    public byte[] convert2ProtoMessage(WsPullMessageRequest pullMessage) {
+    public byte[] request(Signal signal, SubSignal subSignal, WsPullMessageRequest pullMessage) {
         log.info("pull message {} sendMessageCount {} pullType {}",pullMessage.getMessageId(),pullMessage.getSendMessageCount(),pullMessage.getPullType());
         //只有通知下拉消息才需要消息Id减1,在这里做减1操作，主要时因为js对long类型精度丢失无法做加减操作
         long pullMessageId = Long.parseLong(pullMessage.getMessageId());
@@ -31,7 +34,7 @@ public class PullMessageHandler extends WsImHandler<WsPullMessageRequest>{
     }
 
     @Override
-    public String convert2WebsocketMessage(PushPacket pushPacket) {
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullMessageResult result) {
         return null;
     }
 }

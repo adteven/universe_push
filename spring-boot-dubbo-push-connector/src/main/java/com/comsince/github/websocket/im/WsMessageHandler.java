@@ -1,5 +1,6 @@
 package com.comsince.github.websocket.im;
 
+import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.utils.ClassUtil;
@@ -37,11 +38,14 @@ public class WsMessageHandler {
         registerAllAction();
     }
 
-    public byte[] handlePublishMessage(SubSignal subSignal,String content){
-        WsImHandler wsImHandler = wsHandlers.get(subSignal.name());
+    public byte[] handleRequest(Signal signal, SubSignal subSignal, String content){
+
+        WsImHandler wsImHandler = wsHandlers.get(signal.name());
+        if(wsImHandler == null){
+            wsImHandler = wsHandlers.get(subSignal.name());
+        }
         if(wsImHandler != null){
-            return wsImHandler.processMessage(content);
-//            return null;
+            return wsImHandler.handleRequest(signal,subSignal,content);
         } else {
             return null;
         }

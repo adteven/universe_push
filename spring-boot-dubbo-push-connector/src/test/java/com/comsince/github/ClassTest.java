@@ -32,7 +32,7 @@ public class ClassTest {
         try {
             for (Class cls : ClassUtil.getAllAssignedClass(WsImHandler.class)) {
                 Handler annotation = (Handler)cls.getAnnotation(Handler.class);
-                if(annotation != null && annotation.value().equals(IMTopic.AddFriendRequestTopic)) {
+                if(annotation != null && annotation.value().equals(IMTopic.GetUserInfoTopic)) {
                     WsImHandler handler = (WsImHandler) cls.newInstance();
                 }
             }

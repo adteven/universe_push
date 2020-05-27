@@ -1,5 +1,8 @@
 package com.comsince.github.websocket.im;
 
+import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.websocket.model.WsFriendAddRequest;
@@ -9,18 +12,17 @@ import com.comsince.github.websocket.model.WsFriendAddRequest;
  * Copyright (c) [2019]
  * @Time 20-5-27 下午6:16
  **/
-@Handler(IMTopic.AddFriendRequestTopic)
+public class TestHandler extends WsImHandler<WsFriendAddRequest,WFCMessage.PullUserRequest>{
 
-public class TestHandler extends WsImHandler<WsFriendAddRequest,Byte>{
+
     @Override
-    public byte[] convert2ProtoMessage(WsFriendAddRequest request) {
+    public byte[] request(Signal signal, SubSignal subSignal, WsFriendAddRequest request) {
         return new byte[0];
     }
 
-//    @Override
-//    public String convert2WebsocketMessage(Byte protoMessage) {
-//        return null;
-//    }
-
+    @Override
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullUserRequest result) {
+        return null;
+    }
 
 }

@@ -1,15 +1,13 @@
 package com.comsince.github.websocket.im;
 
-import com.comsince.github.PushPacket;
+import com.comsince.github.Signal;
+import com.comsince.github.SubSignal;
 import com.comsince.github.utils.Utility;
-import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tio.utils.json.Json;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 
 /**
@@ -19,55 +17,33 @@ import java.lang.reflect.Method;
  **/
 public abstract class WsImHandler<T,V> {
     protected static final Logger log = LoggerFactory.getLogger(WsImHandler.class);
-    private Class dataCls;
+    private Class requestCls;
+    private Class resultCls;
 
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface ActionMethod {
-    }
-
-    protected static String actionName;
 
     public WsImHandler() {
         try {
-            if (StringUtil.isNullOrEmpty(actionName)) {
-                Class cls = getClass();
-                while (cls.getSuperclass() != null) {
-                    for (Method method : cls.getSuperclass().getDeclaredMethods()) {
-                        if (method.getAnnotation(ActionMethod.class) != null) {
-                            actionName = method.getName();
-                            break;
-                        }
-                    }
-                    if (StringUtil.isNullOrEmpty(actionName)) {
-                        cls = cls.getSuperclass();
-                    } else {
-                        break;
-                    }
-                }
-            }
 
-
-            for (Method method : getClass().getDeclaredMethods()) {
-
-                if (method.getName() == actionName && method.getParameterCount() == 1) {
-                    dataCls = method.getParameterTypes()[0];
-                    log.info("im data class init {}",dataCls);
-                    break;
-                }
-            }
-
+            Type superclass = this.getClass().getGenericSuperclass();
+            ParameterizedType parameterizedType = (ParameterizedType) superclass;
+            requestCls = (Class) parameterizedType.getActualTypeArguments()[0];
+            resultCls = (Class) parameterizedType.getActualTypeArguments()[1];
         } catch (Exception e) {
             e.printStackTrace();
             Utility.printExecption(log, e);
         }
     }
 
-
-    public byte[] processMessage(String content){
+    public byte[] handleRequest(Signal signal, SubSignal subSignal, String content){
         byte[] result = null;
         try {
-            T request = (T) Json.toBean(content,dataCls);
-            result = convert2ProtoMessage(request);
+            T request = null;
+            if (requestCls != String.class) {
+                request = (T) Json.toBean(content,requestCls);
+            } else {
+                request = (T) content;
+            }
+            result = request(signal,subSignal,request);
         } catch (Exception e){
             Utility.printExecption(log, e);
         }
@@ -77,10 +53,13 @@ public abstract class WsImHandler<T,V> {
     /**
      * 所有的抽象函数字段必须包含泛型,这样才能解析出原始类型
      * */
-    @ActionMethod
-    abstract public byte[] convert2ProtoMessage(T request);
+    abstract public byte[] request(Signal signal, SubSignal subSignal, T request);
 
-//    @ActionMethod
-//    abstract public String convert2WebsocketMessage(V protoMessage);
+
+
+    abstract public String result(Signal signal, SubSignal subSignal, V result);
+
+
+
 
 }

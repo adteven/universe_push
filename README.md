@@ -153,9 +153,12 @@ kubectl apply -f ./universe-kube-deployment.yml
 * [t-io](https://github.com/tywo45/t-io)
 * [wildfirechat](https://gitee.com/wildfirechat/server)
 
-## 一次性赞助
+## 开源协议
 
 本项目使用非商业性署名协议[Creative Commons Attribution Non Commercial 3.0 Unported](LICENSE)
+未经授权禁止用于商业
+
+## 一次性赞助
 
 但是随着项目的增长，也需要相应的资金支持，你可以通过以下方式来赞助此项目
 
