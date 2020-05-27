@@ -172,7 +172,7 @@ public abstract class IMHandler<T> {
 
                 response(ackPayload, errorCode, callback);
             } else {
-                LOG.error("Handler {} preAction failure", this.getClass().getName());
+                LOG.error("WsHandler {} preAction failure", this.getClass().getName());
                 ByteBuf ackPayload = Unpooled.buffer(1);
                 ackPayload.ensureWritable(1).writeByte(preActionCode.getCode());
                 response(ackPayload, preActionCode, callback);
