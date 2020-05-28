@@ -1,12 +1,11 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.GroupMember;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsAddGroupMemberRequest;
 
 /**
@@ -19,11 +18,11 @@ public class AddGroupMemberHandler extends WsImHandler<WsAddGroupMemberRequest,B
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsAddGroupMemberRequest wsAddGroupMemberRequest) {
         log.info("add group member {}",wsAddGroupMemberRequest);
-        WFCMessage.AddGroupMemberRequest.Builder memberRequestBuilder = WFCMessage.AddGroupMemberRequest.newBuilder();
+        FSCMessage.AddGroupMemberRequest.Builder memberRequestBuilder = FSCMessage.AddGroupMemberRequest.newBuilder();
         memberRequestBuilder.setGroupId(wsAddGroupMemberRequest.getGroupId());
         if(wsAddGroupMemberRequest.getGroupMembers() != null){
             for(GroupMember gm : wsAddGroupMemberRequest.getGroupMembers()){
-                WFCMessage.GroupMember groupMember = WFCMessage.GroupMember.newBuilder()
+                FSCMessage.GroupMember groupMember = FSCMessage.GroupMember.newBuilder()
                         .setMemberId(gm.getMemberId())
                         .setType(gm.type)
                         .build();

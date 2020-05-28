@@ -1,12 +1,11 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.FriendData;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsFrindRequestMessage;
 import org.tio.utils.json.Json;
 
@@ -19,19 +18,19 @@ import java.util.List;
  * @Time 20-5-27 上午10:37
  **/
 @Handler(IMTopic.FriendPullTopic)
-public class FriendPullHandler extends WsImHandler<WsFrindRequestMessage,WFCMessage.GetFriendsResult>{
+public class FriendPullHandler extends WsImHandler<WsFrindRequestMessage,FSCMessage.GetFriendsResult>{
 
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsFrindRequestMessage request) {
-        WFCMessage.Version version = WFCMessage.Version.newBuilder().setVersion(request.getVersion()).build();
+        FSCMessage.Version version = FSCMessage.Version.newBuilder().setVersion(request.getVersion()).build();
         return version.toByteArray();
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.GetFriendsResult getFriendsResult) {
+    public String result(Signal signal, SubSignal subSignal, FSCMessage.GetFriendsResult getFriendsResult) {
         log.info("getFriendsResult {} ",getFriendsResult.getEntryCount());
         List<FriendData> friendDataList = new ArrayList<>();
-        for(WFCMessage.Friend friend : getFriendsResult.getEntryList()){
+        for(FSCMessage.Friend friend : getFriendsResult.getEntryList()){
             FriendData friendData = new FriendData();
             friendData.setState(friend.getState());
             friendData.setAlias(friend.getAlias());

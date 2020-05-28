@@ -1,11 +1,10 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsUploadTokenRequest;
 import com.comsince.github.websocket.model.WsUploadTokenResponse;
 import org.tio.utils.json.Json;
@@ -16,7 +15,7 @@ import org.tio.utils.json.Json;
  * @Time 20-5-27 下午2:17
  **/
 @Handler(IMTopic.GetQiniuUploadTokenTopic)
-public class GetUploadTokenHandler extends WsImHandler<WsUploadTokenRequest,WFCMessage.GetUploadTokenResult>{
+public class GetUploadTokenHandler extends WsImHandler<WsUploadTokenRequest, FSCMessage.GetUploadTokenResult>{
 
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsUploadTokenRequest wsUploadTokenRequest) {
@@ -27,7 +26,7 @@ public class GetUploadTokenHandler extends WsImHandler<WsUploadTokenRequest,WFCM
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.GetUploadTokenResult getUploadTokenResult) {
+    public String result(Signal signal, SubSignal subSignal, FSCMessage.GetUploadTokenResult getUploadTokenResult) {
         WsUploadTokenResponse wsUploadTokenResponse = new WsUploadTokenResponse();
         wsUploadTokenResponse.setDomain(getUploadTokenResult.getDomain());
         wsUploadTokenResponse.setServer(getUploadTokenResult.getServer());

@@ -1,9 +1,9 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsConnectAcceptedMessage;
 import org.tio.utils.json.Json;
 
@@ -13,14 +13,14 @@ import org.tio.utils.json.Json;
  * @Time 20-5-28 上午10:00
  **/
 @Handler("CONNECT_ACK")
-public class ConnectAckHandler extends WsImHandler<Object, WFCMessage.ConnectAckPayload>{
+public class ConnectAckHandler extends WsImHandler<Object, FSCMessage.ConnectAckPayload>{
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, Object request) {
         return new byte[0];
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.ConnectAckPayload connectAckPayload) {
+    public String result(Signal signal, SubSignal subSignal, FSCMessage.ConnectAckPayload connectAckPayload) {
         String result = "";
         if(SubSignal.CONNECTION_ACCEPTED == subSignal){
             WsConnectAcceptedMessage connectAcceptedMessage = new WsConnectAcceptedMessage();

@@ -1,10 +1,9 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsKickGroupMembersRequest;
 
 import static com.comsince.github.handler.im.IMTopic.KickoffGroupMemberTopic;
@@ -20,7 +19,7 @@ public class KickOffGroupMemberHandler extends WsImHandler<WsKickGroupMembersReq
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsKickGroupMembersRequest kickGroupMembersRequest) {
         log.info("kick group members {}",kickGroupMembersRequest);
-        WFCMessage.RemoveGroupMemberRequest.Builder removeGroupMemberRequest = WFCMessage.RemoveGroupMemberRequest.newBuilder();
+        FSCMessage.RemoveGroupMemberRequest.Builder removeGroupMemberRequest = FSCMessage.RemoveGroupMemberRequest.newBuilder();
         removeGroupMemberRequest.setGroupId(kickGroupMembersRequest.getGroupId());
         for(String memberId : kickGroupMembersRequest.getMemberIds()){
             removeGroupMemberRequest.addRemovedMember(memberId);

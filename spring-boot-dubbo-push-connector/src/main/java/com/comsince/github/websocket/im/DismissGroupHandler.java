@@ -1,11 +1,10 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsGroupDismissRequest;
 
 /**
@@ -17,7 +16,7 @@ import com.comsince.github.websocket.model.WsGroupDismissRequest;
 public class DismissGroupHandler extends WsImHandler<WsGroupDismissRequest,Byte>{
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsGroupDismissRequest wsGroupDismissRequest) {
-        WFCMessage.DismissGroupRequest.Builder builder = WFCMessage.DismissGroupRequest.newBuilder();
+        FSCMessage.DismissGroupRequest.Builder builder = FSCMessage.DismissGroupRequest.newBuilder();
         builder.setGroupId(wsGroupDismissRequest.getGroupId());
         return builder.build().toByteArray();
     }
