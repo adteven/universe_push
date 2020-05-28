@@ -26,7 +26,13 @@ public abstract class WsImHandler<T,V> {
 
             Type superclass = this.getClass().getGenericSuperclass();
             ParameterizedType parameterizedType = (ParameterizedType) superclass;
-            requestCls = (Class) parameterizedType.getActualTypeArguments()[0];
+            log.info("request type {}",parameterizedType.getActualTypeArguments()[0]);
+            Type requestType = parameterizedType.getActualTypeArguments()[0];
+            if(requestType.getTypeName().equals("java.util.ArrayList<java.lang.String>")){
+                requestCls = Class.forName("java.util.ArrayList");
+            } else {
+                requestCls = (Class) requestType;
+            }
             resultCls = (Class) parameterizedType.getActualTypeArguments()[1];
         } catch (Exception e) {
             e.printStackTrace();
