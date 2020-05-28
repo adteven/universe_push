@@ -17,12 +17,12 @@
 package com.comsince.github.persistence;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
 import com.comsince.github.model.FriendData;
 import com.comsince.github.persistence.session.Session;
 import com.comsince.github.persistence.session.StoredMessage;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.util.*;
 import com.comsince.github.utils.Utility;
 import com.google.protobuf.ByteString;
@@ -122,7 +122,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     @Override
     public void initStore() {
         //TODO reload data from mysql
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(MemoryMessagesStore.GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(MemoryMessagesStore.GROUP_MEMBERS);
         if (groupMembers.size() == 0) {
             databaseStore.reloadGroupMemberFromDB(hzInstance);
             databaseStore.reloadFriendsFromDB(hzInstance);
@@ -153,7 +153,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.Message storeMessage(String fromUser, String fromClientId, WFCMessage.Message message) {
+    public FSCMessage.Message storeMessage(String fromUser, String fromClientId, FSCMessage.Message message) {
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
 
 
@@ -169,7 +169,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public int getNotifyReceivers(String fromUser, WFCMessage.Message message, Set<String> notifyReceivers) {
+    public int getNotifyReceivers(String fromUser, FSCMessage.Message message, Set<String> notifyReceivers) {
         int type = message.getConversation().getType();
 
         int pullType = 0;
@@ -185,9 +185,9 @@ public class MemoryMessagesStore implements IMessagesStore {
             } else if(!message.getToList().isEmpty()) {
                 notifyReceivers.addAll(message.getToList());
             } else {
-                MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
-                Collection<WFCMessage.GroupMember> members = groupMembers.get(message.getConversation().getTarget());
-                for (WFCMessage.GroupMember member : members) {
+                MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+                Collection<FSCMessage.GroupMember> members = groupMembers.get(message.getConversation().getTarget());
+                for (FSCMessage.GroupMember member : members) {
                     if (member.getType() != ProtoConstants.GroupMemberType.GroupMemberType_Removed) {
                         notifyReceivers.add(member.getMemberId());
                     }
@@ -213,7 +213,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
             pullType = ProtoConstants.PullType.Pull_ChatRoom;
         } else if(type == ProtoConstants.ConversationType.ConversationType_Channel) {
-            WFCMessage.ChannelInfo channelInfo = getChannelInfo(message.getConversation().getTarget());
+            FSCMessage.ChannelInfo channelInfo = getChannelInfo(message.getConversation().getTarget());
             if (channelInfo != null) {
                 notifyReceivers.add(fromUser);
                 if (channelInfo.getOwner().equals(fromUser)) {
@@ -248,8 +248,8 @@ public class MemoryMessagesStore implements IMessagesStore {
         return databaseStore.getAllEnds();
     }
     @Override
-    public WFCMessage.PullMessageResult fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType) {
-        WFCMessage.PullMessageResult.Builder builder = WFCMessage.PullMessageResult.newBuilder();
+    public FSCMessage.PullMessageResult fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType) {
+        FSCMessage.PullMessageResult.Builder builder = FSCMessage.PullMessageResult.newBuilder();
 
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
         LOG.info("fetch message user {} message size {}",user,mIMap.size());
@@ -331,15 +331,15 @@ public class MemoryMessagesStore implements IMessagesStore {
 
                     // 过滤已经退出群组的消息,已经解散的群组消息,首次加载消息过滤
                     if(ProtoConstants.ConversationType.ConversationType_Group == bundle.getType() && fromMessageId == 0){
-                        WFCMessage.GroupInfo groupInfo = this.getGroupInfo(bundle.getTargetId());
+                        FSCMessage.GroupInfo groupInfo = this.getGroupInfo(bundle.getTargetId());
                         if(groupInfo == null){
                             LOG.info("target {} group have dismissed",bundle.getTargetId());
                             continue;
                         } else {
                             boolean isGroupMember = true;
-                            MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+                            MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
                             if(groupMembers != null){
-                                for(WFCMessage.GroupMember groupMember : groupMembers.get(bundle.getTargetId())){
+                                for(FSCMessage.GroupMember groupMember : groupMembers.get(bundle.getTargetId())){
                                     if(groupMember.getMemberId().equals(user) && groupMember.getType() == ProtoConstants.GroupMemberType.GroupMemberType_Removed){
                                         isGroupMember = false;
                                         break;
@@ -377,9 +377,9 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.PullMessageResult loadRemoteMessages(String user, WFCMessage.Conversation conversation, long beforeUid, int count) {
-        WFCMessage.PullMessageResult.Builder builder = WFCMessage.PullMessageResult.newBuilder();
-        List<WFCMessage.Message> messages = databaseStore.loadRemoteMessages(user, conversation, beforeUid, count);
+    public FSCMessage.PullMessageResult loadRemoteMessages(String user, FSCMessage.Conversation conversation, long beforeUid, int count) {
+        FSCMessage.PullMessageResult.Builder builder = FSCMessage.PullMessageResult.newBuilder();
+        List<FSCMessage.Message> messages = databaseStore.loadRemoteMessages(user, conversation, beforeUid, count);
         builder.setCurrent(0).setHead(0);
         if(messages != null) {
             builder.addAllMessage(messages);
@@ -395,8 +395,8 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
     //Todo chatroom
     @Override
-    public WFCMessage.PullMessageResult fetchChatroomMessage(String fromUser, String chatroomId, String exceptClientId, long fromMessageId) {
-        WFCMessage.PullMessageResult.Builder builder = WFCMessage.PullMessageResult.newBuilder();
+    public FSCMessage.PullMessageResult fetchChatroomMessage(String fromUser, String chatroomId, String exceptClientId, long fromMessageId) {
+        FSCMessage.PullMessageResult.Builder builder = FSCMessage.PullMessageResult.newBuilder();
 
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
 

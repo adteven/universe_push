@@ -1,11 +1,11 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.GroupInfo;
 import com.comsince.github.model.GroupNotificationBinaryContent;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 
 import static com.comsince.github.handler.im.IMTopic.KickoffGroupMemberTopic;
@@ -16,9 +16,9 @@ import static com.comsince.github.handler.im.IMTopic.KickoffGroupMemberTopic;
  * @Time 19-6-27 上午10:32
  **/
 @Handler(value = KickoffGroupMemberTopic)
-public class KickoffGroupMember extends GroupHandler<WFCMessage.RemoveGroupMemberRequest>{
+public class KickoffGroupMember extends GroupHandler<FSCMessage.RemoveGroupMemberRequest>{
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.RemoveGroupMemberRequest request, ImMessageProcessor.IMCallback callback) {
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.RemoveGroupMemberRequest request, ImMessageProcessor.IMCallback callback) {
         ErrorCode errorCode;
         GroupInfo groupInfo = messageService.getGroupInfo(request.getGroupId());
         LOG.info("groupInfo {}",groupInfo);
@@ -32,7 +32,7 @@ public class KickoffGroupMember extends GroupHandler<WFCMessage.RemoveGroupMembe
             if (request.hasNotifyContent() && request.getNotifyContent().getType() > 0) {
                 sendGroupNotification(fromUser, groupInfo.getTarget(), request.getToLineList(), request.getNotifyContent());
             } else {
-                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(request.getGroupId(), fromUser, null, request.getRemovedMemberList()).getKickokfMemberGroupNotifyContent();
+                FSCMessage.MessageContent content = new GroupNotificationBinaryContent(request.getGroupId(), fromUser, null, request.getRemovedMemberList()).getKickokfMemberGroupNotifyContent();
                 sendGroupNotification(fromUser, request.getGroupId(), request.getToLineList(), content);
             }
             errorCode = messageService.kickoffGroupMembers(fromUser, request.getGroupId(), request.getRemovedMemberList());

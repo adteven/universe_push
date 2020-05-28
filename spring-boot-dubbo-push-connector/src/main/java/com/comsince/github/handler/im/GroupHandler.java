@@ -9,10 +9,10 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.configuration.MediaServerConfig;
 import com.comsince.github.model.GroupMember;
 import com.comsince.github.model.UserResponse;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.utils.MessageShardingUtil;
 import com.comsince.github.websocket.image.DownloadManager;
 import com.comsince.github.websocket.image.PortaitUtils;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract public class GroupHandler<T> extends IMHandler<T> {
-    protected void sendGroupNotification(String fromUser, String targetId, List<Integer> lines, WFCMessage.MessageContent content) {
+    protected void sendGroupNotification(String fromUser, String targetId, List<Integer> lines, FSCMessage.MessageContent content) {
         if (lines != null) {
             lines = new ArrayList<>();
         }
@@ -37,7 +37,7 @@ abstract public class GroupHandler<T> extends IMHandler<T> {
 
         for (int line : lines) {
             long timestamp = System.currentTimeMillis();
-            WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder().setContent(content).setServerTimestamp(timestamp);
+            FSCMessage.Message.Builder builder = FSCMessage.Message.newBuilder().setContent(content).setServerTimestamp(timestamp);
             builder.setConversation(builder.getConversationBuilder().setType(ProtoConstants.ConversationType.ConversationType_Group).setTarget(targetId).setLine(line));
             builder.setFromUser(fromUser);
             long messageId = MessageShardingUtil.generateId();
@@ -46,10 +46,10 @@ abstract public class GroupHandler<T> extends IMHandler<T> {
         }
     }
 
-    protected List<String> getMemberIdList(List<WFCMessage.GroupMember> groupMembers) {
+    protected List<String> getMemberIdList(List<FSCMessage.GroupMember> groupMembers) {
         List<String> out = new ArrayList<>();
         if (groupMembers != null) {
-            for (WFCMessage.GroupMember gm : groupMembers
+            for (FSCMessage.GroupMember gm : groupMembers
                  ) {
                 out.add(gm.getMemberId());
             }

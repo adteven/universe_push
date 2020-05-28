@@ -21,6 +21,7 @@ import com.comsince.github.common.ErrorCode;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
 import com.comsince.github.model.FriendData;
 import com.comsince.github.persistence.session.StoredMessage;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.security.Topic;
 import java.util.Collection;
 import java.util.List;
@@ -90,22 +91,22 @@ public interface IMessagesStore {
 //    }
 
     DatabaseStore getDatabaseStore();
-    WFCMessage.Message storeMessage(String fromUser, String fromClientId, WFCMessage.Message message);
-	int getNotifyReceivers(String fromUser, WFCMessage.Message message, Set<String> notifyReceivers);
+    FSCMessage.Message storeMessage(String fromUser, String fromClientId, FSCMessage.Message message);
+	int getNotifyReceivers(String fromUser, FSCMessage.Message message, Set<String> notifyReceivers);
     Set<String> getAllEnds();
-    WFCMessage.PullMessageResult fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType);
-    WFCMessage.PullMessageResult loadRemoteMessages(String user, WFCMessage.Conversation conversation, long beforeUid, int count);
+    FSCMessage.PullMessageResult fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType);
+    FSCMessage.PullMessageResult loadRemoteMessages(String user, FSCMessage.Conversation conversation, long beforeUid, int count);
     long insertUserMessages(String sender, int conversationType, String target, int line, int messageContentType, String userId, long messageId);
-    WFCMessage.GroupInfo createGroup(String operator, WFCMessage.GroupInfo groupInfo, List<WFCMessage.GroupMember> memberList);
-    ErrorCode addGroupMembers(String operator, String groupId, List<WFCMessage.GroupMember> memberList);
+    FSCMessage.GroupInfo createGroup(String operator, FSCMessage.GroupInfo groupInfo, List<FSCMessage.GroupMember> memberList);
+    ErrorCode addGroupMembers(String operator, String groupId, List<FSCMessage.GroupMember> memberList);
     ErrorCode kickoffGroupMembers(String operator, String groupId, List<String> memberList);
     ErrorCode quitGroup(String operator, String groupId);
     ErrorCode dismissGroup(String operator, String groupId, boolean isAdmin);
     ErrorCode modifyGroupInfo(String operator, String groupId, int modifyType, String value);
     ErrorCode modifyGroupAlias(String operator, String groupId, String alias);
-    List<WFCMessage.GroupInfo> getGroupInfos(List<WFCMessage.UserRequest> requests);
-    WFCMessage.GroupInfo getGroupInfo(String groupId);
-    ErrorCode getGroupMembers(String groupId, long maxDt, List<WFCMessage.GroupMember> members);
+    List<FSCMessage.GroupInfo> getGroupInfos(List<FSCMessage.UserRequest> requests);
+    FSCMessage.GroupInfo getGroupInfo(String groupId);
+    ErrorCode getGroupMembers(String groupId, long maxDt, List<FSCMessage.GroupMember> members);
     ErrorCode transferGroup(String operator, String groupId, String newOwner, boolean isAdmin);
     boolean isMemberInGroup(String member, String groupId);
     boolean isForbiddenInGroup(String member, String groupId);
@@ -114,18 +115,18 @@ public interface IMessagesStore {
 
     WFCMessage.Robot getRobot(String robotId);
     void addRobot(WFCMessage.Robot robot);
-    ErrorCode getUserInfo(List<WFCMessage.UserRequest> requestList, WFCMessage.PullUserResult.Builder builder);
-    ErrorCode modifyUserInfo(String userId, WFCMessage.ModifyMyInfoRequest request);
+    ErrorCode getUserInfo(List<FSCMessage.UserRequest> requestList, FSCMessage.PullUserResult.Builder builder);
+    ErrorCode modifyUserInfo(String userId, FSCMessage.ModifyMyInfoRequest request);
 
     ErrorCode modifyUserStatus(String userId, int status);
     int getUserStatus(String userId);
     List<InputOutputUserBlockStatus> getUserStatusList();
 
-    void addUserInfo(WFCMessage.User user, String password);
-    WFCMessage.User getUserInfo(String userId);
-    WFCMessage.User getUserInfoByName(String name);
-    WFCMessage.User getUserInfoByMobile(String mobile);
-    List<WFCMessage.User> searchUser(String keyword, boolean buzzy, int page);
+    void addUserInfo(FSCMessage.User user, String password);
+    FSCMessage.User getUserInfo(String userId);
+    FSCMessage.User getUserInfoByName(String name);
+    FSCMessage.User getUserInfoByMobile(String mobile);
+    List<FSCMessage.User> searchUser(String keyword, boolean buzzy, int page);
 
     void createChatroom(String chatroomId, WFCMessage.ChatroomInfo chatroomInfo);
     void destoryChatroom(String chatroomId);
@@ -137,16 +138,16 @@ public interface IMessagesStore {
 
     long insertChatroomMessages(String target, int line, long messageId);
     Collection<UserClientEntry> getChatroomMembers(String chatroomId);
-    WFCMessage.PullMessageResult fetchChatroomMessage(String fromUser, String chatroomId, String exceptClientId, long fromMessageId);
+    FSCMessage.PullMessageResult fetchChatroomMessage(String fromUser, String chatroomId, String exceptClientId, long fromMessageId);
 
     ErrorCode verifyToken(String userId, String token, List<String> serverIPs, List<Integer> ports);
     ErrorCode login(String name, String password, List<String> userIdRet);
 
     List<FriendData> getFriendList(String userId, long version);
-    List<WFCMessage.FriendRequest> getFriendRequestList(String userId, long version);
+    List<FSCMessage.FriendRequest> getFriendRequestList(String userId, long version);
 
-    ErrorCode saveAddFriendRequest(String userId, WFCMessage.AddFriendRequest request, long[] head);
-    ErrorCode handleFriendRequest(String userId, WFCMessage.HandleFriendRequest request, WFCMessage.Message.Builder msgBuilder, long[] heads, boolean isAdmin);
+    ErrorCode saveAddFriendRequest(String userId, FSCMessage.AddFriendRequest request, long[] head);
+    ErrorCode handleFriendRequest(String userId, FSCMessage.HandleFriendRequest request, FSCMessage.Message.Builder msgBuilder, long[] heads, boolean isAdmin);
     ErrorCode deleteFriend(String userId, String friendUid);
     ErrorCode blackUserRequest(String fromUser, String targetUserId, int status, long[] head);
     ErrorCode SyncFriendRequestUnread(String userId, long unreadDt, long[] head);
@@ -156,22 +157,22 @@ public interface IMessagesStore {
     ErrorCode handleJoinChatroom(String userId, String clientId, String chatroomId);
     ErrorCode handleQuitChatroom(String userId, String clientId, String chatroomId);
 
-    ErrorCode getUserSettings(String userId, long version, WFCMessage.GetUserSettingResult.Builder builder);
-    WFCMessage.UserSettingEntry getUserSetting(String userId, int scope, String key);
-    List<WFCMessage.UserSettingEntry> getUserSetting(String userId, int scope);
-    long updateUserSettings(String userId, WFCMessage.ModifyUserSettingReq request);
+    ErrorCode getUserSettings(String userId, long version, FSCMessage.GetUserSettingResult.Builder builder);
+    FSCMessage.UserSettingEntry getUserSetting(String userId, int scope, String key);
+    List<FSCMessage.UserSettingEntry> getUserSetting(String userId, int scope);
+    long updateUserSettings(String userId, FSCMessage.ModifyUserSettingReq request);
 
     boolean getUserGlobalSlient(String userId);
     boolean getUserPushHiddenDetail(String userId);
-    boolean getUserConversationSlient(String userId, WFCMessage.Conversation conversation);
+    boolean getUserConversationSlient(String userId, FSCMessage.Conversation conversation);
 
-    ErrorCode createChannel(String operator, WFCMessage.ChannelInfo channelInfo);
+    ErrorCode createChannel(String operator, FSCMessage.ChannelInfo channelInfo);
     ErrorCode modifyChannelInfo(String operator, String channelId, int modifyType, String value);
     ErrorCode transferChannel(String operator, String channelId, String newOwner);
     ErrorCode distoryChannel(String operator, String channelId);
-    List<WFCMessage.ChannelInfo> searchChannel(String keyword, boolean buzzy, int page);
+    List<FSCMessage.ChannelInfo> searchChannel(String keyword, boolean buzzy, int page);
     ErrorCode listenChannel(String operator, String channelId, boolean listen);
-    WFCMessage.ChannelInfo getChannelInfo(String channelId);
+    FSCMessage.ChannelInfo getChannelInfo(String channelId);
     boolean checkUserInChannel(String user, String channelId);
 
     Set<String> handleSensitiveWord(String message);
@@ -179,7 +180,7 @@ public interface IMessagesStore {
     boolean removeSensitiveWords(List<String> words);
     List<String> getAllSensitiveWords();
 
-    WFCMessage.Message getMessage(long messageId);
+    FSCMessage.Message getMessage(long messageId);
     long getMessageHead(String user);
     long getFriendHead(String user);
     long getFriendRqHead(String user);

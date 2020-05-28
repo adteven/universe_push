@@ -1,10 +1,10 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.MessageService;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.utils.RateLimiter;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
 import com.comsince.github.utils.Utility;
@@ -199,7 +199,7 @@ public abstract class IMHandler<T> {
 
     }
 
-    protected long saveAndPublish(String username, String clientID, WFCMessage.Message message) {
+    protected long saveAndPublish(String username, String clientID, FSCMessage.Message message) {
         MessageResponse messageResponse = MessageResponse.convertMessageResponse(message);
         messageService.storeMessage(username, clientID, messageResponse);
         Set<String> notifyReceivers = messageService.getNotifyReceivers(username, messageResponse);

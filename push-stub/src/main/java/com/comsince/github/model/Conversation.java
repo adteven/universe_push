@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 
@@ -38,7 +38,7 @@ public class Conversation implements Serializable {
         this.line = line;
     }
 
-    public static Conversation convert2Conversation(WFCMessage.Conversation wfcConversation){
+    public static Conversation convert2Conversation(FSCMessage.Conversation wfcConversation){
         Conversation conversation = new Conversation();
         conversation.setConversationType(wfcConversation.getType());
         conversation.setLine(wfcConversation.getLine());
@@ -47,8 +47,8 @@ public class Conversation implements Serializable {
     }
 
 
-    public static WFCMessage.Conversation convert2WfcConversation(Conversation conversation){
-        WFCMessage.Conversation wfcConversation = WFCMessage.Conversation.newBuilder()
+    public static FSCMessage.Conversation convert2WfcConversation(Conversation conversation){
+        FSCMessage.Conversation wfcConversation = FSCMessage.Conversation.newBuilder()
                 .setLine(conversation.getLine())
                 .setTarget(conversation.getTarget())
                 .setType(conversation.getConversationType())

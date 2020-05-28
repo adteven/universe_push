@@ -1,9 +1,9 @@
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.configuration.MediaServerConfig;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import com.qiniu.util.Auth;
 import io.netty.buffer.ByteBuf;
 
@@ -19,7 +19,7 @@ public class GetQiniuUploadTokenHandler extends IMHandler<Byte> {
         int type = request;
         String token = null;
 
-        WFCMessage.GetUploadTokenResult.Builder resultBuilder = WFCMessage.GetUploadTokenResult.newBuilder();
+        FSCMessage.GetUploadTokenResult.Builder resultBuilder = FSCMessage.GetUploadTokenResult.newBuilder();
         if (MediaServerConfig.USER_QINIU) {
             Auth auth = Auth.create(MediaServerConfig.QINIU_ACCESS_KEY, MediaServerConfig.QINIU_SECRET_KEY);
 

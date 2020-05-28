@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,8 +54,8 @@ public class GroupMember implements Serializable {
     }
 
 
-    public static WFCMessage.GroupMember convertToWFCGroupMember(GroupMember groupMember){
-        WFCMessage.GroupMember.Builder wfcGroupMemberBuilder = WFCMessage.GroupMember.newBuilder();
+    public static FSCMessage.GroupMember convertToWFCGroupMember(GroupMember groupMember){
+        FSCMessage.GroupMember.Builder wfcGroupMemberBuilder = FSCMessage.GroupMember.newBuilder();
         wfcGroupMemberBuilder.setAlias(groupMember.getAlias());
         wfcGroupMemberBuilder.setMemberId(groupMember.getMemberId());
         wfcGroupMemberBuilder.setType(groupMember.getType());
@@ -64,7 +64,7 @@ public class GroupMember implements Serializable {
     }
 
 
-    public static GroupMember convertToGroupMember(WFCMessage.GroupMember wfcGroupMember){
+    public static GroupMember convertToGroupMember(FSCMessage.GroupMember wfcGroupMember){
         GroupMember groupMember = new GroupMember();
         groupMember.setAlias(wfcGroupMember.getAlias());
         groupMember.setMemberId(wfcGroupMember.getMemberId());
@@ -74,11 +74,11 @@ public class GroupMember implements Serializable {
     }
 
 
-    public static List<WFCMessage.GroupMember> convertToWfcMembers(List<GroupMember> memberList){
-        List<WFCMessage.GroupMember> wfcGroupMembers = new ArrayList<>();
+    public static List<FSCMessage.GroupMember> convertToWfcMembers(List<GroupMember> memberList){
+        List<FSCMessage.GroupMember> wfcGroupMembers = new ArrayList<>();
         if(memberList != null){
             for (GroupMember groupMember : memberList){
-                WFCMessage.GroupMember wfcGroupMember = GroupMember.convertToWFCGroupMember(groupMember);
+                FSCMessage.GroupMember wfcGroupMember = GroupMember.convertToWFCGroupMember(groupMember);
                 wfcGroupMembers.add(wfcGroupMember);
             }
         }
@@ -86,10 +86,10 @@ public class GroupMember implements Serializable {
     }
 
 
-    public static List<GroupMember> convertToGroupMember(List<WFCMessage.GroupMember> wfcGroupMembers){
+    public static List<GroupMember> convertToGroupMember(List<FSCMessage.GroupMember> wfcGroupMembers){
         List<GroupMember> groupMembers = new ArrayList<>();
         if(wfcGroupMembers != null){
-            for (WFCMessage.GroupMember wfcGroupMember : wfcGroupMembers){
+            for (FSCMessage.GroupMember wfcGroupMember : wfcGroupMembers){
                 GroupMember groupMember = convertToGroupMember(wfcGroupMember);
                 groupMembers.add(groupMember);
             }

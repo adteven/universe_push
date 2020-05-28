@@ -1,9 +1,9 @@
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 import java.util.Set;
 
@@ -13,9 +13,9 @@ import java.util.Set;
  * @Time 19-7-3 下午3:40
  **/
 @Handler(value = IMTopic.RecallMessageTopic)
-public class RecallMessageHandler extends IMHandler<WFCMessage.INT64Buf>{
+public class RecallMessageHandler extends IMHandler<FSCMessage.INT64Buf>{
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.INT64Buf int64Buf, ImMessageProcessor.IMCallback callback) {
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.INT64Buf int64Buf, ImMessageProcessor.IMCallback callback) {
         ErrorCode errorCode = messageService.recallMessage(int64Buf.getId(), fromUser);
 
         if(errorCode != ErrorCode.ERROR_CODE_SUCCESS) {

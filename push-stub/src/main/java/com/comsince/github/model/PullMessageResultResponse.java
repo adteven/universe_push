@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,20 +40,20 @@ public class PullMessageResultResponse implements Serializable {
         this.head = head;
     }
 
-    public static PullMessageResultResponse convertPullMessage(WFCMessage.PullMessageResult pullMessageResult){
+    public static PullMessageResultResponse convertPullMessage(FSCMessage.PullMessageResult pullMessageResult){
         PullMessageResultResponse pullMessageResultResponse = new PullMessageResultResponse();
         pullMessageResultResponse.setCurrent(pullMessageResult.getCurrent());
         pullMessageResultResponse.setHead(pullMessageResult.getHead());
         List<MessageResponse> messageResponses = new ArrayList<>();
-        for(WFCMessage.Message message : pullMessageResult.getMessageList()){
+        for(FSCMessage.Message message : pullMessageResult.getMessageList()){
             messageResponses.add(MessageResponse.convertMessageResponse(message));
         }
         pullMessageResultResponse.setMessageResponseList(messageResponses);
         return pullMessageResultResponse;
     }
 
-    public static WFCMessage.PullMessageResult convertWFCPullResult(PullMessageResultResponse pullMessageResultResponse){
-        WFCMessage.PullMessageResult.Builder builder = WFCMessage.PullMessageResult.newBuilder();
+    public static FSCMessage.PullMessageResult convertWFCPullResult(PullMessageResultResponse pullMessageResultResponse){
+        FSCMessage.PullMessageResult.Builder builder = FSCMessage.PullMessageResult.newBuilder();
         builder.setCurrent(pullMessageResultResponse.getCurrent());
         builder.setHead(pullMessageResultResponse.getHead());
         List<MessageResponse> messageResponses = pullMessageResultResponse.getMessageResponseList();

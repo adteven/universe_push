@@ -1,17 +1,17 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.utils.MessageShardingUtil;
 import io.netty.buffer.ByteBuf;
 import static cn.wildfirechat.proto.ProtoConstants.ContentType.Text;
 
 @Handler(value = IMTopic.SendMessageTopic)
-public class SendMessageHandler extends IMHandler<WFCMessage.Message> {
+public class SendMessageHandler extends IMHandler<FSCMessage.Message> {
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.Message message, ImMessageProcessor.IMCallback callback) {
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.Message message, ImMessageProcessor.IMCallback callback) {
         ErrorCode errorCode = ErrorCode.ERROR_CODE_SUCCESS;
         if (message != null) {
             if (!isAdmin) {  //admin do not check the right

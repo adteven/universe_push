@@ -9,19 +9,19 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.SubSignal;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.model.UserResponse;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 import static com.comsince.github.common.ErrorCode.ERROR_CODE_SUCCESS;
 
 @Handler(IMTopic.AddFriendRequestTopic)
-public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> {
+public class AddFriendHandler extends GroupHandler<FSCMessage.AddFriendRequest> {
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.AddFriendRequest request, ImMessageProcessor.IMCallback callback) {
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.AddFriendRequest request, ImMessageProcessor.IMCallback callback) {
         AddFriendMessage addFriendMessage = new AddFriendMessage();
         addFriendMessage.setTargetUid(request.getTargetUid());
         addFriendMessage.setReason(request.getReason());

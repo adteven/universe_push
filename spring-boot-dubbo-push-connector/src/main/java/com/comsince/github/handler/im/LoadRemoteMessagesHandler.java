@@ -1,10 +1,10 @@
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.Conversation;
 import com.comsince.github.model.PullMessageResultResponse;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -13,9 +13,9 @@ import io.netty.buffer.ByteBuf;
  * @Time 19-7-11 上午10:17
  **/
 @Handler(value = IMTopic.LoadRemoteMessagesTopic)
-public class LoadRemoteMessagesHandler extends IMHandler<WFCMessage.LoadRemoteMessages>{
+public class LoadRemoteMessagesHandler extends IMHandler<FSCMessage.LoadRemoteMessages>{
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.LoadRemoteMessages request, ImMessageProcessor.IMCallback callback) {
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.LoadRemoteMessages request, ImMessageProcessor.IMCallback callback) {
         ErrorCode errorCode = ErrorCode.ERROR_CODE_SUCCESS;
 
         long beforeUid = request.getBeforeUid();
@@ -24,7 +24,7 @@ public class LoadRemoteMessagesHandler extends IMHandler<WFCMessage.LoadRemoteMe
         }
         Conversation conversation = Conversation.convert2Conversation(request.getConversation());
         PullMessageResultResponse result = messageService.loadRemoteMessages(fromUser, conversation, beforeUid, request.getCount());
-        WFCMessage.PullMessageResult pullMessageResult = PullMessageResultResponse.convertWFCPullResult(result);
+        FSCMessage.PullMessageResult pullMessageResult = PullMessageResultResponse.convertWFCPullResult(result);
         byte[] data = pullMessageResult.toByteArray();
         LOG.info("User {} beforeUid {} load message with count({}), payload size({})", fromUser, beforeUid,result.getMessageCount(), data.length);
         ackPayload.ensureWritable(data.length).writeBytes(data);

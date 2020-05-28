@@ -6,6 +6,7 @@ import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.GroupInfo;
 import com.comsince.github.model.GroupNotificationBinaryContent;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -14,9 +15,9 @@ import io.netty.buffer.ByteBuf;
  * @Time 20-5-21 下午4:10
  **/
 @Handler(IMTopic.DismissGroupTopic)
-public class DismissGroupHandler extends GroupHandler<WFCMessage.DismissGroupRequest>{
+public class DismissGroupHandler extends GroupHandler<FSCMessage.DismissGroupRequest>{
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.DismissGroupRequest request, ImMessageProcessor.IMCallback callback) {
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.DismissGroupRequest request, ImMessageProcessor.IMCallback callback) {
         GroupInfo groupInfo = messageService.getGroupInfo(request.getGroupId());
         ErrorCode errorCode;
         if (groupInfo == null) {
@@ -29,7 +30,7 @@ public class DismissGroupHandler extends GroupHandler<WFCMessage.DismissGroupReq
             if (request.hasNotifyContent() && request.getNotifyContent().getType() > 0) {
                 sendGroupNotification(fromUser, groupInfo.getTarget(), request.getToLineList(), request.getNotifyContent());
             } else {
-                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(groupInfo.getTarget(), fromUser, null, "").getDismissGroupNotifyContent();
+                FSCMessage.MessageContent content = new GroupNotificationBinaryContent(groupInfo.getTarget(), fromUser, null, "").getDismissGroupNotifyContent();
                 sendGroupNotification(fromUser, request.getGroupId(), request.getToLineList(), content);
             }
             errorCode = messageService.dismissGroup(fromUser, request.getGroupId(), isAdmin);

@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class GroupInfo implements Serializable {
         this.updateDt = updateDt;
     }
 
-    public static GroupInfo convert2GroupInfo(WFCMessage.GroupInfo groupInfo){
+    public static GroupInfo convert2GroupInfo(FSCMessage.GroupInfo groupInfo){
         GroupInfo groupInfoResponse = new GroupInfo();
         groupInfoResponse.setTarget(groupInfo.getTargetId());
         groupInfoResponse.setName(groupInfo.getName());
@@ -94,8 +94,8 @@ public class GroupInfo implements Serializable {
     }
 
 
-    public static WFCMessage.GroupInfo convertToWfcGroupInfo(GroupInfo groupInfoResponse){
-        WFCMessage.GroupInfo.Builder builder = WFCMessage.GroupInfo.newBuilder();
+    public static FSCMessage.GroupInfo convertToWfcGroupInfo(GroupInfo groupInfoResponse){
+        FSCMessage.GroupInfo.Builder builder = FSCMessage.GroupInfo.newBuilder();
         builder.setTargetId(groupInfoResponse.getTarget());
         builder.setName(groupInfoResponse.getName());
         builder.setExtra(groupInfoResponse.getExtra());
@@ -108,8 +108,8 @@ public class GroupInfo implements Serializable {
     }
 
 
-    public static List<WFCMessage.GroupInfo> convert2WfcGroupInfos(List<GroupInfo> groupInfos){
-        List<WFCMessage.GroupInfo> wfcGroupInfos = new ArrayList<>();
+    public static List<FSCMessage.GroupInfo> convert2WfcGroupInfos(List<GroupInfo> groupInfos){
+        List<FSCMessage.GroupInfo> wfcGroupInfos = new ArrayList<>();
         if(groupInfos != null){
             for(GroupInfo groupInfo : groupInfos){
                 wfcGroupInfos.add(convertToWfcGroupInfo(groupInfo));
@@ -118,10 +118,10 @@ public class GroupInfo implements Serializable {
         return wfcGroupInfos;
     }
 
-    public static List<GroupInfo> convert2GroupInfos(List<WFCMessage.GroupInfo> wfcGroupInfos){
+    public static List<GroupInfo> convert2GroupInfos(List<FSCMessage.GroupInfo> wfcGroupInfos){
         List<GroupInfo> groupInfos = new ArrayList<>();
         if(wfcGroupInfos != null){
-            for (WFCMessage.GroupInfo wfcGroupInfo : wfcGroupInfos){
+            for (FSCMessage.GroupInfo wfcGroupInfo : wfcGroupInfos){
                 groupInfos.add(convert2GroupInfo(wfcGroupInfo));
             }
         }

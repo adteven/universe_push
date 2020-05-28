@@ -1,7 +1,6 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.MessageService;
 import com.comsince.github.PushServer;
 import com.comsince.github.SessionService;
@@ -9,21 +8,18 @@ import com.comsince.github.SubSignal;
 import com.comsince.github.immessage.PublishAckMessagePacket;
 import com.comsince.github.immessage.PublishMessagePacket;
 import com.comsince.github.model.*;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.ShowcaseWebsocketStarter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
-
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
 
@@ -61,7 +57,7 @@ public class MessagesPublisher {
                 }
 
                 LOG.info("send recall messageUid {} to receiver {} clientId {}",messageUid,user,targetSession.clientID);
-                WFCMessage.NotifyRecallMessage notifyMessage = WFCMessage.NotifyRecallMessage
+                FSCMessage.NotifyRecallMessage notifyMessage = FSCMessage.NotifyRecallMessage
                         .newBuilder()
                         .setFromUser(operatorId)
                         .setId(messageUid)
@@ -89,8 +85,8 @@ public class MessagesPublisher {
                         continue;
                     }
                     LOG.info("send transparent message {} contentType {} to receiver {} clientId {}",messageHead,messageResponse.getContent().getType(),user,targetSession.clientID);
-                    WFCMessage.Message wfcMessage = MessageResponse.convertWFCMessage(messageResponse);
-                    WFCMessage.PullMessageResult pullMessageResult = WFCMessage.PullMessageResult.newBuilder()
+                    FSCMessage.Message wfcMessage = MessageResponse.convertWFCMessage(messageResponse);
+                    FSCMessage.PullMessageResult pullMessageResult = FSCMessage.PullMessageResult.newBuilder()
                             .addMessage(wfcMessage)
                             .setCurrent(0)
                             .setHead(0)
@@ -134,7 +130,7 @@ public class MessagesPublisher {
         }
     }
 
-    public void publish2Receivers(WFCMessage.Message message, Set<String> receivers, String exceptClientId, int pullType) {
+    public void publish2Receivers(FSCMessage.Message message, Set<String> receivers, String exceptClientId, int pullType) {
         long messageId = message.getMessageId();
         String pushContent = message.getContent().getPushContent();
         if (StringUtil.isNullOrEmpty(pushContent)) {
@@ -270,7 +266,7 @@ public class MessagesPublisher {
 
                 LOG.info("WsNotifyMessage pullType {}  messageSeq {}",pullType,messageSeq);
 
-                WFCMessage.NotifyMessage notifyMessage = WFCMessage.NotifyMessage
+                FSCMessage.NotifyMessage notifyMessage = FSCMessage.NotifyMessage
                         .newBuilder()
                         .setType(pullType)
                         .setHead(messageSeq)

@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,15 +19,15 @@ public class ModifyMyInfoRequest implements Serializable {
         int type;
         String value;
 
-        public static InfoEntry convert2InfoEntry(WFCMessage.InfoEntry wfcInfoEntry){
+        public static InfoEntry convert2InfoEntry(FSCMessage.InfoEntry wfcInfoEntry){
             InfoEntry infoEntry = new InfoEntry();
             infoEntry.type = wfcInfoEntry.getType();
             infoEntry.value = wfcInfoEntry.getValue();
             return infoEntry;
         }
 
-        public static WFCMessage.InfoEntry convert2WfcInfoEntry(InfoEntry infoEntry){
-            WFCMessage.InfoEntry wfcInfoEntry = WFCMessage.InfoEntry.newBuilder()
+        public static FSCMessage.InfoEntry convert2WfcInfoEntry(InfoEntry infoEntry){
+            FSCMessage.InfoEntry wfcInfoEntry = FSCMessage.InfoEntry.newBuilder()
                     .setType(infoEntry.type)
                     .setValue(infoEntry.value)
                     .build();
@@ -44,18 +44,18 @@ public class ModifyMyInfoRequest implements Serializable {
     }
 
 
-    public static WFCMessage.ModifyMyInfoRequest convert2WfcMyInfoRequest(ModifyMyInfoRequest modifyMyInfoRequest){
-        WFCMessage.ModifyMyInfoRequest.Builder wfcMyInfoBuilder = WFCMessage.ModifyMyInfoRequest.newBuilder();
+    public static FSCMessage.ModifyMyInfoRequest convert2WfcMyInfoRequest(ModifyMyInfoRequest modifyMyInfoRequest){
+        FSCMessage.ModifyMyInfoRequest.Builder wfcMyInfoBuilder = FSCMessage.ModifyMyInfoRequest.newBuilder();
         for(InfoEntry infoEntry : modifyMyInfoRequest.infoEntries){
             wfcMyInfoBuilder.addEntry(InfoEntry.convert2WfcInfoEntry(infoEntry));
         }
         return wfcMyInfoBuilder.build();
     }
 
-    public static ModifyMyInfoRequest convert2MyInfoRequest(WFCMessage.ModifyMyInfoRequest wfcMyInfoRequest){
+    public static ModifyMyInfoRequest convert2MyInfoRequest(FSCMessage.ModifyMyInfoRequest wfcMyInfoRequest){
         ModifyMyInfoRequest modifyMyInfoRequest = new ModifyMyInfoRequest();
         List<InfoEntry> infoEntries = new ArrayList<>();
-        for(WFCMessage.InfoEntry wfcInfoEntry : wfcMyInfoRequest.getEntryList()){
+        for(FSCMessage.InfoEntry wfcInfoEntry : wfcMyInfoRequest.getEntryList()){
             infoEntries.add(InfoEntry.convert2InfoEntry(wfcInfoEntry));
         }
         modifyMyInfoRequest.infoEntries = infoEntries;

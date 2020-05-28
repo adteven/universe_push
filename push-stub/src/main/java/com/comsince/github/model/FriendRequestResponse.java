@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 
@@ -82,7 +82,7 @@ public class FriendRequestResponse implements Serializable {
                 '}';
     }
 
-    public static FriendRequestResponse convertFriendRequest(WFCMessage.FriendRequest friendRequest){
+    public static FriendRequestResponse convertFriendRequest(FSCMessage.FriendRequest friendRequest){
         FriendRequestResponse friendRequestResponse = new FriendRequestResponse();
         friendRequestResponse.setReason(friendRequest.getReason());
         friendRequestResponse.setTimestamp(friendRequest.getUpdateDt());
@@ -92,8 +92,8 @@ public class FriendRequestResponse implements Serializable {
         return friendRequestResponse;
     }
 
-    public static WFCMessage.FriendRequest convertFriendRequestResponse(FriendRequestResponse friendRequestResponse){
-        WFCMessage.FriendRequest friendRequest = WFCMessage.FriendRequest.newBuilder()
+    public static FSCMessage.FriendRequest convertFriendRequestResponse(FriendRequestResponse friendRequestResponse){
+        FSCMessage.FriendRequest friendRequest = FSCMessage.FriendRequest.newBuilder()
                 .setFromUid(friendRequestResponse.getFrom())
                 .setToUid(friendRequestResponse.getTarget())
                 .setReason(friendRequestResponse.getReason())

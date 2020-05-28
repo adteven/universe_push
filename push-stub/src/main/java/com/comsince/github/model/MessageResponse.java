@@ -1,8 +1,7 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 import com.google.protobuf.ByteString;
-import io.netty.util.internal.StringUtil;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -112,16 +111,16 @@ public class MessageResponse implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public static MessageResponse convertMessageResponse(WFCMessage.Message message){
+    public static MessageResponse convertMessageResponse(FSCMessage.Message message){
         MessageResponse messageResponse = new MessageResponse();
         messageResponse.setFrom(message.getFromUser());
         messageResponse.setMessageId(message.getMessageId());
         messageResponse.setTimestamp(message.getServerTimestamp());
-        WFCMessage.Conversation conversation  = message.getConversation();
+        FSCMessage.Conversation conversation  = message.getConversation();
         messageResponse.setConversationType(conversation.getType());
         messageResponse.setTarget(conversation.getTarget());
         messageResponse.setLine(conversation.getLine());
-        WFCMessage.MessageContent messageContent = message.getContent();
+        FSCMessage.MessageContent messageContent = message.getContent();
         MessageConentResponse messageConentResponse = new MessageConentResponse();
         messageConentResponse.setType(messageContent.getType());
         messageConentResponse.setBinaryContent(messageContent.getData().toByteArray());
@@ -134,20 +133,20 @@ public class MessageResponse implements Serializable {
         return messageResponse;
     }
 
-    public static WFCMessage.Message convertWFCMessage(MessageResponse messageResponse){
-        WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder();
+    public static FSCMessage.Message convertWFCMessage(MessageResponse messageResponse){
+        FSCMessage.Message.Builder builder = FSCMessage.Message.newBuilder();
         builder.setMessageId(messageResponse.getMessageId());
         builder.setServerTimestamp(messageResponse.getTimestamp());
         if(!StringUtils.isEmpty(messageResponse.getFrom())){
             builder.setFromUser(messageResponse.getFrom());
         }
-        WFCMessage.Conversation conversation = WFCMessage.Conversation.newBuilder()
+        FSCMessage.Conversation conversation = FSCMessage.Conversation.newBuilder()
                 .setType(messageResponse.getConversationType())
                 .setLine(messageResponse.getLine())
                 .setTarget(messageResponse.getTarget())
                 .build();
         builder.setConversation(conversation);
-        WFCMessage.MessageContent.Builder messageContentBuilder = WFCMessage.MessageContent.newBuilder();
+        FSCMessage.MessageContent.Builder messageContentBuilder = FSCMessage.MessageContent.newBuilder();
         messageContentBuilder.setType(messageResponse.getContent().getType());
         if(messageResponse.getContent().getBinaryContent() != null){
             messageContentBuilder.setData(ByteString.copyFrom(messageResponse.getContent().getBinaryContent()));

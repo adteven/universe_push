@@ -1,11 +1,11 @@
 package com.comsince.github.service.impl;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.MessageService;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.message.AddFriendMessage;
 import com.comsince.github.model.*;
 import com.comsince.github.persistence.IMessagesStore;
+import com.comsince.github.proto.FSCMessage;
 import org.apache.dubbo.config.annotation.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class MessageServiceImpl implements MessageService {
     public long saveAddFriendRequest(String userId, AddFriendMessage request) {
         logger.info("request targetUid {} reason {}",request.getTargetUid(),request.getReason());
         long[] head = new long[1];
-        WFCMessage.AddFriendRequest addFriendRequest = WFCMessage.AddFriendRequest.newBuilder()
+        FSCMessage.AddFriendRequest addFriendRequest = FSCMessage.AddFriendRequest.newBuilder()
                 .setTargetUid(request.getTargetUid())
                 .setReason(request.getReason())
                 .build();
@@ -47,8 +47,8 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<FriendRequestResponse> getFriendRequestList(String userId, long version) {
         List<FriendRequestResponse> friendRequestResponses = new ArrayList<>();
-        List<WFCMessage.FriendRequest> friendRequests = messagesStore.getFriendRequestList(userId,version);
-        for(WFCMessage.FriendRequest friendRequest : friendRequests){
+        List<FSCMessage.FriendRequest> friendRequests = messagesStore.getFriendRequestList(userId,version);
+        for(FSCMessage.FriendRequest friendRequest : friendRequests){
             FriendRequestResponse friendRequestResponse = FriendRequestResponse.convertFriendRequest(friendRequest);
             friendRequestResponses.add(friendRequestResponse);
         }

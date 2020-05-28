@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,15 +12,15 @@ public class PullUserRequest implements Serializable {
         String uid;
         long updateDate;
 
-        public static UserRequest convertToUserRequest(WFCMessage.UserRequest wfcUserRequest){
+        public static UserRequest convertToUserRequest(FSCMessage.UserRequest wfcUserRequest){
             UserRequest userRequest = new UserRequest();
             userRequest.uid = wfcUserRequest.getUid();
             userRequest.updateDate = wfcUserRequest.getUpdateDt();
             return userRequest;
         }
 
-        public static WFCMessage.UserRequest convertWfcUserRequest(UserRequest userRequest){
-            WFCMessage.UserRequest.Builder builder = WFCMessage.UserRequest.newBuilder();
+        public static FSCMessage.UserRequest convertWfcUserRequest(UserRequest userRequest){
+            FSCMessage.UserRequest.Builder builder = FSCMessage.UserRequest.newBuilder();
             builder.setUid(userRequest.uid);
             builder.setUpdateDt(userRequest.updateDate);
             return builder.build();
@@ -37,18 +37,18 @@ public class PullUserRequest implements Serializable {
         this.userRequests = userRequests;
     }
 
-    public static List<UserRequest> convertToUserRequests(List<WFCMessage.UserRequest> wfcUserRequests){
+    public static List<UserRequest> convertToUserRequests(List<FSCMessage.UserRequest> wfcUserRequests){
         List<UserRequest> userRequests = new ArrayList<>();
         if(wfcUserRequests != null){
-            for(WFCMessage.UserRequest wfcUserRequest : wfcUserRequests){
+            for(FSCMessage.UserRequest wfcUserRequest : wfcUserRequests){
                 userRequests.add(UserRequest.convertToUserRequest(wfcUserRequest));
             }
         }
         return userRequests;
     }
 
-    public static List<WFCMessage.UserRequest> convert2WfcUserRequests(List<UserRequest> userRequests){
-        List<WFCMessage.UserRequest> wfcUserRequests = new ArrayList<>();
+    public static List<FSCMessage.UserRequest> convert2WfcUserRequests(List<UserRequest> userRequests){
+        List<FSCMessage.UserRequest> wfcUserRequests = new ArrayList<>();
         if(wfcUserRequests != null){
             for(UserRequest userRequest : userRequests){
                 wfcUserRequests.add(UserRequest.convertWfcUserRequest(userRequest));

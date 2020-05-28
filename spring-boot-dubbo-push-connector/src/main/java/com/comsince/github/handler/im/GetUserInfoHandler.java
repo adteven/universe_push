@@ -1,10 +1,10 @@
 package com.comsince.github.handler.im;
 
 import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.UserResponse;
 import com.comsince.github.process.ImMessageProcessor;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -13,17 +13,17 @@ import io.netty.buffer.ByteBuf;
  * @Time 19-6-14 下午4:42
  **/
 @Handler(IMTopic.GetUserInfoTopic)
-public class GetUserInfoHandler extends IMHandler<WFCMessage.PullUserRequest>{
+public class GetUserInfoHandler extends IMHandler<FSCMessage.PullUserRequest>{
     @Override
-    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, WFCMessage.PullUserRequest request, ImMessageProcessor.IMCallback callback) {
-        WFCMessage.PullUserResult.Builder resultBuilder = WFCMessage.PullUserResult.newBuilder();
+    public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, boolean isAdmin, FSCMessage.PullUserRequest request, ImMessageProcessor.IMCallback callback) {
+        FSCMessage.PullUserResult.Builder resultBuilder = FSCMessage.PullUserResult.newBuilder();
 
-        for(WFCMessage.UserRequest userRequest: request.getRequestList()){
+        for(FSCMessage.UserRequest userRequest: request.getRequestList()){
             UserResponse userResponse = messageService.getUserInfo(userRequest.getUid());
             LOG.info("get user info {}",userResponse);
             if(userResponse != null){
-                WFCMessage.UserResult.Builder userResultBuilder = WFCMessage.UserResult.newBuilder();
-                userResultBuilder.setUser(WFCMessage.User.newBuilder()
+                FSCMessage.UserResult.Builder userResultBuilder = FSCMessage.UserResult.newBuilder();
+                userResultBuilder.setUser(FSCMessage.User.newBuilder()
                         .setUid(userResponse.getUid())
                         .setDisplayName(userResponse.getDisplayName())
                         .setMobile(userResponse.getMobile())
@@ -36,8 +36,8 @@ public class GetUserInfoHandler extends IMHandler<WFCMessage.PullUserRequest>{
                 userResultBuilder.setCode(ProtoConstants.UserResultCode.Success);
                 resultBuilder.addResult(userResultBuilder.build());
             } else {
-                WFCMessage.UserResult.Builder userResultBuilder = WFCMessage.UserResult.newBuilder();
-                userResultBuilder.setUser(WFCMessage.User.newBuilder().setUid(userRequest.getUid()).build());
+                FSCMessage.UserResult.Builder userResultBuilder = FSCMessage.UserResult.newBuilder();
+                userResultBuilder.setUser(FSCMessage.User.newBuilder().setUid(userRequest.getUid()).build());
                 resultBuilder.addResult(userResultBuilder);
             }
         }
