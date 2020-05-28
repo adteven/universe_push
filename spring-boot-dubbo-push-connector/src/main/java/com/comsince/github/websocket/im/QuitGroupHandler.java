@@ -26,6 +26,6 @@ public class QuitGroupHandler extends WsImHandler<WsGroupQuitRequest,Byte>{
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }

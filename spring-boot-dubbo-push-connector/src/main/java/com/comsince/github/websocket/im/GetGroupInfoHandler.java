@@ -6,7 +6,11 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.model.GroupInfo;
+import org.tio.utils.json.Json;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author comsicne
@@ -28,7 +32,8 @@ public class GetGroupInfoHandler extends WsImHandler<ArrayList<String>,WFCMessag
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullGroupInfoResult result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullGroupInfoResult groupInfoResult) {
+        List<GroupInfo> groupInfos = GroupInfo.convert2GroupInfos(groupInfoResult.getInfoList());
+        return Json.toJson(groupInfos);
     }
 }

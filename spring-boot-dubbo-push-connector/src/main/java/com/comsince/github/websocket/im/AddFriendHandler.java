@@ -7,6 +7,8 @@ import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.websocket.model.WsFriendAddRequest;
+import com.comsince.github.websocket.model.WsResult;
+import org.tio.utils.json.Json;
 
 /**
  * @author comsicne
@@ -27,6 +29,6 @@ public class AddFriendHandler extends WsImHandler<WsFriendAddRequest,Byte>{
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }

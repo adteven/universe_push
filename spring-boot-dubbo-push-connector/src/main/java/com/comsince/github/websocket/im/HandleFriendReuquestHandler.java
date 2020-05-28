@@ -27,6 +27,6 @@ public class HandleFriendReuquestHandler extends WsImHandler<WsFriendHandleReque
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }

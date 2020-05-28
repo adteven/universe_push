@@ -6,7 +6,11 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.model.GroupMember;
 import com.comsince.github.websocket.model.WsGetGroupMemberRequest;
+import org.tio.utils.json.Json;
+
+import java.util.List;
 
 /**
  * @author comsicne
@@ -26,7 +30,8 @@ public class GetGroupMemberHandler extends WsImHandler<WsGetGroupMemberRequest,W
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullGroupMemberResult result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullGroupMemberResult pullGroupMemberResult) {
+        List<GroupMember> groupMemberList = GroupMember.convertToGroupMember(pullGroupMemberResult.getMemberList());
+        return Json.toJson(groupMemberList);
     }
 }

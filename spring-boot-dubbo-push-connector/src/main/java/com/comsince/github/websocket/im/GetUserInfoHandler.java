@@ -6,8 +6,11 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.model.UserResponse;
+import org.tio.utils.json.Json;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author comsicne
@@ -29,7 +32,12 @@ public class GetUserInfoHandler extends WsImHandler<ArrayList<String>,WFCMessage
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullUserResult result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullUserResult pullUserResult) {
+        List<UserResponse> userResponseList = new ArrayList<>();
+        for(WFCMessage.UserResult userResult : pullUserResult.getResultList()){
+            WFCMessage.User user = userResult.getUser();
+            userResponseList.add(UserResponse.convertWFCUser(user));
+        }
+        return Json.toJson(userResponseList);
     }
 }

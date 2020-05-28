@@ -29,6 +29,6 @@ public class ModifyGroupInfoHandler extends WsImHandler<WsModifyGroupInfoRequest
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }

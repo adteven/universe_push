@@ -35,6 +35,6 @@ public class AddGroupMemberHandler extends WsImHandler<WsAddGroupMemberRequest,B
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }

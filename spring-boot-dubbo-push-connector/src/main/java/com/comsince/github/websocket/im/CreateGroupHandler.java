@@ -51,6 +51,6 @@ public class CreateGroupHandler extends WsImHandler<WsCreateGroupRequest,Byte> {
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }

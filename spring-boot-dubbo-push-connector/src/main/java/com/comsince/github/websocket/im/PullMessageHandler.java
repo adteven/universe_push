@@ -6,7 +6,10 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.model.PullMessageResultResponse;
 import com.comsince.github.websocket.model.WsPullMessageRequest;
+import com.comsince.github.websocket.model.WsPullMessageResponse;
+import org.tio.utils.json.Json;
 
 /**
  * @author comsicne
@@ -34,7 +37,10 @@ public class PullMessageHandler extends WsImHandler<WsPullMessageRequest,WFCMess
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullMessageResult result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullMessageResult pullMessageResult) {
+        PullMessageResultResponse pullMessageResultResponse = PullMessageResultResponse.convertPullMessage(pullMessageResult);
+        WsPullMessageResponse wsPullMessageResponse = new WsPullMessageResponse(Long.toString(pullMessageResultResponse.getCurrent()),
+                Long.toString(pullMessageResultResponse.getHead()),pullMessageResultResponse.getMessageResponseList());
+        return Json.toJson(wsPullMessageResponse);
     }
 }

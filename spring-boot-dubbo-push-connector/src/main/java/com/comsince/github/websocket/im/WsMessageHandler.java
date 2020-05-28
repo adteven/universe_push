@@ -51,6 +51,18 @@ public class WsMessageHandler {
         }
     }
 
+    public String handleResult(Signal signal, SubSignal subSignal, byte[] body){
+        WsImHandler wsImHandler = wsHandlers.get(signal.name());
+        if(wsImHandler == null){
+            wsImHandler = wsHandlers.get(subSignal.name());
+        }
+        if(wsImHandler != null){
+            return wsImHandler.handleResult(signal,subSignal,body);
+        } else {
+            return null;
+        }
+    }
+
     private void registerAllAction(){
         try {
             for (Class cls : ClassUtil.getAllAssignedClass(WsImHandler.class)) {

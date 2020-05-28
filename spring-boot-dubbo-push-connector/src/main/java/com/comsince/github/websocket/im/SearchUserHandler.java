@@ -6,7 +6,12 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.model.UserResponse;
 import com.comsince.github.websocket.model.WsUserSearchRequest;
+import org.tio.utils.json.Json;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author comsicne
@@ -28,7 +33,11 @@ public class SearchUserHandler extends WsImHandler<WsUserSearchRequest,WFCMessag
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.SearchUserResult result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.SearchUserResult searchUserResult) {
+        List<UserResponse> userResponseList = new ArrayList<>();
+        for(WFCMessage.User user : searchUserResult.getEntryList()){
+            userResponseList.add(UserResponse.convertWFCUser(user));
+        }
+        return Json.toJson(userResponseList);
     }
 }

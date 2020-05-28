@@ -7,6 +7,8 @@ import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.MessageResponse;
+import com.comsince.github.websocket.model.WsSendMessageResponse;
+import org.tio.utils.json.Json;
 
 import java.nio.ByteBuffer;
 
@@ -26,7 +28,9 @@ public class SendMessageHandler extends WsImHandler<MessageResponse,ByteBuffer>{
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, ByteBuffer result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, ByteBuffer resultBuf) {
+        long messageUid = resultBuf.getLong();
+        long timestamp = resultBuf.getLong();
+        return Json.toJson(new WsSendMessageResponse(String.valueOf(messageUid),timestamp));
     }
 }

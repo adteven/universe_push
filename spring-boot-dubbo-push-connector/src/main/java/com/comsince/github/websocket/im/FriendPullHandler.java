@@ -6,7 +6,12 @@ import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
+import com.comsince.github.model.FriendData;
 import com.comsince.github.websocket.model.WsFrindRequestMessage;
+import org.tio.utils.json.Json;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author comsicne
@@ -23,7 +28,17 @@ public class FriendPullHandler extends WsImHandler<WsFrindRequestMessage,WFCMess
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.GetFriendsResult result) {
-        return null;
+    public String result(Signal signal, SubSignal subSignal, WFCMessage.GetFriendsResult getFriendsResult) {
+        log.info("getFriendsResult {} ",getFriendsResult.getEntryCount());
+        List<FriendData> friendDataList = new ArrayList<>();
+        for(WFCMessage.Friend friend : getFriendsResult.getEntryList()){
+            FriendData friendData = new FriendData();
+            friendData.setState(friend.getState());
+            friendData.setAlias(friend.getAlias());
+            friendData.setFriendUid(friend.getUid());
+            friendData.setTimestamp(friend.getUpdateDt());
+            friendDataList.add(friendData);
+        }
+        return Json.toJson(friendDataList);
     }
 }

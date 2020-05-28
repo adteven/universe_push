@@ -30,6 +30,6 @@ public class KickOffGroupMemberHandler extends WsImHandler<WsKickGroupMembersReq
 
     @Override
     public String result(Signal signal, SubSignal subSignal, Byte result) {
-        return null;
+        return byteResult(result);
     }
 }
