@@ -1,12 +1,11 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.PullMessageResultResponse;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsPullMessageRequest;
 import com.comsince.github.websocket.model.WsPullMessageResponse;
 import org.tio.utils.json.Json;
@@ -17,7 +16,7 @@ import org.tio.utils.json.Json;
  * @Time 20-5-27 下午2:14
  **/
 @Handler(value = IMTopic.PullMessageTopic)
-public class PullMessageHandler extends WsImHandler<WsPullMessageRequest,WFCMessage.PullMessageResult>{
+public class PullMessageHandler extends WsImHandler<WsPullMessageRequest,FSCMessage.PullMessageResult>{
 
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsPullMessageRequest pullMessage) {
@@ -29,7 +28,7 @@ public class PullMessageHandler extends WsImHandler<WsPullMessageRequest,WFCMess
         } else if(pullMessage.getPullType() == 0){
             pullMessageId = pullMessageId + pullMessage.getSendMessageCount();
         }
-        WFCMessage.PullMessageRequest pullMessageRequest = WFCMessage.PullMessageRequest.newBuilder()
+        FSCMessage.PullMessageRequest pullMessageRequest = FSCMessage.PullMessageRequest.newBuilder()
                 .setId(pullMessageId)
                 .setType(pullMessage.getType())
                 .build();
@@ -37,7 +36,7 @@ public class PullMessageHandler extends WsImHandler<WsPullMessageRequest,WFCMess
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullMessageResult pullMessageResult) {
+    public String result(Signal signal, SubSignal subSignal, FSCMessage.PullMessageResult pullMessageResult) {
         PullMessageResultResponse pullMessageResultResponse = PullMessageResultResponse.convertPullMessage(pullMessageResult);
         WsPullMessageResponse wsPullMessageResponse = new WsPullMessageResponse(Long.toString(pullMessageResultResponse.getCurrent()),
                 Long.toString(pullMessageResultResponse.getHead()),pullMessageResultResponse.getMessageResponseList());

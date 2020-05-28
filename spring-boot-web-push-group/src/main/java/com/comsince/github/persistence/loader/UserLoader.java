@@ -8,22 +8,22 @@
 
 package com.comsince.github.persistence.loader;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.persistence.DatabaseStore;
+import com.comsince.github.proto.FSCMessage;
 import com.hazelcast.core.MapStore;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class UserLoader implements MapStore<String, WFCMessage.User> {
+public class UserLoader implements MapStore<String, FSCMessage.User> {
     @Override
-    public void store(String s, WFCMessage.User user) {
+    public void store(String s, FSCMessage.User user) {
         getDatabaseStore().updateUser(user);
     }
 
     @Override
-    public void storeAll(Map<String, WFCMessage.User> map) {
+    public void storeAll(Map<String, FSCMessage.User> map) {
 
     }
 
@@ -42,12 +42,12 @@ public class UserLoader implements MapStore<String, WFCMessage.User> {
     }
 
     @Override
-    public WFCMessage.User load(String key) {
+    public FSCMessage.User load(String key) {
         return getDatabaseStore().getPersistUser(key);
     }
 
     @Override
-    public Map<String, WFCMessage.User> loadAll(Collection<String> keys) {
+    public Map<String, FSCMessage.User> loadAll(Collection<String> keys) {
         return null;
     }
 

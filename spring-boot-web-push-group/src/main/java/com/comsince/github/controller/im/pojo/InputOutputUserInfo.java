@@ -9,7 +9,7 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 public class InputOutputUserInfo {
     private String userId;
@@ -26,7 +26,7 @@ public class InputOutputUserInfo {
     private String extra;
     private long updateDt;
 
-    public static InputOutputUserInfo fromPbUser(WFCMessage.User pbUser) {
+    public static InputOutputUserInfo fromPbUser(FSCMessage.User pbUser) {
         InputOutputUserInfo inputCreateUser = new InputOutputUserInfo();
         inputCreateUser.userId = pbUser.getUid();
         inputCreateUser.name = pbUser.getName();
@@ -51,8 +51,8 @@ public class InputOutputUserInfo {
         this.social = social;
     }
 
-    public WFCMessage.User toUser() {
-        WFCMessage.User.Builder newUserBuilder = WFCMessage.User.newBuilder()
+    public FSCMessage.User toUser() {
+        FSCMessage.User.Builder newUserBuilder = FSCMessage.User.newBuilder()
             .setUid(userId);
         if (name != null)
             newUserBuilder.setName(name);

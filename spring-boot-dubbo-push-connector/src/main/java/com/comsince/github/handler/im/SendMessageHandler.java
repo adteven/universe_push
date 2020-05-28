@@ -1,12 +1,12 @@
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.process.ImMessageProcessor;
 import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.utils.MessageShardingUtil;
 import io.netty.buffer.ByteBuf;
-import static cn.wildfirechat.proto.ProtoConstants.ContentType.Text;
+import static com.comsince.github.proto.ProtoConstants.ContentType.Text;
 
 @Handler(value = IMTopic.SendMessageTopic)
 public class SendMessageHandler extends IMHandler<FSCMessage.Message> {

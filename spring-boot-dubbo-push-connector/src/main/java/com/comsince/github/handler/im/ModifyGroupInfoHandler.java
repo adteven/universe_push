@@ -6,8 +6,8 @@ import com.comsince.github.process.ImMessageProcessor;
 import com.comsince.github.proto.FSCMessage;
 import io.netty.buffer.ByteBuf;
 
-import static cn.wildfirechat.proto.ProtoConstants.ModifyGroupInfoType.Modify_Group_Name;
-import static cn.wildfirechat.proto.ProtoConstants.ModifyGroupInfoType.Modify_Group_Portrait;
+import static com.comsince.github.proto.ProtoConstants.ModifyGroupInfoType.Modify_Group_Name;
+import static com.comsince.github.proto.ProtoConstants.ModifyGroupInfoType.Modify_Group_Portrait;
 import static com.comsince.github.common.ErrorCode.ERROR_CODE_SUCCESS;
 import static com.comsince.github.handler.im.IMTopic.ModifyGroupInfoTopic;
 

@@ -1,6 +1,5 @@
 package com.comsince.github.process;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.*;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.configuration.PushCommonConfiguration;
@@ -8,6 +7,7 @@ import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.handler.PublishMessageHandler;
 import com.comsince.github.immessage.ConnectAckMessagePacket;
 import com.comsince.github.model.SessionResponse;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.security.*;
 import com.comsince.github.utils.*;
 import io.netty.buffer.ByteBuf;
@@ -204,7 +204,7 @@ public class ImMessageProcessor implements MessageProcessor{
         long friendHead = messageService().getFriendHead(user);
         long friendRqHead = messageService().getFriendRqHead(user);
         long settingHead = messageService().getSettingHead(user);
-        WFCMessage.ConnectAckPayload payload = WFCMessage.ConnectAckPayload.newBuilder()
+        FSCMessage.ConnectAckPayload payload = FSCMessage.ConnectAckPayload.newBuilder()
                 .setMsgHead(messageHead)
                 .setFriendHead(friendHead)
                 .setFriendRqHead(friendRqHead)

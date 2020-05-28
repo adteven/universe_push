@@ -8,15 +8,15 @@
 
 package com.comsince.github.persistence.loader;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.persistence.DatabaseStore;
+import com.comsince.github.proto.FSCMessage;
 import com.hazelcast.core.MapStore;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class ChatroomLoader implements MapStore<String, WFCMessage.ChatroomInfo> {
+public class ChatroomLoader implements MapStore<String, FSCMessage.ChatroomInfo> {
     private DatabaseStore getDatabaseStore() {
         return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
@@ -30,7 +30,7 @@ public class ChatroomLoader implements MapStore<String, WFCMessage.ChatroomInfo>
      * @param key@return value of the key, value cannot be null
      */
     @Override
-    public WFCMessage.ChatroomInfo load(String key) {
+    public FSCMessage.ChatroomInfo load(String key) {
         return getDatabaseStore().getPersistChatroomInfo(key);
     }
 
@@ -48,7 +48,7 @@ public class ChatroomLoader implements MapStore<String, WFCMessage.ChatroomInfo>
      * @return map of loaded key-value pairs.
      */
     @Override
-    public Map<String, WFCMessage.ChatroomInfo> loadAll(Collection<String> keys) {
+    public Map<String, FSCMessage.ChatroomInfo> loadAll(Collection<String> keys) {
         return null;
     }
 
@@ -58,12 +58,12 @@ public class ChatroomLoader implements MapStore<String, WFCMessage.ChatroomInfo>
     }
 
     @Override
-    public void store(String s, WFCMessage.ChatroomInfo chatroomInfo) {
+    public void store(String s, FSCMessage.ChatroomInfo chatroomInfo) {
         getDatabaseStore().updateChatroomInfo(s, chatroomInfo);
     }
 
     @Override
-    public void storeAll(Map<String, WFCMessage.ChatroomInfo> map) {
+    public void storeAll(Map<String, FSCMessage.ChatroomInfo> map) {
 
     }
 

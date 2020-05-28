@@ -9,7 +9,7 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 public class OutputGetChatroomInfo {
     private String chatroomId;
@@ -21,7 +21,7 @@ public class OutputGetChatroomInfo {
     private long createDt;
     private long updateDt;
 
-    public OutputGetChatroomInfo(String chatroomId, int memberCount, WFCMessage.ChatroomInfo chatroomInfo) {
+    public OutputGetChatroomInfo(String chatroomId, int memberCount, FSCMessage.ChatroomInfo chatroomInfo) {
         this.chatroomId = chatroomId;
         this.title = chatroomInfo.getTitle();
         this.desc = chatroomInfo.getDesc();

@@ -1,12 +1,11 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.GroupMember;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsGetGroupMemberRequest;
 import org.tio.utils.json.Json;
 
@@ -18,19 +17,19 @@ import java.util.List;
  * @Time 20-5-27 上午11:20
  **/
 @Handler(IMTopic.GetGroupMemberTopic)
-public class GetGroupMemberHandler extends WsImHandler<WsGetGroupMemberRequest,WFCMessage.PullGroupMemberResult>{
+public class GetGroupMemberHandler extends WsImHandler<WsGetGroupMemberRequest,FSCMessage.PullGroupMemberResult>{
 
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsGetGroupMemberRequest getGroupMemberRequest) {
         log.info("get group member {}",getGroupMemberRequest);
-        WFCMessage.PullGroupMemberRequest.Builder groupMemberBuilder = WFCMessage.PullGroupMemberRequest.newBuilder();
+        FSCMessage.PullGroupMemberRequest.Builder groupMemberBuilder = FSCMessage.PullGroupMemberRequest.newBuilder();
         groupMemberBuilder.setTarget(getGroupMemberRequest.getGroupId());
         groupMemberBuilder.setHead(getGroupMemberRequest.getVersion());
         return groupMemberBuilder.build().toByteArray();
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.PullGroupMemberResult pullGroupMemberResult) {
+    public String result(Signal signal, SubSignal subSignal, FSCMessage.PullGroupMemberResult pullGroupMemberResult) {
         List<GroupMember> groupMemberList = GroupMember.convertToGroupMember(pullGroupMemberResult.getMemberList());
         return Json.toJson(groupMemberList);
     }

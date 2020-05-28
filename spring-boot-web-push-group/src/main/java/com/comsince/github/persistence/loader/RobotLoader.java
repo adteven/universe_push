@@ -8,22 +8,22 @@
 
 package com.comsince.github.persistence.loader;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.persistence.DatabaseStore;
+import com.comsince.github.proto.FSCMessage;
 import com.hazelcast.core.MapStore;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class RobotLoader implements MapStore<String, WFCMessage.Robot> {
+public class RobotLoader implements MapStore<String, FSCMessage.Robot> {
     @Override
-    public void store(String s, WFCMessage.Robot robot) {
+    public void store(String s, FSCMessage.Robot robot) {
         getDatabaseStore().updateRobot(robot);
     }
 
     @Override
-    public void storeAll(Map<String, WFCMessage.Robot> map) {
+    public void storeAll(Map<String, FSCMessage.Robot> map) {
 
     }
 
@@ -42,12 +42,12 @@ public class RobotLoader implements MapStore<String, WFCMessage.Robot> {
     }
 
     @Override
-    public WFCMessage.Robot load(String key) {
+    public FSCMessage.Robot load(String key) {
         return getDatabaseStore().getRobot(key);
     }
 
     @Override
-    public Map<String, WFCMessage.Robot> loadAll(Collection<String> keys) {
+    public Map<String, FSCMessage.Robot> loadAll(Collection<String> keys) {
         return null;
     }
 

@@ -8,9 +8,9 @@
 
 package com.comsince.github.controller.im.pojo;
 
-import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.immessage.pojo.MessagePayload;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.util.internal.StringUtil;
 
 public class BroadMessageData {
@@ -51,9 +51,9 @@ public class BroadMessageData {
         return true;
     }
 
-    public WFCMessage.Message toProtoMessage() {
-        return WFCMessage.Message.newBuilder().setFromUser(sender)
-            .setConversation(WFCMessage.Conversation.newBuilder().setType(ProtoConstants.ConversationType.ConversationType_Private).setTarget(sender).setLine(line))
+    public FSCMessage.Message toProtoMessage() {
+        return FSCMessage.Message.newBuilder().setFromUser(sender)
+            .setConversation(FSCMessage.Conversation.newBuilder().setType(ProtoConstants.ConversationType.ConversationType_Private).setTarget(sender).setLine(line))
             .setContent(payload.toProtoMessageContent())
             .build();
     }

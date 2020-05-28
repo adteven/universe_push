@@ -9,7 +9,8 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+
+import com.comsince.github.proto.FSCMessage;
 
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class InputKickoffGroupMember extends InputGroupBase {
         return true;
     }
 
-    public WFCMessage.RemoveGroupMemberRequest toProtoGroupRequest() {
-        WFCMessage.RemoveGroupMemberRequest.Builder removedGroupBuilder = WFCMessage.RemoveGroupMemberRequest.newBuilder();
+    public FSCMessage.RemoveGroupMemberRequest toProtoGroupRequest() {
+        FSCMessage.RemoveGroupMemberRequest.Builder removedGroupBuilder = FSCMessage.RemoveGroupMemberRequest.newBuilder();
         removedGroupBuilder.setGroupId(group_id);
         removedGroupBuilder.addAllRemovedMember(members);
 

@@ -8,11 +8,11 @@
 
 package com.comsince.github.persistence;
 
-import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.model.FriendData;
 import com.comsince.github.persistence.session.ClientSession;
 import com.comsince.github.persistence.session.Session;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.util.DBUtil;
 import com.comsince.github.utils.ThreadPoolExecutorWrapper;
 import com.comsince.github.utils.Utility;
@@ -30,7 +30,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
+import static com.comsince.github.proto.ProtoConstants.PersistFlag.Transparent;
 import static com.comsince.github.utils.Constants.MAX_MESSAGE_QUEUE;
 
 public class DatabaseStore {
@@ -75,12 +75,12 @@ public class DatabaseStore {
         return out;
     }
 
-    List<WFCMessage.User> searchUserFromDB(String keyword, boolean buzzy, int page) {
+    List<FSCMessage.User> searchUserFromDB(String keyword, boolean buzzy, int page) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
 
-        ArrayList<WFCMessage.User> out = new ArrayList<>();
+        ArrayList<FSCMessage.User> out = new ArrayList<>();
 
         try {
             connection = DBUtil.getConnection();
@@ -122,7 +122,7 @@ public class DatabaseStore {
 
             rs = statement.executeQuery();
             while (rs.next()) {
-                WFCMessage.User.Builder builder = WFCMessage.User.newBuilder();
+                FSCMessage.User.Builder builder = FSCMessage.User.newBuilder();
                 index = 1;
 
                 String value = rs.getString(index++);
@@ -171,7 +171,7 @@ public class DatabaseStore {
                 long longValue = rs.getLong(index++);
                 builder.setUpdateDt(longValue);
 
-                WFCMessage.User user = builder.build();
+                FSCMessage.User user = builder.build();
 
                 out.add(user);
             }
@@ -210,7 +210,7 @@ public class DatabaseStore {
     }
 
     void reloadGroupMemberFromDB(HazelcastInstance hzInstance) {
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(MemoryMessagesStore.GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(MemoryMessagesStore.GROUP_MEMBERS);
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -228,7 +228,7 @@ public class DatabaseStore {
 
             rs = statement.executeQuery();
             while (rs.next()) {
-                WFCMessage.GroupMember.Builder builder = WFCMessage.GroupMember.newBuilder();
+                FSCMessage.GroupMember.Builder builder = FSCMessage.GroupMember.newBuilder();
                 index = 1;
 
                 String value = rs.getString(index++);
@@ -250,7 +250,7 @@ public class DatabaseStore {
                 long longValue = rs.getLong(index++);
                 builder.setUpdateDt(longValue);
 
-                WFCMessage.GroupMember member = builder.build();
+                FSCMessage.GroupMember member = builder.build();
                 groupMembers.put(groupId, member);
             }
         } catch (SQLException e) {
@@ -316,7 +316,7 @@ public class DatabaseStore {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
-        MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(MemoryMessagesStore.USER_FRIENDS_REQUEST);
+        MultiMap<String, FSCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(MemoryMessagesStore.USER_FRIENDS_REQUEST);
         if (requestMap.size() > 0) {
             return;
         }
@@ -330,7 +330,7 @@ public class DatabaseStore {
 
             rs = statement.executeQuery();
             while (rs.next()) {
-                WFCMessage.FriendRequest.Builder builder = WFCMessage.FriendRequest.newBuilder();
+                FSCMessage.FriendRequest.Builder builder = FSCMessage.FriendRequest.newBuilder();
                 index = 1;
 
                 String value = rs.getString(index++);
@@ -358,7 +358,7 @@ public class DatabaseStore {
                 builder.setToReadStatus(intvalue > 0);
 
 
-                WFCMessage.FriendRequest request = builder.build();
+                FSCMessage.FriendRequest request = builder.build();
                 requestMap.put(request.getFromUid(), request);
                 requestMap.put(request.getToUid(), request);
             }
@@ -372,7 +372,7 @@ public class DatabaseStore {
     }
 
 
-    public void persistMessage(final WFCMessage.Message message, boolean update) {
+    public void persistMessage(final FSCMessage.Message message, boolean update) {
         if(message.getContent().getPersistFlag() == Transparent) {
             return;
         }
@@ -456,21 +456,21 @@ public class DatabaseStore {
                     resultSet = statement.executeQuery();
 
                     while (resultSet.next()) {
-                        WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder();
+                        FSCMessage.Message.Builder builder = FSCMessage.Message.newBuilder();
                         int index = 1;
                         builder.setMessageId(resultSet.getLong(index++));
                         builder.setFromUser(resultSet.getString(index++));
-                        WFCMessage.Conversation.Builder cb = WFCMessage.Conversation.newBuilder();
+                        FSCMessage.Conversation.Builder cb = FSCMessage.Conversation.newBuilder();
                         cb.setType(resultSet.getInt(index++));
                         cb.setTarget(resultSet.getString(index++));
                         cb.setLine(resultSet.getInt(index++));
                         builder.setConversation(cb.build());
                         Blob blob = resultSet.getBlob(index++);
 
-                        WFCMessage.MessageContent messageContent = WFCMessage.MessageContent.parseFrom(blob.getBinaryStream());
+                        FSCMessage.MessageContent messageContent = FSCMessage.MessageContent.parseFrom(blob.getBinaryStream());
                         builder.setContent(messageContent);
                         builder.setServerTimestamp(resultSet.getTimestamp(index++).getTime());
-                        WFCMessage.Message message = builder.build();
+                        FSCMessage.Message message = builder.build();
                         out.put(message.getMessageId(),new MessageBundle(message.getMessageId(), message.getFromUser(), null, message));
                     }
                 } catch (SQLException e) {
@@ -511,21 +511,21 @@ public class DatabaseStore {
             statement.setLong(1, messageId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder();
+                FSCMessage.Message.Builder builder = FSCMessage.Message.newBuilder();
                 builder.setMessageId(messageId);
                 int index = 1;
                 builder.setFromUser(resultSet.getString(index++));
-                WFCMessage.Conversation.Builder cb = WFCMessage.Conversation.newBuilder();
+                FSCMessage.Conversation.Builder cb = FSCMessage.Conversation.newBuilder();
                 cb.setType(resultSet.getInt(index++));
                 cb.setTarget(resultSet.getString(index++));
                 cb.setLine(resultSet.getInt(index++));
                 builder.setConversation(cb.build());
                 Blob blob = resultSet.getBlob(index++);
 
-                WFCMessage.MessageContent messageContent = WFCMessage.MessageContent.parseFrom(blob.getBinaryStream());
+                FSCMessage.MessageContent messageContent = FSCMessage.MessageContent.parseFrom(blob.getBinaryStream());
                 builder.setContent(messageContent);
                 builder.setServerTimestamp(resultSet.getTimestamp(index++).getTime());
-                WFCMessage.Message message = builder.build();
+                FSCMessage.Message message = builder.build();
                 return new MessageBundle(messageId, message.getFromUser(), null, message);
             }
             resultSet.close();
@@ -538,12 +538,12 @@ public class DatabaseStore {
         return null;
     }
 
-    List<WFCMessage.Message> loadRemoteMessages(String user, WFCMessage.Conversation conversation, long beforeUid, int count) {
-        List<WFCMessage.Message> messages = loadRemoteMessagesFromTable(user, conversation, beforeUid, count, MessageShardingUtil.getMessageTable(beforeUid));
+    List<FSCMessage.Message> loadRemoteMessages(String user, FSCMessage.Conversation conversation, long beforeUid, int count) {
+        List<FSCMessage.Message> messages = loadRemoteMessagesFromTable(user, conversation, beforeUid, count, MessageShardingUtil.getMessageTable(beforeUid));
         if (messages != null && messages.size() < count) {
             String nexTable = MessageShardingUtil.getPreviousMessageTable(beforeUid);
             if (!StringUtil.isNullOrEmpty(nexTable)) {
-                List<WFCMessage.Message> nextMessages = loadRemoteMessagesFromTable(user, conversation, beforeUid, count - messages.size(), nexTable);
+                List<FSCMessage.Message> nextMessages = loadRemoteMessagesFromTable(user, conversation, beforeUid, count - messages.size(), nexTable);
                 if (nextMessages != null) {
                     messages.addAll(nextMessages);
                 }
@@ -552,7 +552,7 @@ public class DatabaseStore {
         return messages;
     }
 
-    List<WFCMessage.Message> loadRemoteMessagesFromTable(String user, WFCMessage.Conversation conversation, long beforeUid, int count, String table) {
+    List<FSCMessage.Message> loadRemoteMessagesFromTable(String user, FSCMessage.Conversation conversation, long beforeUid, int count, String table) {
         LOG.info("loadRemoteMessagesFromTable  from user {} target {} beforeUid {} table {} ",user,conversation.getTarget(),beforeUid,table);
         String sql = "select `_mid`, `_from`, `_type`, `_target`, `_line`, `_data`, `_dt` from " + table +" where";
         if (conversation.getType() == ProtoConstants.ConversationType.ConversationType_Private) {
@@ -566,7 +566,7 @@ public class DatabaseStore {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        List<WFCMessage.Message> out = new ArrayList<>();
+        List<FSCMessage.Message> out = new ArrayList<>();
         try {
             connection = DBUtil.getConnection();
             statement = connection.prepareStatement(sql);
@@ -583,21 +583,21 @@ public class DatabaseStore {
             statement.setInt(index++, count);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder();
+                FSCMessage.Message.Builder builder = FSCMessage.Message.newBuilder();
                 index = 1;
                 builder.setMessageId(resultSet.getLong(index++));
                 builder.setFromUser(resultSet.getString(index++));
-                WFCMessage.Conversation.Builder cb = WFCMessage.Conversation.newBuilder();
+                FSCMessage.Conversation.Builder cb = FSCMessage.Conversation.newBuilder();
                 cb.setType(resultSet.getInt(index++));
                 cb.setTarget(resultSet.getString(index++));
                 cb.setLine(resultSet.getInt(index++));
                 builder.setConversation(cb.build());
                 Blob blob = resultSet.getBlob(index++);
 
-                WFCMessage.MessageContent messageContent = WFCMessage.MessageContent.parseFrom(blob.getBinaryStream());
+                FSCMessage.MessageContent messageContent = FSCMessage.MessageContent.parseFrom(blob.getBinaryStream());
                 builder.setContent(messageContent);
                 builder.setServerTimestamp(resultSet.getTimestamp(index++).getTime());
-                WFCMessage.Message message = builder.build();
+                FSCMessage.Message message = builder.build();
                 out.add(message);
             }
         } catch (SQLException | IOException e) {
@@ -635,7 +635,7 @@ public class DatabaseStore {
         });
     }
 
-    void persistUserSetting(final String userId, WFCMessage.UserSettingEntry entry) {
+    void persistUserSetting(final String userId, FSCMessage.UserSettingEntry entry) {
         mScheduler.execute(()->{
             Connection connection = null;
             PreparedStatement statement = null;
@@ -673,7 +673,7 @@ public class DatabaseStore {
         });
     }
 
-    List<WFCMessage.UserSettingEntry> getPersistUserSetting(final String userId) {
+    List<FSCMessage.UserSettingEntry> getPersistUserSetting(final String userId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -692,9 +692,9 @@ public class DatabaseStore {
 
 
             rs = statement.executeQuery();
-            List<WFCMessage.UserSettingEntry> out = new ArrayList<>();
+            List<FSCMessage.UserSettingEntry> out = new ArrayList<>();
             while (rs.next()) {
-                WFCMessage.UserSettingEntry.Builder builder = WFCMessage.UserSettingEntry.newBuilder();
+                FSCMessage.UserSettingEntry.Builder builder = FSCMessage.UserSettingEntry.newBuilder();
 
                 index = 1;
                 int intvalue = rs.getInt(index++);
@@ -726,7 +726,7 @@ public class DatabaseStore {
     }
 
 
-    public void persistGroupInfo(final WFCMessage.GroupInfo groupInfo) {
+    public void persistGroupInfo(final FSCMessage.GroupInfo groupInfo) {
         mScheduler.execute(()->{
             Connection connection = null;
             PreparedStatement statement = null;
@@ -867,7 +867,7 @@ public class DatabaseStore {
         return left.equals(right);
     }
 
-    void updateSession(String uid, String cid, Session session, WFCMessage.RouteRequest request) {
+    void updateSession(String uid, String cid, Session session, FSCMessage.RouteRequest request) {
         mScheduler.execute(()->{
             Connection connection = null;
             PreparedStatement statement = null;
@@ -1028,7 +1028,7 @@ public class DatabaseStore {
         });
     }
 
-    void persistGroupMember(final String groupId, final List<WFCMessage.GroupMember> memberList) {
+    void persistGroupMember(final String groupId, final List<FSCMessage.GroupMember> memberList) {
         mScheduler.execute(()->{
             Connection connection = null;
             PreparedStatement statement = null;
@@ -1048,7 +1048,7 @@ public class DatabaseStore {
 
                 statement = connection.prepareStatement(sql);
 
-                for (WFCMessage.GroupMember member : memberList
+                for (FSCMessage.GroupMember member : memberList
                     ) {
                     int index = 1;
                     long dt = System.currentTimeMillis();
@@ -1088,7 +1088,7 @@ public class DatabaseStore {
         });
     }
 
-    public WFCMessage.GroupInfo getPersistGroupInfo(String groupId) {
+    public FSCMessage.GroupInfo getPersistGroupInfo(String groupId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -1113,7 +1113,7 @@ public class DatabaseStore {
             if (rs.next()) {
                 String strValue;
                 int intValue;
-                WFCMessage.GroupInfo.Builder builder = WFCMessage.GroupInfo.newBuilder();
+                FSCMessage.GroupInfo.Builder builder = FSCMessage.GroupInfo.newBuilder();
                 index = 1;
 
                 builder.setTargetId(groupId);
@@ -1161,7 +1161,7 @@ public class DatabaseStore {
         return null;
     }
 
-    public void updateChatroomInfo(String chatroomId, WFCMessage.ChatroomInfo chatroomInfo) {
+    public void updateChatroomInfo(String chatroomId, FSCMessage.ChatroomInfo chatroomInfo) {
         LOG.info("Database update chatroom info {}", chatroomId);
         mScheduler.execute(()->{
             Connection connection = null;
@@ -1237,7 +1237,7 @@ public class DatabaseStore {
         });
     }
 
-    public WFCMessage.ChatroomInfo getPersistChatroomInfo(String chatroomId) {
+    public FSCMessage.ChatroomInfo getPersistChatroomInfo(String chatroomId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -1260,7 +1260,7 @@ public class DatabaseStore {
             if (rs.next()) {
                 String strValue;
                 int intValue;
-                WFCMessage.ChatroomInfo.Builder builder = WFCMessage.ChatroomInfo.newBuilder();
+                FSCMessage.ChatroomInfo.Builder builder = FSCMessage.ChatroomInfo.newBuilder();
                 index = 1;
 
                 strValue = rs.getString(index++);
@@ -1382,7 +1382,7 @@ public class DatabaseStore {
             }
         });
     }
-    public WFCMessage.Robot getRobot(String robotId) {
+    public FSCMessage.Robot getRobot(String robotId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -1402,7 +1402,7 @@ public class DatabaseStore {
 
             rs = statement.executeQuery();
             if (rs.next()) {
-                WFCMessage.Robot.Builder builder = WFCMessage.Robot.newBuilder();
+                FSCMessage.Robot.Builder builder = FSCMessage.Robot.newBuilder();
                 index = 1;
                 String value = rs.getString(index++);
                 value = (value == null ? "" : value);
@@ -1439,7 +1439,7 @@ public class DatabaseStore {
         return null;
     }
 
-    public void updateRobot(final WFCMessage.Robot robot) {
+    public void updateRobot(final FSCMessage.Robot robot) {
         LOG.info("Database update user info {}", robot.getUid());
         mScheduler.execute(()->{
             Connection connection = null;
@@ -1491,7 +1491,7 @@ public class DatabaseStore {
         });
     }
 
-    public void updateUser(final WFCMessage.User user) {
+    public void updateUser(final FSCMessage.User user) {
         LOG.info("Database update user info {} {}", user.getUid(), user.getUpdateDt());
         mScheduler.execute(()->{
             Connection connection = null;
@@ -1645,7 +1645,7 @@ public class DatabaseStore {
         }
     }
 
-    public WFCMessage.User getPersistUser(String userId) {
+    public FSCMessage.User getPersistUser(String userId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -1671,7 +1671,7 @@ public class DatabaseStore {
 
             rs = statement.executeQuery();
             if (rs.next()) {
-                WFCMessage.User.Builder builder = WFCMessage.User.newBuilder();
+                FSCMessage.User.Builder builder = FSCMessage.User.newBuilder();
                 index = 1;
                 String value = rs.getString(index++);
                 value = (value == null ? "" : value);
@@ -1840,7 +1840,7 @@ public class DatabaseStore {
         return null;
     }
 
-    List<WFCMessage.FriendRequest> getPersistFriendRequests(String userId) {
+    List<FSCMessage.FriendRequest> getPersistFriendRequests(String userId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -1861,9 +1861,9 @@ public class DatabaseStore {
 
 
             rs = statement.executeQuery();
-            List<WFCMessage.FriendRequest> out = new ArrayList<>();
+            List<FSCMessage.FriendRequest> out = new ArrayList<>();
             while (rs.next()) {
-                WFCMessage.FriendRequest.Builder builder = WFCMessage.FriendRequest.newBuilder();
+                FSCMessage.FriendRequest.Builder builder = FSCMessage.FriendRequest.newBuilder();
                 index = 1;
                 String value = rs.getString(index++);
                 value = (value == null ? "" : value);
@@ -1934,7 +1934,7 @@ public class DatabaseStore {
         });
     }
     //
-    void persistOrUpdateFriendRequest(final WFCMessage.FriendRequest request) {
+    void persistOrUpdateFriendRequest(final FSCMessage.FriendRequest request) {
         mScheduler.execute(()->{
             Connection connection = null;
             PreparedStatement statement = null;
@@ -2053,7 +2053,7 @@ public class DatabaseStore {
         return false;
     }
 
-    void updateChannelInfo(final WFCMessage.ChannelInfo channelInfo) {
+    void updateChannelInfo(final FSCMessage.ChannelInfo channelInfo) {
         LOG.info("Database update channel info {} {}", channelInfo.getTargetId(), channelInfo.getUpdateDt());
         mScheduler.execute(()->{
             Connection connection = null;
@@ -2145,7 +2145,7 @@ public class DatabaseStore {
         });
     }
 
-    WFCMessage.ChannelInfo getPersistChannelInfo(String channelId) {
+    FSCMessage.ChannelInfo getPersistChannelInfo(String channelId) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -2171,7 +2171,7 @@ public class DatabaseStore {
             if (rs.next()) {
                 String strValue;
                 int intValue;
-                WFCMessage.ChannelInfo.Builder builder = WFCMessage.ChannelInfo.newBuilder();
+                FSCMessage.ChannelInfo.Builder builder = FSCMessage.ChannelInfo.newBuilder();
                 index = 1;
 
                 builder.setTargetId(channelId);
@@ -2304,12 +2304,12 @@ public class DatabaseStore {
         return out;
     }
 
-    List<WFCMessage.ChannelInfo> searchChannelFromDB(String keyword, boolean buzzy, int page) {
+    List<FSCMessage.ChannelInfo> searchChannelFromDB(String keyword, boolean buzzy, int page) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
 
-        ArrayList<WFCMessage.ChannelInfo> out = new ArrayList<>();
+        ArrayList<FSCMessage.ChannelInfo> out = new ArrayList<>();
 
         try {
             connection = DBUtil.getConnection();
@@ -2346,7 +2346,7 @@ public class DatabaseStore {
 
             rs = statement.executeQuery();
             while (rs.next()) {
-                WFCMessage.ChannelInfo.Builder builder = WFCMessage.ChannelInfo.newBuilder();
+                FSCMessage.ChannelInfo.Builder builder = FSCMessage.ChannelInfo.newBuilder();
                 index = 1;
 
                 String value = rs.getString(index++);

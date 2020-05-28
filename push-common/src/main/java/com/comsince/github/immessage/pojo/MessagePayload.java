@@ -8,7 +8,7 @@
 
 package com.comsince.github.immessage.pojo;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 import com.google.protobuf.ByteString;
 import io.netty.util.internal.StringUtil;
 
@@ -117,8 +117,8 @@ public class MessagePayload {
         this.mentionedTarget = mentionedTarget;
     }
 
-    public WFCMessage.MessageContent toProtoMessageContent() {
-        WFCMessage.MessageContent.Builder builder = WFCMessage.MessageContent.newBuilder()
+    public FSCMessage.MessageContent toProtoMessageContent() {
+        FSCMessage.MessageContent.Builder builder = FSCMessage.MessageContent.newBuilder()
             .setType(type)
             .setMediaType(mediaType)
             .setPersistFlag(persistFlag)
@@ -141,7 +141,7 @@ public class MessagePayload {
         return builder.build();
     }
 
-    public static MessagePayload fromProtoMessageContent(WFCMessage.MessageContent protoContent) {
+    public static MessagePayload fromProtoMessageContent(FSCMessage.MessageContent protoContent) {
         if (protoContent == null)
             return null;
 

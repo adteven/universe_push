@@ -1,6 +1,5 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
@@ -19,7 +18,7 @@ import java.util.List;
  * @Time 20-5-27 下午2:18
  **/
 @Handler(IMTopic.UserSearchTopic)
-public class SearchUserHandler extends WsImHandler<WsUserSearchRequest, WFCMessage.SearchUserResult>{
+public class SearchUserHandler extends WsImHandler<WsUserSearchRequest, FSCMessage.SearchUserResult>{
 
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, WsUserSearchRequest wsUserSearchRequest) {
@@ -33,9 +32,9 @@ public class SearchUserHandler extends WsImHandler<WsUserSearchRequest, WFCMessa
     }
 
     @Override
-    public String result(Signal signal, SubSignal subSignal, WFCMessage.SearchUserResult searchUserResult) {
+    public String result(Signal signal, SubSignal subSignal, FSCMessage.SearchUserResult searchUserResult) {
         List<UserResponse> userResponseList = new ArrayList<>();
-        for(WFCMessage.User user : searchUserResult.getEntryList()){
+        for(FSCMessage.User user : searchUserResult.getEntryList()){
             userResponseList.add(UserResponse.convertWFCUser(user));
         }
         return Json.toJson(userResponseList);

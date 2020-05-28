@@ -1,8 +1,8 @@
 package com.comsince.github.service.impl;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.controller.im.pojo.*;
 import com.comsince.github.persistence.IMessagesStore;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.security.AES;
 import com.comsince.github.security.TokenAuthenticator;
 import com.comsince.github.service.AdminService;
@@ -40,7 +40,7 @@ public class AdminServiceImpl implements AdminService {
                 && (!StringUtil.isNullOrEmpty(inputUserId.getUserId())
                 || !StringUtil.isNullOrEmpty(inputUserId.getName())
                 || !StringUtil.isNullOrEmpty(inputUserId.getMobile()))) {
-            WFCMessage.User user = null;
+            FSCMessage.User user = null;
             if(!StringUtil.isNullOrEmpty(inputUserId.getUserId())) {
                 user = messagesStore.getUserInfo(inputUserId.getUserId());
             } else if(!StringUtil.isNullOrEmpty(inputUserId.getName())) {
@@ -68,7 +68,7 @@ public class AdminServiceImpl implements AdminService {
                 inputCreateUser.setUserId(messagesStore.getShortUUID());
             }
 
-            WFCMessage.User.Builder newUserBuilder = WFCMessage.User.newBuilder()
+            FSCMessage.User.Builder newUserBuilder = FSCMessage.User.newBuilder()
                     .setUid(StringUtil.isNullOrEmpty(inputCreateUser.getUserId()) ? "" : inputCreateUser.getUserId());
             if (inputCreateUser.getName() != null)
                 newUserBuilder.setName(inputCreateUser.getName());

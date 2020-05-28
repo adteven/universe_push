@@ -1,12 +1,11 @@
 package com.comsince.github.websocket.im;
 
-import cn.wildfirechat.proto.WFCMessage;
-import com.comsince.github.PushPacket;
 import com.comsince.github.Signal;
 import com.comsince.github.SubSignal;
 import com.comsince.github.handler.im.Handler;
 import com.comsince.github.handler.im.IMTopic;
 import com.comsince.github.model.MessageResponse;
+import com.comsince.github.proto.FSCMessage;
 import com.comsince.github.websocket.model.WsSendMessageResponse;
 import org.tio.utils.json.Json;
 
@@ -23,7 +22,7 @@ public class SendMessageHandler extends WsImHandler<MessageResponse,ByteBuffer>{
     @Override
     public byte[] request(Signal signal, SubSignal subSignal, MessageResponse messageResponse) {
         log.info("message send {}",messageResponse);
-        WFCMessage.Message message = MessageResponse.convertWFCMessage(messageResponse);
+        FSCMessage.Message message = MessageResponse.convertWFCMessage(messageResponse);
         return message.toByteArray();
     }
 

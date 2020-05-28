@@ -1,6 +1,6 @@
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.MessageService;
 import com.comsince.github.PushServer;
 import com.comsince.github.SessionService;
@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
+import static com.comsince.github.proto.ProtoConstants.PersistFlag.Transparent;
 
 /**
  * @author comsicne

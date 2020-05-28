@@ -8,7 +8,7 @@
 
 package com.comsince.github.immessage.pojo;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.util.internal.StringUtil;
 
 public class SendMessageData {
@@ -53,14 +53,14 @@ public class SendMessageData {
         return true;
     }
 
-    public WFCMessage.Message toProtoMessage() {
-        return WFCMessage.Message.newBuilder().setFromUser(sender)
-            .setConversation(WFCMessage.Conversation.newBuilder().setType(conv.getType()).setTarget(conv.getTarget()).setLine(conv.getLine()))
+    public FSCMessage.Message toProtoMessage() {
+        return FSCMessage.Message.newBuilder().setFromUser(sender)
+            .setConversation(FSCMessage.Conversation.newBuilder().setType(conv.getType()).setTarget(conv.getTarget()).setLine(conv.getLine()))
             .setContent(payload.toProtoMessageContent())
             .build();
     }
 
-    public static SendMessageData fromProtoMessage(WFCMessage.Message protoMessage) {
+    public static SendMessageData fromProtoMessage(FSCMessage.Message protoMessage) {
         SendMessageData data = new SendMessageData();
         data.sender = protoMessage.getFromUser();
         data.conv = new Conversation();

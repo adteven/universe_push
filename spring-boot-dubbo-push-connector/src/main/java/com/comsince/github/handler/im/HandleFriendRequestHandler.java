@@ -8,7 +8,7 @@
 
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.SubSignal;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.model.MessageResponse;

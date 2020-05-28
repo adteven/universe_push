@@ -9,8 +9,8 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.ProtoConstants;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.util.internal.StringUtil;
 
 public class InputCreateRobot {
@@ -42,8 +42,8 @@ public class InputCreateRobot {
         this.social = social;
     }
 
-    public WFCMessage.Robot toRobot() {
-        WFCMessage.Robot.Builder builder = WFCMessage.Robot.newBuilder();
+    public FSCMessage.Robot toRobot() {
+        FSCMessage.Robot.Builder builder = FSCMessage.Robot.newBuilder();
         if (!StringUtil.isNullOrEmpty(userId))
             builder.setUid(userId);
         if (!StringUtil.isNullOrEmpty(owner))
@@ -58,8 +58,8 @@ public class InputCreateRobot {
         return builder.build();
     }
 
-    public WFCMessage.User toUser() {
-        WFCMessage.User.Builder newUserBuilder = WFCMessage.User.newBuilder()
+    public FSCMessage.User toUser() {
+        FSCMessage.User.Builder newUserBuilder = FSCMessage.User.newBuilder()
             .setUid(userId);
         if (name != null)
             newUserBuilder.setName(name);

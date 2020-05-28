@@ -16,7 +16,6 @@
 
 package com.comsince.github.persistence;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
 import com.comsince.github.model.FriendData;
@@ -31,65 +30,6 @@ import java.util.Set;
  * Defines the SPI to be implemented by a StorageService that handle persistence of messages
  */
 public interface IMessagesStore {
-
-//    class StoredMessage {
-//
-//        final MqttQoS m_qos;
-//        final byte[] m_payload;
-//        final String m_topic;
-//        private boolean m_retained;
-//        private String m_clientID;
-//        private MessageGUID m_guid;
-//
-//        public StoredMessage(byte[] message, MqttQoS qos, String topic) {
-//            m_qos = qos;
-//            m_payload = message;
-//            m_topic = topic;
-//        }
-//
-//        public MqttQoS getQos() {
-//            return m_qos;
-//        }
-//
-//        public String getTopic() {
-//            return m_topic;
-//        }
-//
-//        public void setGuid(MessageGUID guid) {
-//            this.m_guid = guid;
-//        }
-//
-//        public MessageGUID getGuid() {
-//            return m_guid;
-//        }
-//
-//        public String getClientID() {
-//            return m_clientID;
-//        }
-//
-//        public void setClientID(String m_clientID) {
-//            this.m_clientID = m_clientID;
-//        }
-//
-//        public ByteBuf getPayload() {
-//            return Unpooled.copiedBuffer(m_payload);
-//        }
-//
-//        public void setRetained(boolean retained) {
-//            this.m_retained = retained;
-//        }
-//
-//        public boolean isRetained() {
-//            return m_retained;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "PublishEvent{clientID='" + m_clientID + '\'' + ", m_retain="
-//                    + m_retained + ", m_qos=" + m_qos + ", m_topic='" + m_topic + '\'' + '}';
-//        }
-//    }
-
     DatabaseStore getDatabaseStore();
     FSCMessage.Message storeMessage(String fromUser, String fromClientId, FSCMessage.Message message);
 	int getNotifyReceivers(String fromUser, FSCMessage.Message message, Set<String> notifyReceivers);
@@ -113,8 +53,8 @@ public interface IMessagesStore {
 
     ErrorCode recallMessage(long messageUid, String operatorId);
 
-    WFCMessage.Robot getRobot(String robotId);
-    void addRobot(WFCMessage.Robot robot);
+    FSCMessage.Robot getRobot(String robotId);
+    void addRobot(FSCMessage.Robot robot);
     ErrorCode getUserInfo(List<FSCMessage.UserRequest> requestList, FSCMessage.PullUserResult.Builder builder);
     ErrorCode modifyUserInfo(String userId, FSCMessage.ModifyMyInfoRequest request);
 
@@ -128,10 +68,10 @@ public interface IMessagesStore {
     FSCMessage.User getUserInfoByMobile(String mobile);
     List<FSCMessage.User> searchUser(String keyword, boolean buzzy, int page);
 
-    void createChatroom(String chatroomId, WFCMessage.ChatroomInfo chatroomInfo);
+    void createChatroom(String chatroomId, FSCMessage.ChatroomInfo chatroomInfo);
     void destoryChatroom(String chatroomId);
-    WFCMessage.ChatroomInfo getChatroomInfo(String chatroomId);
-    WFCMessage.ChatroomMemberInfo getChatroomMemberInfo(String chatroomId, final int maxMemberCount);
+    FSCMessage.ChatroomInfo getChatroomInfo(String chatroomId);
+    FSCMessage.ChatroomMemberInfo getChatroomMemberInfo(String chatroomId, final int maxMemberCount);
     int getChatroomMemberCount(String chatroomId);
     Collection<String> getChatroomMemberClient(String userId);
     boolean checkUserClientInChatroom(String user, String clientId, String chatroomId);

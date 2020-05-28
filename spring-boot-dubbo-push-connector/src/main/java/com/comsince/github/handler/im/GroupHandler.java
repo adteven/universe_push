@@ -8,7 +8,7 @@
 
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.configuration.MediaServerConfig;
 import com.comsince.github.model.GroupMember;
 import com.comsince.github.model.UserResponse;

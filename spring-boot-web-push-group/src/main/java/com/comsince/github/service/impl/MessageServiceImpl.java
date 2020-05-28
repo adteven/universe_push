@@ -57,14 +57,14 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageResponse handleFriendRequest(String userId, String targetId,int status) {
-        WFCMessage.HandleFriendRequest handleFriendRequest = WFCMessage.HandleFriendRequest.newBuilder()
+        FSCMessage.HandleFriendRequest handleFriendRequest = FSCMessage.HandleFriendRequest.newBuilder()
                 .setTargetUid(targetId)
                 .setStatus(status)
                 .build();
-        WFCMessage.Message.Builder builder = WFCMessage.Message.newBuilder();
+        FSCMessage.Message.Builder builder = FSCMessage.Message.newBuilder();
         builder.setFromUser(targetId);
         messagesStore.handleFriendRequest(userId,handleFriendRequest,builder,new long[2],false);
-        WFCMessage.Message message = builder.build();
+        FSCMessage.Message message = builder.build();
         MessageResponse messageResponse = MessageResponse.convertMessageResponse(message);
         return messageResponse;
     }
@@ -77,13 +77,13 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public UserResponse getUserInfo(String userId) {
         UserResponse userResponse = null;
-        WFCMessage.UserRequest userRequest = WFCMessage.UserRequest.newBuilder().setUid(userId).build();
-        List<WFCMessage.UserRequest> userRequests = new ArrayList<>();
+        FSCMessage.UserRequest userRequest = FSCMessage.UserRequest.newBuilder().setUid(userId).build();
+        List<FSCMessage.UserRequest> userRequests = new ArrayList<>();
         userRequests.add(userRequest);
-        WFCMessage.PullUserResult.Builder resultBuilder = WFCMessage.PullUserResult.newBuilder();
+        FSCMessage.PullUserResult.Builder resultBuilder = FSCMessage.PullUserResult.newBuilder();
         messagesStore.getUserInfo(userRequests,resultBuilder);
-        for(WFCMessage.UserResult userResult : resultBuilder.getResultList()){
-            WFCMessage.User user = userResult.getUser();
+        for(FSCMessage.UserResult userResult : resultBuilder.getResultList()){
+            FSCMessage.User user = userResult.getUser();
             userResponse = UserResponse.convertWFCUser(user);
         }
         return userResponse;
@@ -91,7 +91,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public ErrorCode modifyUserInfo(String userId, ModifyMyInfoRequest request) {
-        WFCMessage.ModifyMyInfoRequest modifyMyInfoRequest = ModifyMyInfoRequest.convert2WfcMyInfoRequest(request);
+        FSCMessage.ModifyMyInfoRequest modifyMyInfoRequest = ModifyMyInfoRequest.convert2WfcMyInfoRequest(request);
         return messagesStore.modifyUserInfo(userId,modifyMyInfoRequest);
     }
 
@@ -128,7 +128,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public GroupInfo getGroupInfo(String groupId) {
-        WFCMessage.GroupInfo groupInfo = messagesStore.getGroupInfo(groupId);
+        FSCMessage.GroupInfo groupInfo = messagesStore.getGroupInfo(groupId);
         GroupInfo groupInfoResponse = GroupInfo.convert2GroupInfo(groupInfo);
         return groupInfoResponse;
     }
@@ -136,26 +136,26 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public GroupInfo createGroup(String operator, GroupInfo groupInfo, List<GroupMember> memberList) {
 
-        WFCMessage.GroupInfo wfcGroupInfo = messagesStore.createGroup(operator,GroupInfo.convertToWfcGroupInfo(groupInfo),GroupMember.convertToWfcMembers(memberList));
+        FSCMessage.GroupInfo wfcGroupInfo = messagesStore.createGroup(operator,GroupInfo.convertToWfcGroupInfo(groupInfo),GroupMember.convertToWfcMembers(memberList));
         return GroupInfo.convert2GroupInfo(wfcGroupInfo);
     }
 
     @Override
     public List<GroupMember> getGroupMembers(String groupId, long maxDt) {
-        List<WFCMessage.GroupMember> wfcGroupMembers = new ArrayList<>();
+        List<FSCMessage.GroupMember> wfcGroupMembers = new ArrayList<>();
         messagesStore.getGroupMembers(groupId,maxDt,wfcGroupMembers);
         return GroupMember.convertToGroupMember(wfcGroupMembers);
     }
 
     @Override
     public List<GroupInfo> getGroupInfos(List<PullUserRequest.UserRequest> requests) {
-        List<WFCMessage.GroupInfo> wfcGroupInfos = messagesStore.getGroupInfos(PullUserRequest.convert2WfcUserRequests(requests));
+        List<FSCMessage.GroupInfo> wfcGroupInfos = messagesStore.getGroupInfos(PullUserRequest.convert2WfcUserRequests(requests));
         return GroupInfo.convert2GroupInfos(wfcGroupInfos);
     }
 
     @Override
     public ErrorCode addGroupMembers(String operator, String groupId, List<GroupMember> memberList) {
-        List<WFCMessage.GroupMember> wfcGroupMembers = GroupMember.convertToWfcMembers(memberList);
+        List<FSCMessage.GroupMember> wfcGroupMembers = GroupMember.convertToWfcMembers(memberList);
         ErrorCode errorCode = messagesStore.addGroupMembers(operator,groupId,wfcGroupMembers);
         return errorCode;
     }
@@ -194,20 +194,20 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public PullMessageResultResponse fetchMessage(String user, String exceptClientId, long fromMessageId, int pullType) {
-        WFCMessage.PullMessageResult pullMessageResult = messagesStore.fetchMessage(user,exceptClientId,fromMessageId,pullType);
+        FSCMessage.PullMessageResult pullMessageResult = messagesStore.fetchMessage(user,exceptClientId,fromMessageId,pullType);
         return PullMessageResultResponse.convertPullMessage(pullMessageResult);
     }
 
     @Override
     public PullMessageResultResponse loadRemoteMessages(String user, Conversation conversation, long beforeUid, int count) {
-        WFCMessage.Conversation wfcConversation = Conversation.convert2WfcConversation(conversation);
-        WFCMessage.PullMessageResult pullMessageResult = messagesStore.loadRemoteMessages(user,wfcConversation,beforeUid,count);
+        FSCMessage.Conversation wfcConversation = Conversation.convert2WfcConversation(conversation);
+        FSCMessage.PullMessageResult pullMessageResult = messagesStore.loadRemoteMessages(user,wfcConversation,beforeUid,count);
         return PullMessageResultResponse.convertPullMessage(pullMessageResult);
     }
 
     @Override
     public MessageResponse getMessage(long messageId) {
-        WFCMessage.Message wfcMessage = messagesStore.getMessage(messageId);
+        FSCMessage.Message wfcMessage = messagesStore.getMessage(messageId);
         return MessageResponse.convertMessageResponse(wfcMessage);
     }
 
@@ -269,8 +269,8 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<UserResponse> searchUser(String keyword, boolean buzzy, int page) {
         List<UserResponse> userResponseList = new ArrayList<>();
-        List<WFCMessage.User> users = messagesStore.searchUser(keyword,buzzy,page);
-        for(WFCMessage.User user : users){
+        List<FSCMessage.User> users = messagesStore.searchUser(keyword,buzzy,page);
+        for(FSCMessage.User user : users){
             UserResponse userResponse = UserResponse.convertWFCUser(user);
             userResponseList.add(userResponse);
         }

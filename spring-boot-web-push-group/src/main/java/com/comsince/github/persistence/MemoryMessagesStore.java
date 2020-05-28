@@ -16,7 +16,7 @@
 
 package com.comsince.github.persistence;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.common.ErrorCode;
 import com.comsince.github.controller.im.pojo.InputOutputUserBlockStatus;
 import com.comsince.github.model.FriendData;
@@ -48,10 +48,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import com.comsince.github.security.Topic;
 import com.comsince.github.security.Tokenor;
-import static cn.wildfirechat.proto.ProtoConstants.ChannelStatus.Channel_Status_Destoryed;
-import static cn.wildfirechat.proto.ProtoConstants.ModifyChannelInfoType.*;
-import static cn.wildfirechat.proto.ProtoConstants.ModifyGroupInfoType.*;
-import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
+import static com.comsince.github.proto.ProtoConstants.ChannelStatus.Channel_Status_Destoryed;
+import static com.comsince.github.proto.ProtoConstants.ModifyChannelInfoType.*;
+import static com.comsince.github.proto.ProtoConstants.ModifyGroupInfoType.*;
+import static com.comsince.github.proto.ProtoConstants.PersistFlag.Transparent;
 import static com.comsince.github.persistence.MyInfoType.*;
 import static com.comsince.github.util.BrokerConstants.*;
 import static com.comsince.github.utils.Constants.MAX_CHATROOM_MESSAGE_QUEUE;
@@ -594,8 +594,8 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.GroupInfo createGroup(String fromUser, WFCMessage.GroupInfo groupInfo, List<WFCMessage.GroupMember> memberList) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+    public FSCMessage.GroupInfo createGroup(String fromUser, FSCMessage.GroupInfo groupInfo, List<FSCMessage.GroupMember> memberList) {
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
         String groupId = null;
         long dt = System.currentTimeMillis();
@@ -617,9 +617,9 @@ public class MemoryMessagesStore implements IMessagesStore {
             .build();
 
         mIMap.put(groupId, groupInfo);
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
-        for (WFCMessage.GroupMember member : memberList) {
+        for (FSCMessage.GroupMember member : memberList) {
             member = member.toBuilder().setUpdateDt(dt).build();
             groupMembers.put(groupId, member);
         }
@@ -631,10 +631,10 @@ public class MemoryMessagesStore implements IMessagesStore {
 
 
     @Override
-    public ErrorCode addGroupMembers(String operator, String groupId, List<WFCMessage.GroupMember> memberList) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+    public ErrorCode addGroupMembers(String operator, String groupId, List<FSCMessage.GroupMember> memberList) {
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
         }
@@ -642,31 +642,31 @@ public class MemoryMessagesStore implements IMessagesStore {
             return ErrorCode.ERROR_CODE_NOT_RIGHT;
         }
 
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
         long updateDt = System.currentTimeMillis();
 
-        List<WFCMessage.GroupMember> tmp = new ArrayList<>();
+        List<FSCMessage.GroupMember> tmp = new ArrayList<>();
         ArrayList<String> newInviteUsers = new ArrayList<>();
-        for (WFCMessage.GroupMember member : memberList) {
+        for (FSCMessage.GroupMember member : memberList) {
             member = member.toBuilder().setType(ProtoConstants.GroupMemberType.GroupMemberType_Normal).setUpdateDt(updateDt).setAlias("").build();
             tmp.add(member);
             newInviteUsers.add(member.getMemberId());
         }
         memberList = tmp;
 
-        for (WFCMessage.GroupMember member : groupMembers.get(groupId)) {
+        for (FSCMessage.GroupMember member : groupMembers.get(groupId)) {
             if (newInviteUsers.contains(member.getMemberId())) {
                 groupMembers.remove(groupId, member);
             }
         }
 
-        for (WFCMessage.GroupMember member : memberList) {
+        for (FSCMessage.GroupMember member : memberList) {
             groupMembers.put(groupId, member);
         }
 
         int count = 0;
-        for (WFCMessage.GroupMember member : groupMembers.get(groupId)) {
+        for (FSCMessage.GroupMember member : groupMembers.get(groupId)) {
             if (member.getType() != ProtoConstants.GroupMemberType.GroupMemberType_Removed) {
                 count++;
             }
@@ -680,9 +680,9 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode kickoffGroupMembers(String operator, String groupId, List<String> memberList) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
         }
@@ -691,13 +691,13 @@ public class MemoryMessagesStore implements IMessagesStore {
             return ErrorCode.ERROR_CODE_NOT_RIGHT;
         }
 
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
         int removeCount = 0;
         long updateDt = System.currentTimeMillis();
-        ArrayList<WFCMessage.GroupMember> list = new ArrayList<>();
-        List<WFCMessage.GroupMember> allMembers = new ArrayList<>(groupMembers.get(groupId));
-        for (WFCMessage.GroupMember member : allMembers) {
+        ArrayList<FSCMessage.GroupMember> list = new ArrayList<>();
+        List<FSCMessage.GroupMember> allMembers = new ArrayList<>(groupMembers.get(groupId));
+        for (FSCMessage.GroupMember member : allMembers) {
             if (memberList.contains(member.getMemberId())) {
                 boolean removed = groupMembers.remove(groupId, member);
                 LOG.info("remove groupId "+groupId+" member "+member.getMemberId()+" removed "+removed);
@@ -721,12 +721,12 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode quitGroup(String operator, String groupId) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
-            MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
-            for (WFCMessage.GroupMember member : groupMembers.get(groupId)
+            MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+            for (FSCMessage.GroupMember member : groupMembers.get(groupId)
                 ) {
                 if (member.getMemberId().equals(operator)) {
                     groupMembers.remove(groupId, member);
@@ -739,16 +739,16 @@ public class MemoryMessagesStore implements IMessagesStore {
         if (groupInfo.getType() != ProtoConstants.GroupType.GroupType_Free && groupInfo.getOwner() != null && groupInfo.getOwner().equals(operator)) {
             return ErrorCode.ERROR_CODE_NOT_RIGHT;
         }
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
         long updateDt = System.currentTimeMillis();
         boolean removed = false;
-        for (WFCMessage.GroupMember member : groupMembers.get(groupId)
+        for (FSCMessage.GroupMember member : groupMembers.get(groupId)
             ) {
             if (member.getMemberId().equals(operator)) {
                 removed = groupMembers.remove(groupId, member);
                 if (removed) {
-                    ArrayList<WFCMessage.GroupMember> list = new ArrayList<>();
+                    ArrayList<FSCMessage.GroupMember> list = new ArrayList<>();
                     list.add(member);
                     databaseStore.persistGroupMember(groupId, list);
 
@@ -768,12 +768,12 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode dismissGroup(String operator, String groupId, boolean isAdmin) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
-            MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+            MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
             groupMembers.remove(groupId);
 
             return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -785,7 +785,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             return ErrorCode.ERROR_CODE_NOT_RIGHT;
         }
 
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
         groupMembers.remove(groupId);
         mIMap.remove(groupId);
@@ -798,9 +798,9 @@ public class MemoryMessagesStore implements IMessagesStore {
     @Override
     public ErrorCode modifyGroupInfo(String operator, String groupId, int modifyType, String value) {
 
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
-        WFCMessage.GroupInfo oldInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo oldInfo = mIMap.get(groupId);
 
         if (oldInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -822,7 +822,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
         }
 
-        WFCMessage.GroupInfo.Builder newInfoBuilder = oldInfo.toBuilder();
+        FSCMessage.GroupInfo.Builder newInfoBuilder = oldInfo.toBuilder();
 
         if (modifyType == Modify_Group_Name)
             newInfoBuilder.setName(value);
@@ -839,8 +839,8 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode modifyGroupAlias(String operator, String groupId, String alias) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             groupInfo = databaseStore.getPersistGroupInfo(groupId);
             if (groupInfo != null) {
@@ -851,9 +851,9 @@ public class MemoryMessagesStore implements IMessagesStore {
         }
 
         long updateDt = System.currentTimeMillis();
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
-        Collection<WFCMessage.GroupMember> members = groupMembers.get(groupId);
-        for (WFCMessage.GroupMember member : members
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        Collection<FSCMessage.GroupMember> members = groupMembers.get(groupId);
+        for (FSCMessage.GroupMember member : members
             ) {
             if (member.getMemberId().equals(operator)) {
                 groupMembers.remove(groupId, member);
@@ -871,11 +871,11 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public List<WFCMessage.GroupInfo> getGroupInfos(List<WFCMessage.UserRequest> requests) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
-        ArrayList<WFCMessage.GroupInfo> out = new ArrayList<>();
-        for (WFCMessage.UserRequest request : requests) {
-            WFCMessage.GroupInfo groupInfo = mIMap.get(request.getUid());
+    public List<FSCMessage.GroupInfo> getGroupInfos(List<FSCMessage.UserRequest> requests) {
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        ArrayList<FSCMessage.GroupInfo> out = new ArrayList<>();
+        for (FSCMessage.UserRequest request : requests) {
+            FSCMessage.GroupInfo groupInfo = mIMap.get(request.getUid());
             if (groupInfo == null) {
                 groupInfo = databaseStore.getPersistGroupInfo(request.getUid());
                 if (groupInfo != null) {
@@ -892,10 +892,10 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.GroupInfo getGroupInfo(String groupId) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+    public FSCMessage.GroupInfo getGroupInfo(String groupId) {
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             groupInfo = databaseStore.getPersistGroupInfo(groupId);
             if (groupInfo != null) {
@@ -906,24 +906,24 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode getGroupMembers(String groupId, long maxDt, List<WFCMessage.GroupMember> members) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+    public ErrorCode getGroupMembers(String groupId, long maxDt, List<FSCMessage.GroupMember> members) {
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
         } else if (groupInfo.getMemberUpdateDt() <= maxDt) {
             return ErrorCode.ERROR_CODE_NOT_MODIFIED;
         }
 
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
-        for(WFCMessage.GroupMember groupMember : groupMembers.get(groupId)){
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        for(FSCMessage.GroupMember groupMember : groupMembers.get(groupId)){
             if(groupMember.getType() != ProtoConstants.GroupMemberType.GroupMemberType_Removed){
                 members.add(groupMember);
             }
         }
 //        members.addAll(groupMembers.get(groupId));
-        for(WFCMessage.GroupMember groupMember : members){
+        for(FSCMessage.GroupMember groupMember : members){
             LOG.info("groupId "+groupId+" member "+groupMember.getMemberId());
         }
         return ErrorCode.ERROR_CODE_SUCCESS;
@@ -932,10 +932,10 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode transferGroup(String operator, String groupId, String newOwner, boolean isAdmin) {
-        IMap<String, WFCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
+        IMap<String, FSCMessage.GroupInfo> mIMap = hzInstance.getMap(GROUPS_MAP);
 
 
-        WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
+        FSCMessage.GroupInfo groupInfo = mIMap.get(groupId);
 
         if (groupInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -957,11 +957,11 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public boolean isMemberInGroup(String memberId, String groupId) {
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
-        Collection<WFCMessage.GroupMember> members = groupMembers.get(groupId);
+        Collection<FSCMessage.GroupMember> members = groupMembers.get(groupId);
 
-        for (WFCMessage.GroupMember member : members) {
+        for (FSCMessage.GroupMember member : members) {
             LOG.info("target memberId {} groupId {} <-> member {} memberType {}",memberId,groupId,member.getMemberId(),member.getType());
             if (member.getMemberId().equals(memberId) && member.getType() != ProtoConstants.GroupMemberType.GroupMemberType_Removed)
                 return true;
@@ -972,11 +972,11 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public boolean isForbiddenInGroup(String memberId, String groupId) {
-        MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+        MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
 
-        Collection<WFCMessage.GroupMember> members = groupMembers.get(groupId);
+        Collection<FSCMessage.GroupMember> members = groupMembers.get(groupId);
 
-        for (WFCMessage.GroupMember member : members
+        for (FSCMessage.GroupMember member : members
             ) {
             if (member.getMemberId().equals(memberId) && member.getType() == ProtoConstants.GroupMemberType.GroupMemberType_Silent)
                 return true;
@@ -990,7 +990,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
         MessageBundle messageBundle = mIMap.get(messageUid);
         if (messageBundle != null) {
-            WFCMessage.Message message = messageBundle.getMessage();
+            FSCMessage.Message message = messageBundle.getMessage();
             boolean canRecall = false;
             if (message.getFromUser().equals(operatorId)) {
                 canRecall = true;
@@ -998,9 +998,9 @@ public class MemoryMessagesStore implements IMessagesStore {
             LOG.info("recall messageUid {} operatorId {} fromUser {} callRecall {}",messageUid,operatorId,message.getFromUser(),canRecall);
 
             if (!canRecall && message.getConversation().getType() == ProtoConstants.ConversationType.ConversationType_Group) {
-                IMap<String, WFCMessage.GroupInfo> groupMap = hzInstance.getMap(GROUPS_MAP);
+                IMap<String, FSCMessage.GroupInfo> groupMap = hzInstance.getMap(GROUPS_MAP);
 
-                WFCMessage.GroupInfo groupInfo = groupMap.get(message.getConversation().getTarget());
+                FSCMessage.GroupInfo groupInfo = groupMap.get(message.getConversation().getTarget());
                 if (groupInfo == null) {
                     return ErrorCode.ERROR_CODE_NOT_EXIST;
                 }
@@ -1008,9 +1008,9 @@ public class MemoryMessagesStore implements IMessagesStore {
                     canRecall = true;
                 }
 
-                MultiMap<String, WFCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
-                Collection<WFCMessage.GroupMember> members = groupMembers.get(message.getConversation().getTarget());
-                for (WFCMessage.GroupMember member : members) {
+                MultiMap<String, FSCMessage.GroupMember> groupMembers = hzInstance.getMultiMap(GROUP_MEMBERS);
+                Collection<FSCMessage.GroupMember> members = groupMembers.get(message.getConversation().getTarget());
+                for (FSCMessage.GroupMember member : members) {
                     if (member.getMemberId().equals(operatorId)) {
                         if (member.getType() == ProtoConstants.GroupMemberType.GroupMemberType_Manager || member.getType() == ProtoConstants.GroupMemberType.GroupMemberType_Owner) {
                             canRecall = true;
@@ -1021,8 +1021,8 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
 
             if (!canRecall && message.getConversation().getType() == ProtoConstants.ConversationType.ConversationType_ChatRoom) {
-                IMap<String, WFCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
-                WFCMessage.ChatroomInfo room = chatroomInfoMap.get(message.getConversation().getTarget());
+                IMap<String, FSCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
+                FSCMessage.ChatroomInfo room = chatroomInfoMap.get(message.getConversation().getTarget());
                 //todo check is manager
             }
 
@@ -1041,35 +1041,35 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.Robot getRobot(String robotId) {
-        IMap<String, WFCMessage.Robot> mRobotMap = hzInstance.getMap(ROBOTS);
+    public FSCMessage.Robot getRobot(String robotId) {
+        IMap<String, FSCMessage.Robot> mRobotMap = hzInstance.getMap(ROBOTS);
         return mRobotMap.get(robotId);
     }
 
     @Override
-    public void addRobot(WFCMessage.Robot robot) {
-        IMap<String, WFCMessage.Robot> mUserMap = hzInstance.getMap(ROBOTS);
+    public void addRobot(FSCMessage.Robot robot) {
+        IMap<String, FSCMessage.Robot> mUserMap = hzInstance.getMap(ROBOTS);
         mUserMap.put(robot.getUid(), robot);
     }
 
 
     @Override
-    public ErrorCode getUserInfo(List<WFCMessage.UserRequest> requestList, WFCMessage.PullUserResult.Builder builder) {
-        IMap<String, WFCMessage.User> mUserMap = hzInstance.getMap(USERS);
+    public ErrorCode getUserInfo(List<FSCMessage.UserRequest> requestList, FSCMessage.PullUserResult.Builder builder) {
+        IMap<String, FSCMessage.User> mUserMap = hzInstance.getMap(USERS);
 
-        for (WFCMessage.UserRequest request : requestList
+        for (FSCMessage.UserRequest request : requestList
             ) {
-            WFCMessage.User user = mUserMap.get(request.getUid());
+            FSCMessage.User user = mUserMap.get(request.getUid());
             if (user == null) {
                 user = databaseStore.getPersistUser(request.getUid());
                 if (user != null) {
                     mUserMap.set(request.getUid(), user);
                 }
             }
-            WFCMessage.UserResult.Builder resultBuilder = WFCMessage.UserResult.newBuilder();
+            FSCMessage.UserResult.Builder resultBuilder = FSCMessage.UserResult.newBuilder();
             if (user == null) {
                 LOG.warn("Get user info, user {} not exist", request.getUid());
-                user = WFCMessage.User.newBuilder().setUid(request.getUid()).build();
+                user = FSCMessage.User.newBuilder().setUid(request.getUid()).build();
                 resultBuilder.setUser(user);
                 resultBuilder.setCode(ProtoConstants.UserResultCode.NotFound);
             } else {
@@ -1078,7 +1078,7 @@ public class MemoryMessagesStore implements IMessagesStore {
                     resultBuilder.setUser(user);
                     resultBuilder.setCode(ProtoConstants.UserResultCode.Success);
                 } else {
-                    user = WFCMessage.User.newBuilder().setUid(request.getUid()).build();
+                    user = FSCMessage.User.newBuilder().setUid(request.getUid()).build();
                     resultBuilder.setUser(user);
                     resultBuilder.setCode(ProtoConstants.UserResultCode.NotModified);
                 }
@@ -1091,11 +1091,11 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode modifyUserInfo(String userId, WFCMessage.ModifyMyInfoRequest request) {
-        IMap<String, WFCMessage.User> mUserMap = hzInstance.getMap(USERS);
+    public ErrorCode modifyUserInfo(String userId, FSCMessage.ModifyMyInfoRequest request) {
+        IMap<String, FSCMessage.User> mUserMap = hzInstance.getMap(USERS);
 
 
-        WFCMessage.User user = mUserMap.get(userId);
+        FSCMessage.User user = mUserMap.get(userId);
         if (user == null) {
             user = databaseStore.getPersistUser(userId);
             if (user != null) {
@@ -1105,9 +1105,9 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
         }
 
-        WFCMessage.User.Builder builder = user.toBuilder();
+        FSCMessage.User.Builder builder = user.toBuilder();
         boolean modified = false;
-        for (WFCMessage.InfoEntry entry : request.getEntryList()
+        for (FSCMessage.InfoEntry entry : request.getEntryList()
             ) {
             switch (entry.getType()) {
                 case Modify_DisplayName:
@@ -1197,44 +1197,44 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public void addUserInfo(WFCMessage.User user, String password) {
-        IMap<String, WFCMessage.User> mUserMap = hzInstance.getMap(USERS);
+    public void addUserInfo(FSCMessage.User user, String password) {
+        IMap<String, FSCMessage.User> mUserMap = hzInstance.getMap(USERS);
         mUserMap.put(user.getUid(), user);
         databaseStore.updateUserPassword(user.getUid(), password);
     }
 
     @Override
-    public WFCMessage.User getUserInfo(String userId) {
+    public FSCMessage.User getUserInfo(String userId) {
         if (StringUtil.isNullOrEmpty(userId)) {
             return null;
         }
-        IMap<String, WFCMessage.User> mUserMap = hzInstance.getMap(USERS);
-        WFCMessage.User user = mUserMap.get(userId);
+        IMap<String, FSCMessage.User> mUserMap = hzInstance.getMap(USERS);
+        FSCMessage.User user = mUserMap.get(userId);
         return user;
     }
 
     @Override
-    public WFCMessage.User getUserInfoByName(String name) {
+    public FSCMessage.User getUserInfoByName(String name) {
         String userId = databaseStore.getUserIdByName(name);
         return getUserInfo(userId);
     }
 
     @Override
-    public WFCMessage.User getUserInfoByMobile(String mobile) {
+    public FSCMessage.User getUserInfoByMobile(String mobile) {
         String userId = databaseStore.getUserIdByMobile(mobile);
         return getUserInfo(userId);
     }
     @Override
-    public List<WFCMessage.User> searchUser(String keyword, boolean buzzy, int page) {
+    public List<FSCMessage.User> searchUser(String keyword, boolean buzzy, int page) {
         return databaseStore.searchUserFromDB(keyword, buzzy, page);
     }
 
     @Override
-    public void createChatroom(String chatroomId, WFCMessage.ChatroomInfo chatroomInfo) {
-        IMap<String, WFCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
-        WFCMessage.ChatroomInfo preInfo = chatroomInfoMap.get(chatroomId);
+    public void createChatroom(String chatroomId, FSCMessage.ChatroomInfo chatroomInfo) {
+        IMap<String, FSCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
+        FSCMessage.ChatroomInfo preInfo = chatroomInfoMap.get(chatroomId);
         if (preInfo != null) {
-            WFCMessage.ChatroomInfo.Builder builder = preInfo.toBuilder();
+            FSCMessage.ChatroomInfo.Builder builder = preInfo.toBuilder();
             if (!StringUtil.isNullOrEmpty(chatroomInfo.getTitle())) {
                 builder.setTitle(chatroomInfo.getTitle());
             }
@@ -1260,8 +1260,8 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public void destoryChatroom(String chatroomId) {
-        IMap<String, WFCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
-        WFCMessage.ChatroomInfo room = chatroomInfoMap.get(chatroomId);
+        IMap<String, FSCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
+        FSCMessage.ChatroomInfo room = chatroomInfoMap.get(chatroomId);
         if (room != null) {
             room = room.toBuilder().setUpdateDt(System.currentTimeMillis()).setState(ProtoConstants.ChatroomState.Chatroom_State_End).build();
             chatroomInfoMap.put(chatroomId, room);
@@ -1269,13 +1269,13 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.ChatroomInfo getChatroomInfo(String chatroomId) {
-        IMap<String, WFCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
+    public FSCMessage.ChatroomInfo getChatroomInfo(String chatroomId) {
+        IMap<String, FSCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
         return chatroomInfoMap.get(chatroomId);
     }
 
     @Override
-    public WFCMessage.ChatroomMemberInfo getChatroomMemberInfo(String chatroomId, final int maxMemberCount) {
+    public FSCMessage.ChatroomMemberInfo getChatroomMemberInfo(String chatroomId, final int maxMemberCount) {
         MultiMap<String, UserClientEntry> chatroomMembers = hzInstance.getMultiMap(CHATROOM_MEMBER_IDS);
         Collection<UserClientEntry> members = chatroomMembers.get(chatroomId);
 
@@ -1302,10 +1302,10 @@ public class MemoryMessagesStore implements IMessagesStore {
                     }
                 });
             }
-            return WFCMessage.ChatroomMemberInfo.newBuilder().setMemberCount(members.size()).addAllMembers(memberIds).build();
+            return FSCMessage.ChatroomMemberInfo.newBuilder().setMemberCount(members.size()).addAllMembers(memberIds).build();
         }
 
-        return WFCMessage.ChatroomMemberInfo.newBuilder().setMemberCount(0).build();
+        return FSCMessage.ChatroomMemberInfo.newBuilder().setMemberCount(0).build();
 
     }
     @Override
@@ -1442,15 +1442,15 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public List<WFCMessage.FriendRequest> getFriendRequestList(String userId, long version) {
-        List<WFCMessage.FriendRequest> out = new ArrayList<>();
+    public List<FSCMessage.FriendRequest> getFriendRequestList(String userId, long version) {
+        List<FSCMessage.FriendRequest> out = new ArrayList<>();
 
-        MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
-        Collection<WFCMessage.FriendRequest> requests = requestMap.get(userId);
+        MultiMap<String, FSCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
+        Collection<FSCMessage.FriendRequest> requests = requestMap.get(userId);
         if (requests == null || requests.size() == 0) {
             requests = databaseStore.getPersistFriendRequests(userId);
             if (requests != null) {
-                for (WFCMessage.FriendRequest request : requests) {
+                for (FSCMessage.FriendRequest request : requests) {
                     if (request.getUpdateDt() > version)
                         requestMap.put(userId, request);
                 }
@@ -1459,7 +1459,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
         }
 
-        for (WFCMessage.FriendRequest request : requests) {
+        for (FSCMessage.FriendRequest request : requests) {
             if (request.getUpdateDt() > version) {
                 out.add(request);
             }
@@ -1469,13 +1469,13 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode saveAddFriendRequest(String userId, WFCMessage.AddFriendRequest request, long[] head) {
-        MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
-        Collection<WFCMessage.FriendRequest> requests = requestMap.get(userId);
+    public ErrorCode saveAddFriendRequest(String userId, FSCMessage.AddFriendRequest request, long[] head) {
+        MultiMap<String, FSCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
+        Collection<FSCMessage.FriendRequest> requests = requestMap.get(userId);
         if (requests == null || requests.size() == 0) {
             requests = databaseStore.getPersistFriendRequests(userId);
             if (requests != null) {
-                for (WFCMessage.FriendRequest r : requests) {
+                for (FSCMessage.FriendRequest r : requests) {
                     requestMap.put(userId, r);
                 }
             } else {
@@ -1483,9 +1483,9 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
         }
 
-        WFCMessage.FriendRequest existRequest = null;
+        FSCMessage.FriendRequest existRequest = null;
 
-        for (WFCMessage.FriendRequest tmpRequest : requests) {
+        for (FSCMessage.FriendRequest tmpRequest : requests) {
             if (tmpRequest.getToUid().equals(request.getTargetUid())) {
                 existRequest = tmpRequest;
                 break;
@@ -1503,7 +1503,7 @@ public class MemoryMessagesStore implements IMessagesStore {
                 return ErrorCode.ERROR_CODE_FRIEND_ALREADY_REQUEST;
             }
         }
-        WFCMessage.FriendRequest newRequest = WFCMessage.FriendRequest
+        FSCMessage.FriendRequest newRequest = FSCMessage.FriendRequest
             .newBuilder()
             .setFromUid(userId)
             .setToUid(request.getTargetUid())
@@ -1522,7 +1522,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode SyncFriendRequestUnread(String userId, long unreadDt, long[] head) {
-        MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
+        MultiMap<String, FSCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
 
         long curTS = System.currentTimeMillis();
         head[0] = curTS;
@@ -1534,7 +1534,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode handleFriendRequest(String userId, WFCMessage.HandleFriendRequest request, WFCMessage.Message.Builder msgBuilder, long[] heads, boolean isAdmin) {
+    public ErrorCode handleFriendRequest(String userId, FSCMessage.HandleFriendRequest request, FSCMessage.Message.Builder msgBuilder, long[] heads, boolean isAdmin) {
 
         if (isAdmin) {
             MultiMap<String, FriendData> friendsMap = hzInstance.getMultiMap(USER_FRIENDS);
@@ -1588,20 +1588,20 @@ public class MemoryMessagesStore implements IMessagesStore {
             return ErrorCode.ERROR_CODE_SUCCESS;
         }
 
-        MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
-        Collection<WFCMessage.FriendRequest> requests = requestMap.get(userId);
+        MultiMap<String, FSCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
+        Collection<FSCMessage.FriendRequest> requests = requestMap.get(userId);
         if (requests == null || requests.size() == 0) {
             requests = databaseStore.getPersistFriendRequests(userId);
             if (requests != null) {
-                for (WFCMessage.FriendRequest r : requests
+                for (FSCMessage.FriendRequest r : requests
                     ) {
                     requestMap.put(userId, r);
                 }
             }
         }
 
-        WFCMessage.FriendRequest existRequest = null;
-        for (WFCMessage.FriendRequest tmpRequest : requests) {
+        FSCMessage.FriendRequest existRequest = null;
+        for (FSCMessage.FriendRequest tmpRequest : requests) {
             if (tmpRequest.getFromUid().equals(request.getTargetUid())) {
                 existRequest = tmpRequest;
                 break;
@@ -1631,8 +1631,8 @@ public class MemoryMessagesStore implements IMessagesStore {
                 heads[0] = friendData2.getTimestamp();
                 heads[1] = friendData1.getTimestamp();
 
-                msgBuilder.setConversation(WFCMessage.Conversation.newBuilder().setTarget(userId).setLine(0).setType(ProtoConstants.ConversationType.ConversationType_Private).build());
-                msgBuilder.setContent(WFCMessage.MessageContent.newBuilder().setType(1).setSearchableContent(existRequest.getReason()).build());
+                msgBuilder.setConversation(FSCMessage.Conversation.newBuilder().setTarget(userId).setLine(0).setType(ProtoConstants.ConversationType.ConversationType_Private).build());
+                msgBuilder.setContent(FSCMessage.MessageContent.newBuilder().setType(1).setSearchableContent(existRequest.getReason()).build());
                 return ErrorCode.ERROR_CODE_SUCCESS;
             }
         } else {
@@ -1697,7 +1697,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode handleJoinChatroom(String userId, String clientId, String chatroomId) {
-        IMap<String, WFCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
+        IMap<String, FSCMessage.ChatroomInfo> chatroomInfoMap = hzInstance.getMap(CHATROOMS);
         if (chatroomInfoMap == null || chatroomInfoMap.get(chatroomId) == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
         }
@@ -1757,17 +1757,17 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode getUserSettings(String userId, long version, WFCMessage.GetUserSettingResult.Builder builder) {
-        MultiMap<String, WFCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
+    public ErrorCode getUserSettings(String userId, long version, FSCMessage.GetUserSettingResult.Builder builder) {
+        MultiMap<String, FSCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
 
-        Collection<WFCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
+        Collection<FSCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
         if (entries == null || entries.size() == 0) {
             entries = loadPersistedUserSettings(userId, userSettingMap);
         }
 
         ErrorCode ec = ErrorCode.ERROR_CODE_NOT_MODIFIED;
         if (entries != null) {
-            for (WFCMessage.UserSettingEntry entry : entries
+            for (FSCMessage.UserSettingEntry entry : entries
             ) {
                 if (entry.getUpdateDt() > version) {
                     ec = ErrorCode.ERROR_CODE_SUCCESS;
@@ -1780,9 +1780,9 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
 
-    private List<WFCMessage.UserSettingEntry> loadPersistedUserSettings(String userId, MultiMap<String, WFCMessage.UserSettingEntry> userSettingMap) {
-        List<WFCMessage.UserSettingEntry> datas = databaseStore.getPersistUserSetting(userId);
-        for (WFCMessage.UserSettingEntry data : datas
+    private List<FSCMessage.UserSettingEntry> loadPersistedUserSettings(String userId, MultiMap<String, FSCMessage.UserSettingEntry> userSettingMap) {
+        List<FSCMessage.UserSettingEntry> datas = databaseStore.getPersistUserSetting(userId);
+        for (FSCMessage.UserSettingEntry data : datas
              ) {
             userSettingMap.put(userId, data);
         }
@@ -1791,16 +1791,16 @@ public class MemoryMessagesStore implements IMessagesStore {
 
 
     @Override
-    public WFCMessage.UserSettingEntry getUserSetting(String userId, int scope, String key) {
-        MultiMap<String, WFCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
+    public FSCMessage.UserSettingEntry getUserSetting(String userId, int scope, String key) {
+        MultiMap<String, FSCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
 
-        Collection<WFCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
+        Collection<FSCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
         if (entries == null || entries.size() == 0) {
             entries = loadPersistedUserSettings(userId, userSettingMap);
         }
 
         if (entries != null) {
-            for (WFCMessage.UserSettingEntry entry : entries) {
+            for (FSCMessage.UserSettingEntry entry : entries) {
                 if (entry.getScope() == scope && (key== null || key.equals(entry.getKey()))) {
                     return entry;
                 }
@@ -1811,17 +1811,17 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public List<WFCMessage.UserSettingEntry> getUserSetting(String userId, int scope) {
-        MultiMap<String, WFCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
+    public List<FSCMessage.UserSettingEntry> getUserSetting(String userId, int scope) {
+        MultiMap<String, FSCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
 
-        Collection<WFCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
+        Collection<FSCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
         if (entries == null || entries.size() == 0) {
             entries = loadPersistedUserSettings(userId, userSettingMap);
         }
 
-        List<WFCMessage.UserSettingEntry> result = new ArrayList<>();
+        List<FSCMessage.UserSettingEntry> result = new ArrayList<>();
         if (entries != null) {
-            for (WFCMessage.UserSettingEntry entry : entries
+            for (FSCMessage.UserSettingEntry entry : entries
             ) {
                 if (entry.getScope() == scope) {
                     result.add(entry);
@@ -1833,10 +1833,10 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public long updateUserSettings(String userId, WFCMessage.ModifyUserSettingReq request) {
-        MultiMap<String, WFCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
+    public long updateUserSettings(String userId, FSCMessage.ModifyUserSettingReq request) {
+        MultiMap<String, FSCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
 
-        Collection<WFCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
+        Collection<FSCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
         if (entries == null || entries.size() == 0) {
             entries = loadPersistedUserSettings(userId, userSettingMap);
             if (entries == null) {
@@ -1845,10 +1845,10 @@ public class MemoryMessagesStore implements IMessagesStore {
         }
 
         long updateDt = System.currentTimeMillis();
-        WFCMessage.UserSettingEntry settingEntry = WFCMessage.UserSettingEntry.newBuilder().setScope(request.getScope()).setKey(request.getKey()).setValue(request.getValue()).setUpdateDt(updateDt).build();
+        FSCMessage.UserSettingEntry settingEntry = FSCMessage.UserSettingEntry.newBuilder().setScope(request.getScope()).setKey(request.getKey()).setValue(request.getValue()).setUpdateDt(updateDt).build();
         databaseStore.persistUserSetting(userId, settingEntry);
 
-        for (WFCMessage.UserSettingEntry entry : entries
+        for (FSCMessage.UserSettingEntry entry : entries
             ) {
             if (entry.getScope() == request.getScope() && entry.getKey().equals(request.getKey())) {
                 userSettingMap.remove(userId, entry);
@@ -1868,7 +1868,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     public boolean getUserGlobalSlient(String userId) {
         Boolean slient = userGlobalSlientMap.get(userId);
         if (slient == null) {
-            WFCMessage.UserSettingEntry entry = getUserSetting(userId, UserSettingScope.kUserSettingGlobalSilent, null);
+            FSCMessage.UserSettingEntry entry = getUserSetting(userId, UserSettingScope.kUserSettingGlobalSilent, null);
             if (entry == null || !entry.getValue().equals("1")) {
                 slient = false;
             } else {
@@ -1883,7 +1883,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     public boolean getUserPushHiddenDetail(String userId) {
         Boolean hidden = userPushHiddenDetail.get(userId);
         if (hidden == null) {
-            WFCMessage.UserSettingEntry entry = getUserSetting(userId, UserSettingScope.kUserSettingGlobalSilent, null);
+            FSCMessage.UserSettingEntry entry = getUserSetting(userId, UserSettingScope.kUserSettingGlobalSilent, null);
             if (entry == null || !entry.getValue().equals("1")) {
                 hidden = false;
             } else {
@@ -1895,12 +1895,12 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public boolean getUserConversationSlient(String userId, WFCMessage.Conversation conversation) {
+    public boolean getUserConversationSlient(String userId, FSCMessage.Conversation conversation) {
         String key = userId + "|" + conversation.getType() + "|" + conversation.getTarget() + "|" + conversation.getLine();
         Boolean slient = userConvSlientMap.get(key);
         if (slient == null) {
             String convSlientKey = conversation.getType() + "-" + conversation.getLine() + "-" + conversation.getTarget();
-            WFCMessage.UserSettingEntry entry = getUserSetting(userId, UserSettingScope.kUserSettingConversationSilent, convSlientKey);
+            FSCMessage.UserSettingEntry entry = getUserSetting(userId, UserSettingScope.kUserSettingConversationSilent, convSlientKey);
             if (entry == null || !entry.getValue().equals("1")) {
                 slient = false;
             } else {
@@ -1912,8 +1912,8 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode createChannel(String operator, WFCMessage.ChannelInfo channelInfo) {
-        IMap<String, WFCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
+    public ErrorCode createChannel(String operator, FSCMessage.ChannelInfo channelInfo) {
+        IMap<String, FSCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
 
         mIMap.put(channelInfo.getTargetId(), channelInfo);
 
@@ -1922,9 +1922,9 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode modifyChannelInfo(String operator, String channelId, int modifyType, String value) {
-        IMap<String, WFCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
+        IMap<String, FSCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
 
-        WFCMessage.ChannelInfo oldInfo = mIMap.get(channelId);
+        FSCMessage.ChannelInfo oldInfo = mIMap.get(channelId);
 
         if (oldInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -1936,7 +1936,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
 
 
-        WFCMessage.ChannelInfo.Builder newInfoBuilder = oldInfo.toBuilder();
+        FSCMessage.ChannelInfo.Builder newInfoBuilder = oldInfo.toBuilder();
 
         if (modifyType == Modify_Channel_Name)
             newInfoBuilder.setName(value);
@@ -1967,9 +1967,9 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode transferChannel(String operator, String channelId, String newOwner) {
-        IMap<String, WFCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
+        IMap<String, FSCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
 
-        WFCMessage.ChannelInfo oldInfo = mIMap.get(channelId);
+        FSCMessage.ChannelInfo oldInfo = mIMap.get(channelId);
 
         if (oldInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -1981,7 +1981,7 @@ public class MemoryMessagesStore implements IMessagesStore {
 
 
 
-        WFCMessage.ChannelInfo.Builder newInfoBuilder = oldInfo.toBuilder();
+        FSCMessage.ChannelInfo.Builder newInfoBuilder = oldInfo.toBuilder();
 
         newInfoBuilder.setOwner(newOwner);
         newInfoBuilder.setUpdateDt(System.currentTimeMillis());
@@ -1991,9 +1991,9 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public ErrorCode distoryChannel(String operator, String channelId) {
-        IMap<String, WFCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
+        IMap<String, FSCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
 
-        WFCMessage.ChannelInfo oldInfo = mIMap.get(channelId);
+        FSCMessage.ChannelInfo oldInfo = mIMap.get(channelId);
 
         if (oldInfo == null) {
             return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -2004,7 +2004,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         }
 
 
-        WFCMessage.ChannelInfo.Builder newInfoBuilder = oldInfo.toBuilder();
+        FSCMessage.ChannelInfo.Builder newInfoBuilder = oldInfo.toBuilder();
 
         newInfoBuilder.setStatus(Channel_Status_Destoryed);
         newInfoBuilder.setUpdateDt(System.currentTimeMillis());
@@ -2013,7 +2013,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public List<WFCMessage.ChannelInfo> searchChannel(String keyword, boolean buzzy, int page) {
+    public List<FSCMessage.ChannelInfo> searchChannel(String keyword, boolean buzzy, int page) {
         return databaseStore.searchChannelFromDB(keyword, buzzy, page);
     }
 
@@ -2032,8 +2032,8 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.ChannelInfo getChannelInfo(String channelId) {
-        IMap<String, WFCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
+    public FSCMessage.ChannelInfo getChannelInfo(String channelId) {
+        IMap<String, FSCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
         return mIMap.get(channelId);
     }
 
@@ -2045,8 +2045,8 @@ public class MemoryMessagesStore implements IMessagesStore {
         }
 
         if(!chatroomMembers.containsEntry(channelId, user)) {
-            IMap<String, WFCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
-            WFCMessage.ChannelInfo info = mIMap.get(channelId);
+            IMap<String, FSCMessage.ChannelInfo> mIMap = hzInstance.getMap(CHANNELS);
+            FSCMessage.ChannelInfo info = mIMap.get(channelId);
             if (info == null || !info.getOwner().equals(user)) {
                 return false;
             }
@@ -2085,7 +2085,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public WFCMessage.Message getMessage(long messageId) {
+    public FSCMessage.Message getMessage(long messageId) {
         IMap<Long, MessageBundle> mIMap = hzInstance.getMap(MESSAGES_MAP);
         MessageBundle bundle = mIMap.get(messageId);
         if (bundle != null) {
@@ -2153,19 +2153,19 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public long getFriendRqHead(String userId) {
-        MultiMap<String, WFCMessage.FriendRequest> friendsReqMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
-        Collection<WFCMessage.FriendRequest> friendsReq = friendsReqMap.get(userId);
+        MultiMap<String, FSCMessage.FriendRequest> friendsReqMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
+        Collection<FSCMessage.FriendRequest> friendsReq = friendsReqMap.get(userId);
         long max = 0;
         if (friendsReq == null || friendsReq.size() == 0) {
             friendsReq = databaseStore.getPersistFriendRequests(userId);
-            for (WFCMessage.FriendRequest req : friendsReq
+            for (FSCMessage.FriendRequest req : friendsReq
                  ) {
                 friendsReqMap.put(userId, req);
             }
         }
 
         if (friendsReq != null && friendsReq.size() > 0) {
-            for (WFCMessage.FriendRequest request :
+            for (FSCMessage.FriendRequest request :
                 friendsReq) {
                 if (request.getUpdateDt() > max)
                     max = request.getUpdateDt();
@@ -2177,15 +2177,15 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public long getSettingHead(String userId) {
-        MultiMap<String, WFCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
+        MultiMap<String, FSCMessage.UserSettingEntry> userSettingMap = hzInstance.getMultiMap(USER_SETTING);
 
-        Collection<WFCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
+        Collection<FSCMessage.UserSettingEntry> entries = userSettingMap.get(userId);
         if (entries == null || entries.size() == 0) {
             return 0L;
         }
 
         long max = 0;
-        for (WFCMessage.UserSettingEntry entry : entries
+        for (FSCMessage.UserSettingEntry entry : entries
             ) {
             if (entry.getUpdateDt() > max) {
                 max = entry.getUpdateDt();

@@ -1,6 +1,6 @@
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 
@@ -167,7 +167,7 @@ public class UserResponse implements Serializable {
                 '}';
     }
 
-    public static UserResponse convertWFCUser(WFCMessage.User user){
+    public static UserResponse convertWFCUser(FSCMessage.User user){
         UserResponse userResponse = new UserResponse();
         userResponse.setUid(user.getUid());
         userResponse.setAddress(user.getAddress());

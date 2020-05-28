@@ -8,7 +8,7 @@
 
 package com.comsince.github.model;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.proto.FSCMessage;
 import com.google.gson.Gson;
 import com.google.protobuf.ByteString;

@@ -1,6 +1,6 @@
 package com.comsince.github.handler.im;
 
-import cn.wildfirechat.proto.ProtoConstants;
+import com.comsince.github.proto.ProtoConstants;
 import com.comsince.github.MessageService;
 import com.comsince.github.model.MessageResponse;
 import com.comsince.github.process.ImMessageProcessor;
@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static com.comsince.github.common.ErrorCode.*;

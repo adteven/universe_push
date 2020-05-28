@@ -1,4 +1,4 @@
-package cn.wildfirechat.proto;
+package com.comsince.github.proto;
 
 public class ProtoConstants {
 

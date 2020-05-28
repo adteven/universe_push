@@ -8,15 +8,15 @@
 
 package com.comsince.github.persistence.loader;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.context.SpringApplicationContext;
 import com.comsince.github.persistence.DatabaseStore;
+import com.comsince.github.proto.FSCMessage;
 import com.hazelcast.core.MapStore;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class GroupLoader implements MapStore<String, WFCMessage.GroupInfo> {
+public class GroupLoader implements MapStore<String, FSCMessage.GroupInfo> {
     private DatabaseStore getDatabaseStore() {
         return (DatabaseStore) SpringApplicationContext.getBean("databaseStore");
     }
@@ -30,7 +30,7 @@ public class GroupLoader implements MapStore<String, WFCMessage.GroupInfo> {
      * @param key@return value of the key, value cannot be null
      */
     @Override
-    public WFCMessage.GroupInfo load(String key) {
+    public FSCMessage.GroupInfo load(String key) {
         return getDatabaseStore().getPersistGroupInfo(key);
     }
 
@@ -48,7 +48,7 @@ public class GroupLoader implements MapStore<String, WFCMessage.GroupInfo> {
      * @return map of loaded key-value pairs.
      */
     @Override
-    public Map<String, WFCMessage.GroupInfo> loadAll(Collection<String> keys) {
+    public Map<String, FSCMessage.GroupInfo> loadAll(Collection<String> keys) {
         return null;
     }
 
@@ -59,13 +59,13 @@ public class GroupLoader implements MapStore<String, WFCMessage.GroupInfo> {
     }
 
     @Override
-    public void store(String key, WFCMessage.GroupInfo value) {
+    public void store(String key, FSCMessage.GroupInfo value) {
         getDatabaseStore().persistGroupInfo(value);
     }
 
     @Override
-    public void storeAll(Map<String, WFCMessage.GroupInfo> map) {
-        for (WFCMessage.GroupInfo value : map.values()) {
+    public void storeAll(Map<String, FSCMessage.GroupInfo> map) {
+        for (FSCMessage.GroupInfo value : map.values()) {
             getDatabaseStore().persistGroupInfo(value);
         }
     }

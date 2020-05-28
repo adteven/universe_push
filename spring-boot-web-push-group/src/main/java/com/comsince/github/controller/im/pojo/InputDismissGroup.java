@@ -9,7 +9,7 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 public class InputDismissGroup extends InputGroupBase {
     private String group_id;
@@ -27,8 +27,8 @@ public class InputDismissGroup extends InputGroupBase {
         return true;
     }
 
-    public WFCMessage.DismissGroupRequest toProtoGroupRequest() {
-        WFCMessage.DismissGroupRequest.Builder dismissGroupBuilder = WFCMessage.DismissGroupRequest.newBuilder();
+    public FSCMessage.DismissGroupRequest toProtoGroupRequest() {
+        FSCMessage.DismissGroupRequest.Builder dismissGroupBuilder = FSCMessage.DismissGroupRequest.newBuilder();
         dismissGroupBuilder.setGroupId(group_id);
 
         if (to_lines != null) {

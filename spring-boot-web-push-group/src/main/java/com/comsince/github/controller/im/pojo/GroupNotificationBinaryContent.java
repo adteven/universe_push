@@ -8,8 +8,8 @@
 
 package com.comsince.github.controller.im.pojo;
 
-import cn.wildfirechat.proto.ProtoConstants;
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.ProtoConstants;
+import com.comsince.github.proto.FSCMessage;
 import com.google.gson.Gson;
 import com.google.protobuf.ByteString;
 
@@ -85,43 +85,43 @@ public class GroupNotificationBinaryContent {
         this.ms = ms;
     }
 
-    public WFCMessage.MessageContent getGroupNotifyContent(int groupContentType) {
-        return WFCMessage.MessageContent.newBuilder().setType(groupContentType).setData(ByteString.copyFromUtf8(new Gson().toJson(this))).build();
+    public FSCMessage.MessageContent getGroupNotifyContent(int groupContentType) {
+        return FSCMessage.MessageContent.newBuilder().setType(groupContentType).setData(ByteString.copyFromUtf8(new Gson().toJson(this))).build();
     }
 
-    public WFCMessage.MessageContent getAddGroupNotifyContent() {
+    public FSCMessage.MessageContent getAddGroupNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_ADD_GROUP_MEMBER);
     }
 
-    public WFCMessage.MessageContent getCreateGroupNotifyContent() {
+    public FSCMessage.MessageContent getCreateGroupNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_CREATE_GROUP);
     }
 
-    public WFCMessage.MessageContent getDismissGroupNotifyContent() {
+    public FSCMessage.MessageContent getDismissGroupNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_DISMISS_GROUP);
     }
 
-    public WFCMessage.MessageContent getKickokfMemberGroupNotifyContent() {
+    public FSCMessage.MessageContent getKickokfMemberGroupNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_KICKOF_GROUP_MEMBER);
     }
 
-    public WFCMessage.MessageContent getQuitGroupNotifyContent() {
+    public FSCMessage.MessageContent getQuitGroupNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_QUIT_GROUP);
     }
 
-    public WFCMessage.MessageContent getTransferGroupNotifyContent() {
+    public FSCMessage.MessageContent getTransferGroupNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_TRANSFER_GROUP_OWNER);
     }
 
-    public WFCMessage.MessageContent getChangeGroupNameNotifyContent() {
+    public FSCMessage.MessageContent getChangeGroupNameNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_CHANGE_GROUP_NAME);
     }
 
-    public WFCMessage.MessageContent getChangeGroupPortraitNotifyContent() {
+    public FSCMessage.MessageContent getChangeGroupPortraitNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_CHANGE_GROUP_PORTRAIT);
     }
 
-    public WFCMessage.MessageContent getModifyGroupMemberAliasNotifyContent() {
+    public FSCMessage.MessageContent getModifyGroupMemberAliasNotifyContent() {
         return getGroupNotifyContent(ProtoConstants.MESSAGE_CONTENT_TYPE_MODIFY_GROUP_ALIAS);
     }
 }

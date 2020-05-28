@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
+import static com.comsince.github.proto.ProtoConstants.PersistFlag.Transparent;
 import static com.comsince.github.model.MessageContentType.*;
 
 public class MessageResponse implements Serializable {

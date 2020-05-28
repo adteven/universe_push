@@ -8,7 +8,8 @@
 
 package com.comsince.github.persistence;
 
-import cn.wildfirechat.proto.WFCMessage;
+
+import com.comsince.github.proto.FSCMessage;
 
 import java.io.Serializable;
 
@@ -23,13 +24,13 @@ public class MessageBundle implements Serializable {
 	private int type;
 	private int line;
 	private String targetId;
-	private WFCMessage.Message message;
+	private FSCMessage.Message message;
 	private long messageId;
 
     public MessageBundle() {
     }
 
-    public MessageBundle(long messageId, String fromUser, String fromClientId, WFCMessage.Message message) {
+    public MessageBundle(long messageId, String fromUser, String fromClientId, FSCMessage.Message message) {
 		super();
 		this.fromUser = fromUser;
 		this.fromClientId = fromClientId;
@@ -60,11 +61,11 @@ public class MessageBundle implements Serializable {
 	public String getTargetId() {
 		return targetId;
 	}
-	public WFCMessage.Message getMessage() {
+	public FSCMessage.Message getMessage() {
 		return message;
 	}
 
-    public void setMessage(WFCMessage.Message message) {
+    public void setMessage(FSCMessage.Message message) {
         this.fromUser = message.getFromUser();
         this.type = message.getConversation().getType();
         this.targetId = message.getConversation().getTarget();

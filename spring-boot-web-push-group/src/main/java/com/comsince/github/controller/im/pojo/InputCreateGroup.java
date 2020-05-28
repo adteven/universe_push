@@ -9,7 +9,7 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.util.internal.StringUtil;
 
 public class InputCreateGroup extends InputGroupBase {
@@ -19,9 +19,9 @@ public class InputCreateGroup extends InputGroupBase {
         return true;
     }
 
-    public WFCMessage.CreateGroupRequest toProtoGroupRequest() {
-        WFCMessage.Group.Builder groupBuilder = WFCMessage.Group.newBuilder();
-        WFCMessage.GroupInfo.Builder groupInfoBuilder = WFCMessage.GroupInfo.newBuilder();
+    public FSCMessage.CreateGroupRequest toProtoGroupRequest() {
+        FSCMessage.Group.Builder groupBuilder = FSCMessage.Group.newBuilder();
+        FSCMessage.GroupInfo.Builder groupInfoBuilder = FSCMessage.GroupInfo.newBuilder();
         if (!StringUtil.isNullOrEmpty(group.getGroup_info().target_id)) {
             groupInfoBuilder.setTargetId(group.getGroup_info().getTarget_id());
         }
@@ -46,7 +46,7 @@ public class InputCreateGroup extends InputGroupBase {
 
         groupBuilder.setGroupInfo(groupInfoBuilder);
         for (PojoGroupMember pojoGroupMember : group.getMembers()) {
-            WFCMessage.GroupMember.Builder groupMemberBuilder = WFCMessage.GroupMember.newBuilder().setMemberId(pojoGroupMember.getMember_id());
+            FSCMessage.GroupMember.Builder groupMemberBuilder = FSCMessage.GroupMember.newBuilder().setMemberId(pojoGroupMember.getMember_id());
             if (!StringUtil.isNullOrEmpty(pojoGroupMember.getAlias())) {
                 groupMemberBuilder.setAlias(pojoGroupMember.getAlias());
             }
@@ -54,7 +54,7 @@ public class InputCreateGroup extends InputGroupBase {
             groupBuilder.addMembers(groupMemberBuilder);
         }
 
-        WFCMessage.CreateGroupRequest.Builder createGroupReqBuilder = WFCMessage.CreateGroupRequest.newBuilder();
+        FSCMessage.CreateGroupRequest.Builder createGroupReqBuilder = FSCMessage.CreateGroupRequest.newBuilder();
         createGroupReqBuilder.setGroup(groupBuilder);
         if (to_lines != null) {
             for (Integer line : to_lines

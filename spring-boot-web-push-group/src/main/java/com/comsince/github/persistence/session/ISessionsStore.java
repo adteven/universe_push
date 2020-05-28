@@ -16,8 +16,8 @@
 
 package com.comsince.github.persistence.session;
 
-import cn.wildfirechat.proto.WFCMessage;
 import com.comsince.github.common.ErrorCode;
+import com.comsince.github.proto.FSCMessage;
 
 import java.util.Collection;
 import java.util.Queue;
@@ -40,7 +40,7 @@ public interface ISessionsStore {
 
     ErrorCode createNewSession(String username, String clientID, boolean cleanSession, boolean createNoExist);
 
-    ClientSession updateExistSession(String username, String clientID, WFCMessage.RouteRequest endpoint, boolean cleanSession);
+    ClientSession updateExistSession(String username, String clientID, FSCMessage.RouteRequest endpoint, boolean cleanSession);
 
     Session getSession(String clientID);
 

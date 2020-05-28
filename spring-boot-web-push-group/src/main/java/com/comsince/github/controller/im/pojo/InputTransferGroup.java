@@ -9,7 +9,7 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 
 public class InputTransferGroup extends InputGroupBase {
     private String group_id;
@@ -20,8 +20,8 @@ public class InputTransferGroup extends InputGroupBase {
         return true;
     }
 
-    public WFCMessage.TransferGroupRequest toProtoGroupRequest() {
-        WFCMessage.TransferGroupRequest.Builder groupBuilder = WFCMessage.TransferGroupRequest.newBuilder();
+    public FSCMessage.TransferGroupRequest toProtoGroupRequest() {
+        FSCMessage.TransferGroupRequest.Builder groupBuilder = FSCMessage.TransferGroupRequest.newBuilder();
 
         groupBuilder.setGroupId(group_id);
         groupBuilder.setNewOwner(new_owner);

@@ -9,7 +9,7 @@
 package com.comsince.github.controller.im.pojo;
 
 
-import cn.wildfirechat.proto.WFCMessage;
+import com.comsince.github.proto.FSCMessage;
 import io.netty.util.internal.StringUtil;
 
 import java.util.List;
@@ -38,11 +38,11 @@ public class InputAddGroupMember extends InputGroupBase {
         return true;
     }
 
-    public WFCMessage.AddGroupMemberRequest toProtoGroupRequest() {
-        WFCMessage.AddGroupMemberRequest.Builder addGroupBuilder = WFCMessage.AddGroupMemberRequest.newBuilder();
+    public FSCMessage.AddGroupMemberRequest toProtoGroupRequest() {
+        FSCMessage.AddGroupMemberRequest.Builder addGroupBuilder = FSCMessage.AddGroupMemberRequest.newBuilder();
         addGroupBuilder.setGroupId(group_id);
         for (PojoGroupMember pojoGroupMember : getMembers()) {
-            WFCMessage.GroupMember.Builder groupMemberBuilder = WFCMessage.GroupMember.newBuilder().setMemberId(pojoGroupMember.getMember_id());
+            FSCMessage.GroupMember.Builder groupMemberBuilder = FSCMessage.GroupMember.newBuilder().setMemberId(pojoGroupMember.getMember_id());
             if (!StringUtil.isNullOrEmpty(pojoGroupMember.getAlias())) {
                 groupMemberBuilder.setAlias(pojoGroupMember.getAlias());
             }
